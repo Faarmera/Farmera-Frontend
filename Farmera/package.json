@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "axios": "^1.7.9",
     "lucide-react": "^0.462.0",
     "prop-types": "^15.8.1",
     "props-validator": "^0.1.0",
