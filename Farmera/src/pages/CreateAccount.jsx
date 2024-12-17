@@ -7,8 +7,8 @@ import { FcGoogle } from "react-icons/fc"
 import axios from "axios"
 import React, { useState } from "react"
 import {Link, useNavigate } from "react-router-dom"
+import {useAuth} from "../context/AuthContext"
 import { EyeIcon, EyeOffIcon } from "lucide-react"
-
 
 const CreateAccount = () => {
     const [toggleForm, setToggleForm] = useState(false)
@@ -35,6 +35,7 @@ const CreateAccount = () => {
     const [farmerError, setFarmerError] = useState(null)
     const [showPassword, setShowPassword] = useState(false)
     const Navigate = useNavigate()
+    const { dispatch } = useAuth()
 
     const validateEmail = (email) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -101,7 +102,6 @@ const CreateAccount = () => {
         //     return
         // }
         
-        
         try {
             let formData = new FormData();
             formData.append("firstname", buyerData.firstname);
@@ -110,7 +110,7 @@ const CreateAccount = () => {
             formData.append("phonenumber", buyerData.phonenumber);
             formData.append("password", buyerData.password);
 
-            let signupBuyer = await axios.post("http://localhost:5000/api/v1/auth/signbuyerup",
+            let signupBuyer = await axios.post("http://localhost:5000/api/v1/auth/signup/buyer",
                 formData
             );
             // console.log("SignupBuyer Successful:", signupBuyer.data);
@@ -132,9 +132,7 @@ const CreateAccount = () => {
             } else {
                 setBuyerError(err.response?.data?.message)
             }
-        }
-        
-        
+        }   
     }
 
     const signFarmerUp = async (e) => {
@@ -181,10 +179,15 @@ const CreateAccount = () => {
             formData.append("phonenumber", farmerData.phonenumber);
             formData.append("password", farmerData.password);
 
-            let signupFarmer = await axios.post("http://localhost:5000/api/v1/auth/signfarmerup", 
+            let signupFarmer = await axios.post("http://localhost:5000/api/v1/auth/signup/farmer", 
                 formData
             );
             // console.log("SignupFarmer Successful:", signupFarmer.data);
+
+            dispatch({
+                type: "SIGN_IN",
+                payload: signupFarmer.data
+            })
             
             setFarmerData({
                 firstname: "",
