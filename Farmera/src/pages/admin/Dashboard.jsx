@@ -25,7 +25,7 @@ export default function Dashboard() {
     <Container>
       <Wrapper>
         <WelcomeSection>
-          <h1>Welcome, {authState.user?.name}</h1>
+          <h1>Welcome, {authState.user?.firstname}</h1>
           <p>Manage your products and view your store's performance</p>
         </WelcomeSection>
 

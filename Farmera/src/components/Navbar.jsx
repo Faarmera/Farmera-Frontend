@@ -264,7 +264,7 @@ export default function Navbar() {
 
         {/* Desktop Menu */}
         <DesktopMenu>
-          <NavLink to="/store">Store</NavLink>
+          <NavLink to="/buyer-store">Store</NavLink>
           <NavLink to="/about">About Us</NavLink>
           {/* <NavLink to="/help">Help</NavLink> */}
 
@@ -294,7 +294,7 @@ export default function Navbar() {
             )}
           </SearchContainer>
 
-          <CartLink to="/cart">
+          <CartLink to="/buyer-cart">
             <ShoppingCart className="cart-icon" />
             <span className="cart-badge">0</span>
           </CartLink>
@@ -314,7 +314,7 @@ export default function Navbar() {
       {/* Mobile Menu */}
       {isOpen && (
         <MobileMenu>
-          <MobileMenuLink to="/store">Store</MobileMenuLink>
+          <MobileMenuLink to="/buyer-store">Store</MobileMenuLink>
           <MobileMenuLink to="/about">About Us</MobileMenuLink>
           <MobileMenuLink to="/help/contact">Help</MobileMenuLink>
           <MobileMenuLink to="/help/faq">FAQ</MobileMenuLink>

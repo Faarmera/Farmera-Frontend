@@ -1,64 +1,146 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import styled from "styled-components";
 
 const ForgotPassword = () =>{
 
-    const [email, setEmail] = useState("")
+    const [formData, setFormData] = useState({
 
-    const [validEmail, setValidEmail] = useState(false)
+        email: ""
+
+    });
 
     const [errors, setErrors] = useState({
-        email: '',
-    })
 
-    const validateEmail = (email) =>{
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
-    }
+        email:""
 
-    const emailChange = (e) =>{
-        setEmail(e.target.value)
-        if(errors.email){
-            setErrors(prevErrors=>({
-                ...prevErrors,
-                email: ""
-            }))
-        }
-        setValidEmail(validateEmail(email))
-    }
+    });
+
+    const [successMessage, setSuccessMessage] = useState(false)
+
+    const [loading, setLoading] = useState(false);
+
+    const navigate = useNavigate();
 
 
+    const handleChange = (e) =>{
+        
+        const {id, value} = e.target;
 
-    const handleSubmit = (e) =>{
+        setFormData(prev=>({
+            ...prev,
+            [id]: value
+        }));
+
+        setErrors(prev =>({
+            ...prev,
+            [id]: ""
+        }));
+
+    };
+
+    const handleSubmit = async (e) =>{
+        
         e.preventDefault();
 
-        const newErrors = {email: ''}
+        setLoading(true)
 
-        if(!email){
-            newErrors.email = "Email is required"
-        }else if(!validateEmail(email)){
-                newErrors.email = "Enter a valid password"
+        try{
+            
+            const response = await axios.post(
+
+                "https://farmera-eyu3.onrender.com/api/v1/auth/forgotPassword",
+                formData
+
+            );
+
+            if (response.data.message) {
+
+                setSuccessMessage(true)
+
+                setTimeout(() => {
+
+                    navigate("/signin")
+
+                }, 3000);
+
+            }
+    
+        } catch (error){
+
+            if (error.response){
+
+                setErrors({
+                    email: "Email not found",
+                });
+
+            } else {
+
+                setErrors({
+                    email: "Network issues. Try again later..."
+                })
+
             }
 
-        setErrors(newErrors)
+        }finally{
+
+            setLoading(false)
+
+        }
+
     }
 
     return(
+
         <ContainerDiv>
+
             <h2>Reset Password</h2>
+
             <div className="formAndCo">
+
                 <p className="firstText">We will send you an email with a link on how to reset your password.</p>
-                <form onSubmit={handleSubmit}>
+
+                <form onSubmit = {handleSubmit}>
+
                     <label htmlFor="email">Email</label>
-                    <input type="email" id="email" value={email} className={errors.email ? "errorOutline" : ""} onChange={emailChange} placeholder="example@gmail.com"/>
+
+                    <input 
+                        type="email" 
+                        id="email"
+                        value = {formData.email}
+                        onChange = {handleChange}
+                        placeholder="example@gmail.com"
+                        className={errors.email ? "errorOutline" : "successOutline"}
+                    />
+
                     {errors.email && (
                         <p className="errorMessage">{errors.email}</p>
                     )}
-                    <button className={validEmail ? "valid" : ""}>Send Reset Password Link</button>
+
+
+                    {successMessage && (
+                        <p className="successMessage">Password reset instructions have been sent to your email</p>
+                    )}
+
+                    <button 
+                        type="submit"
+                        disabled = {loading}
+                        className={formData.email ? "valid" : ""}
+                    >
+
+                        {loading ? "Sending..." : "Send Reset Password Link"}
+
+                    </button>
+                    
                 </form>
-                <Link to="/signin" className="link">Go back to login</Link>
+
+                <Link to="/signin" className="link">Go back to login</Link> 
+                {/* change the above link later */}
+                
             </div>
+
         </ContainerDiv>
     );
 };
@@ -66,8 +148,10 @@ const ForgotPassword = () =>{
 export default ForgotPassword;
 
 const ContainerDiv = styled.div`
+
     width: 100%;
     height: 535px;
+    min-height: 100vh;
 
     display: flex;
     flex-direction: column;
@@ -77,8 +161,6 @@ const ContainerDiv = styled.div`
     box-sizing: border-box;
     padding-top: 50px;
     padding-bottom: 50px;
-
-    border-radius: 15px;
 
     background-color: #efefef;
 
@@ -185,6 +267,7 @@ const ContainerDiv = styled.div`
                 background-color: green;
                 color: white;
             }
+
         }
 
         .link{
@@ -206,8 +289,18 @@ const ContainerDiv = styled.div`
         border: 1px solid red !important;
     }
 
+    .successOutline{
+        border: 1px solid green !important;
+    }
+
     .errorMessage{
         color: red;
+        font-size: 12px;
+        margin-top: 5px;
+    }
+
+    .successMessage{
+        color: green;
         font-size: 12px;
         margin-top: 5px;
     }

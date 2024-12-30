@@ -1,4 +1,6 @@
-import React, { createContext, useContext, useReducer } from "react";
+// PLEASE, DO NOT CHANGE ANYTHING HERE UNLESS YOU INFORM OPEOLUWA
+
+import React, { createContext, useContext, useReducer, useEffect } from "react";
 
 // Initial State
 const initialState = {
@@ -9,17 +11,15 @@ const initialState = {
 // Auth Reducer
 const authReducer = (state, action) => {
   switch (action.type) {
-    case "SIGN_IN":
+    case 'SIGN_IN':
       return {
-        ...state,
-        user: action.payload,
-        isAuthenticated: true,
+          isAuthenticated: true,
+          user: action.payload.user
       };
-    case "SIGN_OUT":
+    case 'SIGN_OUT':
       return {
-        ...state,
-        user: null,
-        isAuthenticated: false,
+          isAuthenticated: false,
+          user: null
       };
     default:
       return state;
@@ -33,7 +33,37 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  return <AuthContext.Provider value={{ state, dispatch }}>{children}</AuthContext.Provider>;
+  useEffect(() => {
+
+    const userData = localStorage.getItem('userData');
+
+    if (userData) {
+
+        const user = JSON.parse(userData);
+
+        dispatch({
+
+          type: "SIGN_IN",
+          payload: {
+              user: {
+
+                  _id: user._id,
+                  firstname: user.firstname,
+                  lastname: user.lastname,
+                  email: user.email,
+                  phonenumber: user.phonenumber,
+                  role: user.role,
+                  type: user.type
+                  
+              },
+          }
+
+        });
+    }
+    
+  }, []);
+
+  return (<AuthContext.Provider value={{ state, dispatch }}>{children}</AuthContext.Provider>);
 };
 
 // Custom Hook

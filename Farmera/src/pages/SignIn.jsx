@@ -1,100 +1,166 @@
-import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
-import facebook from "../assets/PNG/facebook.png";
-import google from "../assets/PNG/google.png";
-import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+
+import { useAuth } from "../context/AuthContext";
+
 import styled from "styled-components";
+
+import axios from "axios";
+// import google from "../assets/PNG/google.png";
 
 
 const SignIn = () => {
-    const navigate = useNavigate(); // Hook to navigate
+
+    const { dispatch } = useAuth();
+
+    useEffect(() => {
+        console.log('Current type:', localStorage.getItem("type"));
+    }, []);
+
     const [showPassword, setShowPassword] = useState(false);
 
     const showPasswordToggle = () => {
         setShowPassword(!showPassword);
     };
 
+    const navigate = useNavigate();
+
+    const [formData, setFormData] = useState({
+        email: "",
+        password: ""
+    });
+
     const [errors, setErrors] = useState({
         email: '',
         password: ''
     });
 
-    const [password, setPassword] = useState('');
-    
-    const passwordChange = (e) => {
-        setPassword(e.target.value);
-        if (errors.password) {
-            setErrors(prevErrors => ({
-                ...prevErrors,
-                password: ""
-            }));
-        }
+    const [loading, setLoading] = useState(false);
+
+    const handleChange = (e) => {
+
+        const { id, value } = e.target;
+
+        setFormData(prev =>({
+            ...prev,
+            [id]: value
+        }));
+        
+        setErrors(prev => ({
+            ...prev,
+            [id]: ''
+        }));
+
     };
+    const handleSubmit = async (e) => {
 
-    const [email, setEmail] = useState('');
-
-    const emailChange = (e) => {
-        setEmail(e.target.value);
-        if (errors.email) {
-            setErrors(prevErrors => ({
-                ...prevErrors,
-                email: ""
-            }));
-        }
-    };
-
-    const validateEmail = (email) => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
-    };
-
-    const validatePassword = (password) => {
-        return password.length >= 8;
-    };
-
-    const handleSubmit = (e) => {
         e.preventDefault();
 
-        const newErrors = { email: '', password: '' };
+        setLoading(true);
+    
+        try {
 
-        if (!email && !password) {
-            newErrors.email = "Email is required";
-            newErrors.password = "Password is required";
-        } else {
-            if (!email) {
-                newErrors.email = "Email is required";
-            } else if (!validateEmail(email)) {
-                newErrors.email = "Enter a valid email address";
+            const response = await axios.post(
+
+                "https://farmera-eyu3.onrender.com/api/v1/auth/signin",
+                formData
+
+            );
+
+            // console.log("Server Response:", response.data);
+
+            // console.log("type received:", response.data.type);
+
+            const userData = response.data;
+            
+            localStorage.setItem("userData", JSON.stringify({
+                ...userData,
+                isAdmin: userData.type === "admin",
+            }));
+
+            localStorage.setItem("type", response.data.type )
+
+            // console.log("type saved in localStorage:", localStorage.getItem("type"));
+
+            // console.log("Attempting to navigate to dashboard...");
+
+            dispatch({
+                type: "SIGN_IN",
+                payload: {
+                    user: {
+                        _id: userData._id,
+                        firstname: userData.firstname,
+                        lastname: userData.lastname,
+                        email: userData.email,
+                        phonenumber: userData.phonenumber,
+                        role: userData.role,
+                        type: userData.type,
+                        isAdmin: userData.type === "admin"
+                    },
+                }
+            });
+
+            switch (userData.type) {
+                case "admin":
+                    navigate("/");
+                    break;
+                case "farmer":
+                    navigate("/farmer-dashboard");
+                    break;
+                case "buyer":
+                    navigate("/buyer-store");
+                    break;
+                default:
+                    throw new Error("Invalid user type");
+            }
+    
+
+        } catch (error) {
+
+            // console.error("Error during sign-in:", error);
+
+            if (error.response) {
+                
+                    setErrors({
+                        email: "Invalid credentials",
+                        password: "Invalid credentials"
+                    });
+
+            } else {
+
+                setErrors({
+                    email: "Network issues. Try again later...",
+                    password: "Network issues. Try again later..."
+                });
+
             }
 
-            if (!password) {
-                newErrors.password = "Password is required";
-            } else if (!validatePassword(password)) {
-                newErrors.password = "Enter a valid password";
-            }
-        }
+        } finally {
 
-        if (!newErrors.email && !newErrors.password) {
-            // If there are no errors, navigate to Home
-            navigate("/");
-        }
+            setLoading(false);
 
-        setErrors(newErrors);
+        }
     };
 
     return (
+
         <FormWrapper>
+
             <h2>Sign In</h2>
+
             <div className="formAndCo">
+
                 <form onSubmit={handleSubmit}>
+
                     <div className="inputOne">
-                        <label htmlFor="username">Email Address</label>
+                        <label htmlFor="email">Email Address</label>
                         <input
-                            type="text"
-                            id="username"
-                            value={email}
-                            onChange={emailChange}
+                            type="email"
+                            id="email"
+                            value={formData.email}
+                            onChange={handleChange}
                             className={errors.email ? "error-outline" : ""}
-                            placeholder="johndoe@gmail.com"
                         />
                         {errors.email && (
                             <p className="error-message">{errors.email}</p>
@@ -106,10 +172,9 @@ const SignIn = () => {
                         <input
                             type={showPassword ? "text" : "password"}
                             id="password"
-                            value={password}
-                            onChange={passwordChange}
+                            value={formData.password}
+                            onChange={handleChange}
                             className={errors.password ? "error-outline" : ""}
-                            placeholder="Password (Min. of 8 characters)"
                         />
                         {errors.password && (
                             <p className="error-message">{errors.password}</p>
@@ -127,18 +192,29 @@ const SignIn = () => {
                     </div>
 
                     <Link to="/forgotpassword" className="link">Forgot Password?</Link>
-                    <button type="submit" className="signInButton">Sign In</button>
+
+                    <button type="submit" className="signInButton" disabled={loading}>
+                    
+                        {loading ? "Signing in..." : "Sign In"}
+                    
+                    </button>
+
                 </form>
 
                 <div className="belowForm">
-                    <div className="createAccount">
-                        <p className="preludeToCreate">Don't have an account yet?</p>
-                        <Link to="/signup" className="create">Create Account</Link>
-                    </div>
 
+                    <div className="createAccount">
+
+                        <p className="preludeToCreate">Don't have an account yet?</p>
+
+                        <Link to="/signup" className="create">Create Account</Link>
+
+                    </div>
+{/* 
                     <p className="or">Or Sign Up With</p>
 
                     <div className="buttonDiv">
+
                         <button>
                             <img src={google} alt="#" />
                             <p>Google</p>
@@ -147,7 +223,8 @@ const SignIn = () => {
                             <img src={facebook} alt="#" />
                             <p>Facebook</p>
                         </button>
-                    </div>  
+
+                    </div>   */}
                 </div>
             </div>          
         </FormWrapper>
@@ -157,12 +234,11 @@ const SignIn = () => {
 export default SignIn;
 
 const FormWrapper = styled.div`
+
     width: 100%;
     height: 735px;
-    background-color:white;
-background-color: white; // Set default background color to white
-  min-height: 100vh; // Ensure it takes full height
-  padding: 2rem; // Add some padding
+    min-height: 100vh;
+
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -171,8 +247,6 @@ background-color: white; // Set default background color to white
     box-sizing: border-box;
     padding-top: 50px;
     padding-bottom: 50px;
-
-    border-radius: 15px;
 
     background-color: #efefef;
 
@@ -282,6 +356,7 @@ background-color: white; // Set default background color to white
                     margin-top: 10px;
                 }
             }
+
             .inputThree{
                 width: 115px;
                 display: flex;
@@ -289,6 +364,7 @@ background-color: white; // Set default background color to white
                 justify-content: space-between;
                 align-items: center;
     
+                margin-top: 9px;
                 margin-bottom: 35px;
     
                 input{

@@ -164,8 +164,9 @@ const HeroSection = styled.div`
     border-radius: 0px 0px 8px 8px;
   }
     .bout{
-    color:white;
+    color: white;
     font-size: 1.2rem;
+    justify-content:center;
     
 
     @media (min-width: 768px) {
@@ -179,22 +180,22 @@ const Overlay = styled.div`
   position: absolute;
   inset: 0;
   background-color: black;
-  opacity: 0.4;
+  opacity: 0.6;
 `;
 
 const HeroContent = styled.div`
-  position: absolute;
+  position: relative;
   max-width: 1200px;
   margin: 0 auto;
-  padding:  3.5rem;
+  padding:  1rem;
   height: 100%;
   display: grid;
   align-items: left;
-  color: blue;
+  color: white;
 
 
   font-size: 2rem;
-    font-weight: bold;
+    font-weight: ;
     margin-bottom: 1.5rem;
 
     @media (min-width: 768px) {
@@ -203,7 +204,7 @@ const HeroContent = styled.div`
 
   p {
     font-size: 1.25rem;
-    margin-bottom: 2rem;
+    margin-bottom: 3rem;
 
     @media (min-width: 768px) {
       font-size: 1.5rem;
@@ -277,15 +278,16 @@ const TeamGrid = styled.div`
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 2rem;
   margin-top: 2rem;
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(3, 1fr);
 `;
 
 const TeamCard = styled.div`
   background: #F0FDF4;
   padding: 1.5rem;
   text-align: center;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-
+  border-radius: 15px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
   img {
     width: 100%;
     height: 200px;

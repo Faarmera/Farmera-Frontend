@@ -7,8 +7,8 @@ import { FcGoogle } from "react-icons/fc"
 import axios from "axios"
 import React, { useState } from "react"
 import {Link, useNavigate } from "react-router-dom"
-import {useAuth} from "../context/AuthContext"
-import { EyeIcon, EyeOffIcon, LoaderCircleIcon} from "lucide-react"
+import { useAuth } from "../context/AuthContext"
+import { EyeIcon, EyeOffIcon } from "lucide-react"
 
 const CreateAccount = () => {
     const [toggleForm, setToggleForm] = useState(false)
@@ -34,9 +34,26 @@ const CreateAccount = () => {
     const [buyerError, setBuyerError] = useState(null)
     const [farmerError, setFarmerError] = useState(null)
     const [showPassword, setShowPassword] = useState(false)
-    const [loadInUser, setLoadInUser] = useState(false)
     const Navigate = useNavigate()
     const { dispatch } = useAuth()
+
+    const validateEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+
+    const validatePhonenumber = (phonenumber) => {
+        return phonenumber.length === 11
+    }
+
+    const validatePasswordRegex = (password) => {
+        const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+        return passwordRegex.test(password)
+    }
+
+    const validatePassword = (password) => {
+        return password.length >= 8;
+    }
     
     const fillBuyerData = (e) => {
         setBuyerData({
@@ -54,27 +71,51 @@ const CreateAccount = () => {
 
     const signBuyerUp = async (e) => {
         e.preventDefault()
-        setLoadInUser(true)
         setBuyerError(null)
 
-        // setBuyerDataList([...buyerDataList, buyerData])
+        setBuyerDataList([...buyerDataList, buyerData])
         // console.log([...buyerDataList, buyerData]);
 
         const isFormComplete = Object.values(buyerData).every((value) => value.trim() !== "")
         if (!isFormComplete) {
             setBuyerError("Fill all the required form fields")
-            setLoadInUser(false)
             return
         }
+
+        // if (!validateEmail(buyerData.email)) {
+        //     setBuyerError("Invalid Email format")
+        //     return
+        // }
+
+        // if (!validatePassword(buyerData.password)) {
+        //     setBuyerError("Password must be at least 8 characters long")
+        //     return
+        // }
+
+        // if (!validatePasswordRegex(buyerData.password)) {
+        //     setBuyerError("Password must contain at least one uppercase letter and one special character")
+        //     return
+        // }
+
+        // if (!validatePhonenumber(buyerData.phonenumber)) {
+        //     setBuyerError("Phone Number must be 11 digits long")
+        //     return
+        // }
+        
         
         try {
-            let signupBuyer = await axios.post("https://farmera-eyu3.onrender.com/api/v1/auth/signup/buyer",
-                buyerData
+            let formData = new FormData();
+            formData.append("firstname", buyerData.firstname);
+            formData.append("lastname", buyerData.lastname);
+            formData.append("email", buyerData.email);
+            formData.append("phonenumber", buyerData.phonenumber);
+            formData.append("password", buyerData.password);
+
+            let signupBuyer = await axios.post("http://localhost:5000/api/v1/auth/signup/buyer",
+                formData
             );
             // console.log("SignupBuyer Successful:", signupBuyer.data);
-           
-            Navigate("/signin")
-
+            
             setBuyerData({
                 firstname: "",
                 lastname: "",
@@ -83,7 +124,7 @@ const CreateAccount = () => {
                 password: "",
             })
 
-            // setLoadInUser(false)
+            Navigate("/signin")
         } catch (err) {
             // console.log("An error occured while signing buyer up", err.response);
             
@@ -92,38 +133,62 @@ const CreateAccount = () => {
             } else {
                 setBuyerError(err.response?.data?.message)
             }
-
-            setLoadInUser(false)
-        }   
+        }
     }
 
     const signFarmerUp = async (e) => {
         e.preventDefault()
-        setLoadInUser(true)
         setFarmerError(null)
 
-        // setFarmerDataList([...farmerDataList, farmerData])
+        setFarmerDataList([...farmerDataList, farmerData])
         // console.log([...farmerDataList, farmerData]);
 
         const isFormComplete = Object.values(farmerData).every((value) => value.trim() !== "")
         if (!isFormComplete) {
-            setFarmerError("Fill all the required form fields")
-            setLoadInUser(false)
+            setFarmerError("All form fields are required")
             return
         }
 
+        // if (!validateEmail(farmerData.email)) {
+        //     setFarmerData("Invalid Email format")
+        //     return
+        // }
+
+        // if (!validatePassword(farmerData.password)) {
+        //     setFarmerError("Password must be at least 8 characters long")
+        //     return
+        // }
+
+        // if (!validatePasswordRegex(farmerData.password)) {
+        //     setFarmerError("Password must contain at least one uppercase letter and one special character")
+        //     return
+        // }
+
+        // if (!validatePhonenumber(farmerData.phonenumber)) {
+        //     setFarmerError("Phone Number must be 11 digits long")
+        //     return
+        // }
+
         try {
-            let signupFarmer = await axios.post("https://farmera-eyu3.onrender.com/api/v1/auth/signup/farmer", 
-                farmerData
+            let formData = new FormData();
+            formData.append("firstname", farmerData.firstname);
+            formData.append("lastname", farmerData.lastname);
+            formData.append("farmname", farmerData.farmname);
+            formData.append("state", farmerData.state);
+            formData.append("farmaddress", farmerData.farmaddress);
+            formData.append("email", farmerData.email);
+            formData.append("phonenumber", farmerData.phonenumber);
+            formData.append("password", farmerData.password);
+
+            let signupFarmer = await axios.post("http://localhost:5000/api/v1/auth/signup/farmer", 
+                formData
             );
             // console.log("SignupFarmer Successful:", signupFarmer.data);
-
+            
             dispatch({
                 type: "SIGN_IN",
                 payload: signupFarmer.data
             })
-            
-            Navigate("/dashboard")
 
             setFarmerData({
                 firstname: "",
@@ -136,6 +201,7 @@ const CreateAccount = () => {
                 password: "",
             })
 
+            Navigate("/dashboard")
         } catch (err) {
             // console.log("An error ocurred while signing farmer up", err.response);
 
@@ -144,9 +210,9 @@ const CreateAccount = () => {
             } else {
                 setFarmerError(err.response?.data?.message)
             }
-
-            setLoadInUser(false)
         }
+        
+        
     }
 
     return (
@@ -201,11 +267,7 @@ const CreateAccount = () => {
                                             <p>{buyerError}</p>
                                         ) : null}
                                         <div>
-                                            <button disabled={loadInUser}>
-                                                {loadInUser ? (
-                                                    <p><LoaderCircleIcon className="loaderspin" /> Please wait</p>
-                                                ) : ("Create an Account")} 
-                                            </button>
+                                            <button>Create an Account</button>
                                         </div>
                                     </div>
                                 </form>
@@ -291,11 +353,7 @@ const CreateAccount = () => {
                                                 <p>{farmerError}</p>
                                             ) : null}
                                         <div>
-                                            <button disabled={loadInUser}>
-                                            {loadInUser ? (
-                                                    <p><LoaderCircleIcon className="loaderspin" /> Please wait</p>
-                                                ) : ("Create an Account")}
-                                            </button>
+                                            <button>Create an Account</button>
                                         </div>
                                     </div>
                                 </form>)
@@ -543,25 +601,6 @@ form {
                 &:hover{
                     background-color: #15803d;
                 }
-
-                p{
-                    /* border: 1px solid black; */
-                    color: white;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 5px;
-                    font-size: 1rem;
-                    font-weight: 500;
-                    line-height: 1.6;
-
-                    @media (max-width: 768px) {
-                        font-size: 0.9rem;
-                        line-height: 1.5;
-                    }
-                }
-                
-                
             }
             
         }
@@ -590,18 +629,6 @@ main{
 
     @media (max-width: 480px) {
         gap: 10px
-    }
-}
-.loaderspin{
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin{
-    0%{
-        transform: rotate(0deg);
-    }
-    100%{
-        transform: rotate(360deg);
     }
 }`
 
@@ -632,7 +659,7 @@ select{
     padding: 5px;
     font-size: 1rem;
     color: rgb(97, 97, 97);
-    font-weight: 500;
+    font-weight: 400;
     line-height: 1.6;
     width: 100%;
     position: relative;
