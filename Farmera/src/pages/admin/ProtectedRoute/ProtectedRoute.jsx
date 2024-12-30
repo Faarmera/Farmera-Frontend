@@ -5,7 +5,7 @@ import { Navigate } from 'react-router-dom';
 export const ProtectedRoute = ({ children }) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     
-    if (userData?.type === "admin") {
+    if (userData?.type === "admin" && !location.pathname.startsWith('/farmer')) {
         return children;
     }
 
@@ -20,6 +20,7 @@ export const ProtectedRoute = ({ children }) => {
     if (userData?.type) {
 
         const routes = {
+            admin: "/",
             farmer: "/farmer-dashboard",
             buyer: "/buyer-store"
         };

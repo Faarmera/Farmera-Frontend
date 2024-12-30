@@ -14,9 +14,9 @@ const SignIn = () => {
 
     const { dispatch } = useAuth();
 
-    useEffect(() => {
-        console.log('Current type:', localStorage.getItem("type"));
-    }, []);
+    // useEffect(() => {
+    //     console.log('Current type:', localStorage.getItem("type"));
+    // }, []);
 
     const [showPassword, setShowPassword] = useState(false);
 
@@ -79,7 +79,7 @@ const SignIn = () => {
                 isAdmin: userData.type === "admin",
             }));
 
-            localStorage.setItem("type", response.data.type )
+            localStorage.setItem("type", response.data.type)
 
             // console.log("type saved in localStorage:", localStorage.getItem("type"));
 
