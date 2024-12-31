@@ -10,12 +10,16 @@ import axios from "axios";
 // import google from "../assets/PNG/google.png";
 
 
+
+
 const SignIn = () => {
 
     const { dispatch } = useAuth();
 
     // useEffect(() => {
-    //     console.log('Current type:', localStorage.getItem("type"));
+
+    //     console.log('Current token:', localStorage.getItem("token"));
+
     // }, []);
 
     const [showPassword, setShowPassword] = useState(false);
@@ -69,39 +73,38 @@ const SignIn = () => {
             );
 
             // console.log("Server Response:", response.data);
+            // console.log("token received:", response.data.token);
 
-            // console.log("type received:", response.data.type);
+            const {token, user} = response.data;
 
-            const userData = response.data;
+            localStorage.setItem("token", token)
             
-            localStorage.setItem("userData", JSON.stringify({
-                ...userData,
-                isAdmin: userData.type === "admin",
-            }));
+            localStorage.setItem("user", JSON.stringify(user));
 
-            localStorage.setItem("type", response.data.type)
-
-            // console.log("type saved in localStorage:", localStorage.getItem("type"));
-
+            // console.log("token saved in localStorage:", localStorage.getItem("token"));
             // console.log("Attempting to navigate to dashboard...");
+
+            axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
             dispatch({
                 type: "SIGN_IN",
                 payload: {
                     user: {
-                        _id: userData._id,
-                        firstname: userData.firstname,
-                        lastname: userData.lastname,
-                        email: userData.email,
-                        phonenumber: userData.phonenumber,
-                        role: userData.role,
-                        type: userData.type,
-                        isAdmin: userData.type === "admin"
+                        _id: user._id,
+                        firstname: user.firstname,
+                        lastname: user.lastname,
+                        email: user.email,
+                        phonenumber: user.phonenumber,
+                        role: user.role,
+                        type: user.type,
+                        isAdmin: user.type === "admin"
                     },
+                    token
                 }
             });
+            
 
-            switch (userData.type) {
+            switch (user.type) {
                 case "admin":
                     navigate("/");
                     break;
@@ -120,7 +123,7 @@ const SignIn = () => {
 
             // console.error("Error during sign-in:", error);
 
-            if (error.response) {
+            if (error.response && error.response.status === 401) {
                 
                     setErrors({
                         email: "Invalid credentials",

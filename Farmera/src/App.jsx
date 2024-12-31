@@ -1,10 +1,16 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
+import { useEffect } from "react";
+
+import { ProtectedRoute } from "./pages/admin/ProtectedRoute/ProtectedRoute";
+import SetUpAxiosInterceptors from "./utils/AxiosConfig";
+
 import { GlobalStyles } from "./styles/GlobalStyle";
 import Navbar from "./components/Navbar";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
 import Footer from "./components/Footer";
-import { ProtectedRoute } from "./pages/admin/ProtectedRoute/ProtectedRoute";
+
 
 import Home from "./pages/Home";
 
@@ -25,6 +31,13 @@ import CartPage from "./components/cart/CartPage";
 import Dashboard from "./pages/admin/Dashboard";
 
 export default function App() {
+
+  useEffect(() => {
+
+    SetUpAxiosInterceptors();
+
+  }, []);
+
   return (
     <AuthProvider>
     <CartProvider>
@@ -49,10 +62,13 @@ export default function App() {
 
 
           <Route path="/buyer-store" element={
+
             <ProtectedRoute>
             <Store />
             </ProtectedRoute>
+            
             } />
+
           <Route path="/buyer-cart" element={
             
             <ProtectedRoute>

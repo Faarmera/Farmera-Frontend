@@ -3,7 +3,7 @@
 import { Navigate } from 'react-router-dom';
 
 export const ProtectedRoute = ({ children }) => {
-    const userData = JSON.parse(localStorage.getItem("userData"));
+    const userData = JSON.parse(localStorage.getItem("user"));
     
     if (userData?.type === "admin" && !location.pathname.startsWith('/farmer')) {
         return children;

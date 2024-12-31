@@ -35,9 +35,11 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
 
-    const userData = localStorage.getItem('userData');
+    const token = localStorage.getItem("token")
 
-    if (userData) {
+    const userData = localStorage.getItem("user");
+
+    if (token && userData) {
 
         const user = JSON.parse(userData);
 
@@ -53,9 +55,11 @@ export const AuthProvider = ({ children }) => {
                   email: user.email,
                   phonenumber: user.phonenumber,
                   role: user.role,
-                  type: user.type
+                  type: user.type,
+                  isAdmin: user.type === "admin"
                   
               },
+              token
           }
 
         });
