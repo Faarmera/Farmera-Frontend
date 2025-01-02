@@ -124,7 +124,7 @@ const CreateAccount = () => {
                 payload: signupFarmer.data
             })
 
-            navigate("/farmer-dashboard")
+            navigate("/sigin")
             // Navigate("/signin")
 
             setFarmerData({

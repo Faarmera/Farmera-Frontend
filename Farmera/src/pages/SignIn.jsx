@@ -123,7 +123,7 @@ const SignIn = () => {
 
             // console.error("Error during sign-in:", error);
 
-            if (error.response && error.response.status === 401) {
+            if (error.response) {
                 
                     setErrors({
                         email: "Invalid credentials",
