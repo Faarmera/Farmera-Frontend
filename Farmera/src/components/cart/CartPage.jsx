@@ -393,7 +393,7 @@ const Container = styled.div`
   }
 
   @media (min-width: 1024px) {
-   
+  }
 `;
 
 const CartItems = styled.div`

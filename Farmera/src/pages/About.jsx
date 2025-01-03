@@ -280,6 +280,7 @@ const TeamGrid = styled.div`
   margin-top: 2rem;
   @media (min-width: 768px) {
     grid-template-columns: repeat(3, 1fr);
+  }
 `;
 
 const TeamCard = styled.div`
