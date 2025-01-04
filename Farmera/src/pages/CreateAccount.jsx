@@ -60,7 +60,12 @@ const CreateAccount = () => {
         // setBuyerDataList([...buyerDataList, buyerData])
         // console.log([...buyerDataList, buyerData]);
 
-        const isFormComplete = Object.values(buyerData).every((value) => value.trim() !== "")
+        const newBuyerData = {
+            ...buyerData,
+            email: buyerData.email.toLowerCase(),
+        };
+
+        const isFormComplete = Object.values(newBuyerData).every((value) => value.trim() !== "")
         if (!isFormComplete) {
             setBuyerError("Fill all the required form fields")
             setLoadInUser(false)
@@ -69,7 +74,7 @@ const CreateAccount = () => {
         
         try {
             let signupBuyer = await axios.post("https://farmera-eyu3.onrender.com/api/v1/auth/signup/buyer",
-                buyerData
+                newBuyerData
             );
 
             // console.log("SignupBuyer Successful:", signupBuyer.data);
@@ -106,7 +111,12 @@ const CreateAccount = () => {
         // setFarmerDataList([...farmerDataList, farmerData])
         // console.log([...farmerDataList, farmerData]);
 
-        const isFormComplete = Object.values(farmerData).every((value) => value.trim() !== "")
+        const newFarmerData = {
+            ...farmerData,
+            email: farmerData.email.toLowerCase(),
+        };
+
+        const isFormComplete = Object.values(newFarmerData).every((value) => value.trim() !== "")
         if (!isFormComplete) {
             setFarmerError("Fill all the required form fields")
             setLoadInUser(false)
@@ -115,7 +125,7 @@ const CreateAccount = () => {
 
         try {
             let signupFarmer = await axios.post("https://farmera-eyu3.onrender.com/api/v1/auth/signup/farmer", 
-                farmerData
+                newFarmerData
             );
             // console.log("SignupFarmer Successful:", signupFarmer.data);
             
@@ -124,7 +134,7 @@ const CreateAccount = () => {
                 payload: signupFarmer.data
             })
 
-            navigate("/sigin")
+            navigate("/farmer-dashboard")
             // Navigate("/signin")
 
             setFarmerData({
