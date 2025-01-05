@@ -36,8 +36,8 @@ const SignIn = () => {
     });
 
     const [errors, setErrors] = useState({
-        email: '',
-        password: ''
+        email: "",
+        password: ""
     });
 
     const [loading, setLoading] = useState(false);
@@ -48,12 +48,12 @@ const SignIn = () => {
 
         setFormData(prev =>({
             ...prev,
-            [id]: value
+            [id]: id === "email" ? value.toLowerCase() : value
         }));
         
         setErrors(prev => ({
             ...prev,
-            [id]: ''
+            [id]: ""
         }));
 
     };
