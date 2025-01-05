@@ -85,7 +85,6 @@ const StorePage = () => {
       </Route>
 
       <FiltersContainer>
-        <input type="text" name="search" placeholder="Search..." value={filters.search} onChange={handleFilterChange} />
         <input type="text" name="category" placeholder="Category..." value={filters.category} onChange={handleFilterChange} />
         <input type="number" name="minPrice" placeholder="Min Price" value={filters.minPrice} onChange={handleFilterChange} />
         <input type="number" name="maxPrice" placeholder="Max Price" value={filters.maxPrice} onChange={handleFilterChange} />
@@ -103,12 +102,10 @@ const StorePage = () => {
               <ProductCard key={product._id}>
                 <img src={product.images} alt={product.imageIds} />
                 <div>
-                  <h2>{product.name}</h2>  <br />
-                  {/* <h3>Category :{product.category?.name || "N/A"}</h3> */}
+                  <h2>{product.name}</h2>
                   <p>{product.description}</p>
                   <p id="location">By {product.store} @ {product.location}</p>
                   <h3>₦{product.price}</h3>
-                  {/* <p> Only {product.qtyAvailable} units left</p> */}
                   <button onClick={() => addToCart(product._id)}>Add to Cart</button>
                 </div>
               </ProductCard>
@@ -177,11 +174,10 @@ const FeaturedProductsSection = styled.div`
 
 const ProductWrapper = styled.div`
   max-width: 1200px;
-  margin: 0 auto;
-  padding-left: 25px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 50px;
 `
 
 const Pagination = styled.div`
@@ -230,14 +226,12 @@ const ProductCard = styled.div`
   div {
     padding: 1rem;
 
-    h3 {
-      /* font-size: 1rem; */
-      /* font-weight: 600; */
-      /* margin-bottom: 30px; */
+    h2{
+      font-size: 15px;
+      margin-bottom: 5px;
     }
 
     p {
-      /* color: #16a34a; */
       color: black;
       font-size: 12px;
     }
@@ -259,3 +253,133 @@ const ProductCard = styled.div`
     }
   }
 `
+
+// import React, { useState, useEffect } from "react";
+// import axios from "axios";
+
+// const StorePage = () => {
+//   const [categories, setCategories] = useState([]); // For all categories
+//   const [selectedCategory, setSelectedCategory] = useState(null); // For the selected category and its products
+//   const [loading, setLoading] = useState(false); // To show loading state
+//   const [error, setError] = useState(null); // For error handling
+
+//   const allCategoriesUrl =
+//     "https://farmera-eyu3.onrender.com/api/v1/category/get/allCategories";
+//   const categoryByNameUrl =
+//     "https://farmera-eyu3.onrender.com/api/v1/category/get/";
+
+//   // Fetch all categories on mount
+//   useEffect(() => {
+//     const fetchCategories = async () => {
+//       setLoading(true);
+//       try {
+//         const response = await axios.get(allCategoriesUrl);
+//         setCategories(response.data);
+//         setError(null);
+//       } catch (err) {
+//         console.error("Error fetching categories:", err);
+//         setError("Unable to load categories.");
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchCategories();
+//   }, []);
+
+//   // Fetch a single category by name
+//   const handleCategoryClick = async (categoryName) => {
+//     setLoading(true);
+//     try {
+//       const response = await axios.get(`${categoryByNameUrl}${categoryName}`);
+//       setSelectedCategory(response.data);
+//       setError(null);
+//     } catch (err) {
+//       console.error(`Error fetching category ${categoryName}:`, err);
+//       setError("Unable to load category details.");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   // Reset view to show all categories
+//   const handleBackClick = () => {
+//     setSelectedCategory(null);
+//   };
+
+//   return (
+//     <div style={{ padding: "2rem" }}>
+//       <h1>Store</h1>
+
+//       {/* Show loading spinner */}
+//       {loading && <p>Loading...</p>}
+
+//       {/* Show error message */}
+//       {error && <p style={{ color: "red" }}>{error}</p>}
+
+//       {/* Display categories or products */}
+//       {!loading && !error && (
+//         <>
+//           {!selectedCategory ? (
+//             <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
+//               {categories.map((category) => (
+//                 <div
+//                   key={category._id}
+//                   style={{
+//                     border: "1px solid #ddd",
+//                     borderRadius: "8px",
+//                     padding: "1rem",
+//                     width: "200px",
+//                     textAlign: "center",
+//                     cursor: "pointer",
+//                   }}
+//                   onClick={() => handleCategoryClick(category.name)}
+//                 >
+//                   <h3>{category.name}</h3>
+//                 </div>
+//               ))}
+//             </div>
+//           ) : (
+//             <div>
+//               <button
+//                 onClick={handleBackClick}
+//                 style={{
+//                   marginBottom: "1rem",
+//                   padding: "0.5rem 1rem",
+//                   backgroundColor: "#f0f0f0",
+//                   border: "1px solid #ccc",
+//                   borderRadius: "4px",
+//                   cursor: "pointer",
+//                 }}
+//               >
+//                 Back to Categories
+//               </button>
+
+//               <h2>{selectedCategory.name}</h2>
+//               <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
+//                 {selectedCategory.products.map((product) => (
+//                   <div
+//                     key={product._id}
+//                     style={{
+//                       border: "1px solid #ddd",
+//                       borderRadius: "8px",
+//                       padding: "1rem",
+//                       width: "200px",
+//                       textAlign: "center",
+//                     }}
+//                   >
+//                     <h4>{product.name}</h4>
+//                     <p>Category: {product.category.name}</p>
+//                   </div>
+//                 ))}
+//               </div>
+//             </div>
+//           )}
+//         </>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default StorePage;
+

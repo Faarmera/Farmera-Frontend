@@ -13,7 +13,7 @@ const SearchResults = () => {
         { products: [{ productId, quantity: 1 }] },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`, // Assuming token is stored in localStorage
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
@@ -39,7 +39,7 @@ const SearchResults = () => {
                 <h2>{product.name}</h2>  <br />
                 <p>{product.description}</p>
                   <p id="location">By {product.store} @ {product.location}</p>
-                  <h3>₦{product.price}</h3>
+                  <h3>₦ {product.price}</h3>
                   <button onClick={() => addToCart(product._id)}>Add to Cart</button>
                 </div>
 
@@ -47,7 +47,7 @@ const SearchResults = () => {
           ))}
         </ul>
       ) : (
-        <p>No products found.</p>
+        <p id="noProducts">No products found.</p>
       )}
     </SearchResultsWrapper>
   );
@@ -61,18 +61,25 @@ const SearchResultsWrapper = styled.div`
   margin-bottom: 50px;
   /* margin: 0 auto; */
   padding-left: 25px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 50px;
 
   h1{
     text-align: center;
   }
+
+  #noProducts{
+    margin-top: 50px;
+    font-size: 30px;
+    font-weight: 500;
+  }
+
 `
 const ProductCard = styled.div`
-  margin-top: 30px;
-  margin-bottom: 30px;
   width: 250px;
+  margin-top: 50px;
   background-color: white;
   padding: 10px;
   border-radius: 0.375rem;
@@ -95,14 +102,12 @@ const ProductCard = styled.div`
   div {
     padding: 1rem;
 
-    h3 {
-      /* font-size: 1rem; */
-      /* font-weight: 600; */
-      /* margin-bottom: 30px; */
+    h2{
+      font-size: 15px;
+      margin-bottom: 5px;
     }
 
     p {
-      /* color: #16a34a; */
       color: black;
       font-size: 12px;
     }
