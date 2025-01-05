@@ -329,131 +329,198 @@
 
 // export default CartPage;
 
-import React from "react";
-import styled from "styled-components";
-import { useCart } from "../../context/CartContext";
 
-const CartPage = () => {
-  const { state, updateQuantity, removeFromCart, clearCart } = useCart();
 
-  const handleCheckout = () => {
-    // Simulate checkout process
-    alert("Checkout successful! Thank you for your purchase.");
-    clearCart(); // Clear the cart after checkout
+
+
+
+// import React from "react";
+// import styled from "styled-components";
+// import { useCart } from "../../context/CartContext";
+
+// const CartPage = () => {
+//   const { state, updateQuantity, removeFromCart, clearCart } = useCart();
+
+//   const handleCheckout = () => {
+//     // Simulate checkout process
+//     alert("Checkout successful! Thank you for your purchase.");
+//     clearCart(); // Clear the cart after checkout
+//   };
+
+//   if (state.items.length === 0) {
+//     return (
+//       <Container>
+//         <h1>Your Cart is Empty</h1>
+//       </Container>
+//     );
+//   }
+
+//   return (
+//     <Container>
+//       <h1>Your Cart</h1>
+//       <CartItems>
+//         {state.items.map((item) => (
+//           <CartItem key={item.id}>
+//             <img src={item.image} alt={item.name} />
+//             <div>
+//               <h3>{item.name}</h3>
+//               <p>₦{item.price}</p>
+//               <QuantityControls>
+//                 <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>-</button>
+//                 <span>{item.quantity}</span>
+//                 <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
+//               </QuantityControls>
+//               <button onClick={() => removeFromCart(item.id)}>Remove</button>
+//             </div>
+//           </CartItem>
+//         ))}
+//       </CartItems>
+//       <CartSummary>
+//         <p>Total: ₦{state.total}</p>
+//         <p>Total Items: {state.totalQuantity}</p>
+//         <button onClick={clearCart}>Clear Cart</button>
+//         <CheckoutButton onClick={handleCheckout}>Checkout</CheckoutButton> {/* Checkout Button */}
+//       </CartSummary>
+//     </Container>
+//   );
+// };
+
+// export default CartPage;
+
+// const Container = styled.div`
+
+//   padding: 2rem;
+//   max-width: 1200px;
+//   margin: 0 auto;
+  
+//   @media (min-width: 640px) {
+   
+//   }
+
+//   @media (min-width: 1024px) {
+//   }
+// `;
+
+// const CartItems = styled.div`
+//   display: flex;
+//   flex-direction: row;
+//   gap: 2rem;
+  
+// `;
+
+// const CartItem = styled.div`
+//   display: block;
+//   gap: 1rem;
+//   img {
+//     width: 100px;
+//     height: 100px;
+//     object-fit: cover;
+//   }
+// `;
+
+// const QuantityControls = styled.div`
+//   display: flex;
+//   gap: 0.5rem;
+//   button {
+//     background: #16a34a;
+//     border-radius:5px;
+//     color: white;
+//     border: none;
+//     padding: 0.25rem 0.5rem;
+//     cursor: pointer;
+//   }
+// `;
+
+// const CartSummary = styled.div`
+//   margin-top: 2rem;
+//   p {
+//     font-size: 1.5rem;
+//     font-weight:bold;
+//     font:;
+//   }
+//   button {
+//     background: #16a34a;
+//     border-radius:5px;
+//     color: white;
+//     padding: 0.5rem 1rem;
+//     border: none;
+//     cursor: pointer;
+//     margin-right: 3rem; // Space between buttons
+//   }
+// `;
+
+// const CheckoutButton = styled.button`
+//   background: #16a34a; // Green color for checkout button
+//   color: white;
+//   padding: 0.5rem 1rem;
+//   border: none;
+//   cursor: pointer;
+//   margin-left: 1rem; // Space between clear cart and checkout buttons
+//   transition: background-color 0.3s;
+
+//   &:hover {
+//     background-color: #15803d; // Darker green on hover
+//   }
+// `;
+
+
+import React, { useContext } from "react";
+import { CartContext } from "../components/cart/CartContext";
+import cartService from "../components/cart/cartService";
+
+const Cart = () => {
+  const { cart, fetchCart, loading } = useContext(CartContext);
+  const token = localStorage.getItem("token");
+
+  const handleRemoveItem = async (productId) => {
+    try {
+      await cartService.deleteProductFromCart(productId, token);
+      fetchCart(); // Refresh cart
+    } catch (error) {
+      console.error("Error removing item:", error.response?.data || error.message);
+    }
   };
 
-  if (state.items.length === 0) {
-    return (
-      <Container>
-        <h1>Your Cart is Empty</h1>
-      </Container>
-    );
+  const handleClearCart = async () => {
+    try {
+      await cartService.clearCart(token);
+      fetchCart();
+    } catch (error) {
+      console.error("Error clearing cart:", error.response?.data || error.message);
+    }
+  };
+
+  //handle delete product from cart
+
+  if (loading) {
+    return <div>Loading...</div>;
   }
 
   return (
-    <Container>
+    <div>
       <h1>Your Cart</h1>
-      <CartItems>
-        {state.items.map((item) => (
-          <CartItem key={item.id}>
-            <img src={item.image} alt={item.name} />
-            <div>
-              <h3>{item.name}</h3>
-              <p>₦{item.price}</p>
-              <QuantityControls>
-                <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>-</button>
-                <span>{item.quantity}</span>
-                <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
-              </QuantityControls>
-              <button onClick={() => removeFromCart(item.id)}>Remove</button>
-            </div>
-          </CartItem>
-        ))}
-      </CartItems>
-      <CartSummary>
-        <p>Total: ₦{state.total}</p>
-        <p>Total Items: {state.totalQuantity}</p>
-        <button onClick={clearCart}>Clear Cart</button>
-        <CheckoutButton onClick={handleCheckout}>Checkout</CheckoutButton> {/* Checkout Button */}
-      </CartSummary>
-    </Container>
+      {cart && cart.cartItems.length > 0 ? (
+        <div>
+          <ul>
+            {cart.cartItems.map((item) => (
+              <li key={item.product._id}>
+                <div>
+                  <h2>{item.product.name}</h2>
+                  <p>Price: ${item.price}</p>
+                  <p>Quantity: {item.quantity}</p>
+                  <button onClick={() => handleRemoveItem(item.product._id)}>Remove</button>
+                </div>
+              </li>
+            ))}
+          </ul>
+          <h3>Total: ${cart.totalBill}</h3>
+          <button onClick={handleClearCart}>Clear Cart</button>
+        </div>
+      ) : (
+        <p>Your cart is empty</p>
+      )}
+    </div>
   );
 };
 
-export default CartPage;
-
-const Container = styled.div`
-
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
-  
-  @media (min-width: 640px) {
-   
-  }
-
-  @media (min-width: 1024px) {
-  }
-`;
-
-const CartItems = styled.div`
-  display: flex;
-  flex-direction: row;
-  gap: 2rem;
-  
-`;
-
-const CartItem = styled.div`
-  display: block;
-  gap: 1rem;
-  img {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-  }
-`;
-
-const QuantityControls = styled.div`
-  display: flex;
-  gap: 0.5rem;
-  button {
-    background: #16a34a;
-    border-radius:5px;
-    color: white;
-    border: none;
-    padding: 0.25rem 0.5rem;
-    cursor: pointer;
-  }
-`;
-
-const CartSummary = styled.div`
-  margin-top: 2rem;
-  p {
-    font-size: 1.5rem;
-    font-weight:bold;
-    font:;
-  }
-  button {
-    background: #16a34a;
-    border-radius:5px;
-    color: white;
-    padding: 0.5rem 1rem;
-    border: none;
-    cursor: pointer;
-    margin-right: 3rem; // Space between buttons
-  }
-`;
-
-const CheckoutButton = styled.button`
-  background: #16a34a; // Green color for checkout button
-  color: white;
-  padding: 0.5rem 1rem;
-  border: none;
-  cursor: pointer;
-  margin-left: 1rem; // Space between clear cart and checkout buttons
-  transition: background-color 0.3s;
-
-  &:hover {
-    background-color: #15803d; // Darker green on hover
-  }
-`;
+export default Cart;

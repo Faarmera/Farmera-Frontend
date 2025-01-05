@@ -493,133 +493,137 @@
 
 
 import { useState, useEffect } from "react";
-import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import styled from "styled-components";
+import { Link } from "react-router-dom";
 import { FaAngleRight } from "react-icons/fa";
-import axios from "axios"
-
-
+import axios from "axios";
 
 const StorePage = () => {
-    const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const [pagination, setPagination] = useState({ currentPage: 1, totalPages: 1 });
-    const [filters, setFilters] = useState({
-        category: "",
-        minPrice: "",
-        maxPrice: "",
-        location: "",
-        search: "",
-    });
-    // const categories = ['All', 'Vegetables', 'Fruits', 'Cassava', "Cocoa", "women's clothing"];
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [pagination, setPagination] = useState({ currentPage: 1, totalPages: 1 });
+  const [filters, setFilters] = useState({
+    category: "",
+    minPrice: "",
+    maxPrice: "",
+    location: "",
+    search: "",
+  });
 
-    const fetchProducts = async (queryParams) => {
-      try {
-        const response = await axios.get(`https://farmera-eyu3.onrender.com/api/v1/product/get/allProducts`, { params: queryParams });
-        return response.data;
-      } catch (error) {
-        console.error("Error fetching products:", error.response?.data || error.message);
-        throw error;
-      }
-    };
-  
-    const fetchAndSetProducts = async (page = 1) => {
-        setLoading(true);
-        setError(null);
-        try {
-            const queryParams = { ...filters, page };
-            const data = await fetchProducts(queryParams);
-            setProducts(data.products);
-            setPagination({ currentPage: data.currentPage, totalPages: data.totalPages });
-        } catch (err) {
-            setError(err.message || "An error occurred while fetching products.");
-        } finally {
-            setLoading(false);
+  const fetchProducts = async (queryParams) => {
+    try {
+      const response = await axios.get(`https://farmera-eyu3.onrender.com/api/v1/product/get/allProducts`, { params: queryParams });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching products:", error.response?.data || error.message);
+      throw error;
+    }
+  };
+
+  const fetchAndSetProducts = async (page = 1) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const queryParams = { ...filters, page };
+      const data = await fetchProducts(queryParams);
+      setProducts(data.products);
+      setPagination({ currentPage: data.currentPage, totalPages: data.totalPages });
+    } catch (err) {
+      setError(err.message || "An error occurred while fetching products.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const addToCart = async (productId) => {
+    try {
+      const response = await axios.post(
+        "https://farmera-eyu3.onrender.com/api/v1/cart/add",
+        { products: [{ productId, quantity: 1 }] },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`, // Assuming token is stored in localStorage
+          },
         }
-    };
-  
-    useEffect(() => {
-        fetchAndSetProducts();
-    }, [filters]);
-  
-    const handleFilterChange = (e) => {
-        const { name, value } = e.target;
-        setFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
-    };
-  
-    const handlePageChange = (page) => {
-        fetchAndSetProducts(page);
-    };
-  
-    return (
-        <Div>
-            <Route>
-                <Link to="/">
-                    <p className='home'>Home</p>
-                </Link>
-                <FaAngleRight style={{color: "rgb(182,182,182)"}}/>
-                <p style={{color: "rgb(182,182,182)"}}>All Categories</p>
-            </Route>
+      );
+      alert("Product added to cart successfully!");
+      console.log("Add to Cart Response:", response.data);
+    } catch (error) {
+      console.error("Error adding product to cart:", error.response?.data || error.message);
+      alert(error.response?.data?.error || "An error occurred while adding to cart.");
+    }
+  };
 
-            {/* <CategoryButtons>
-                {categories.map((category)=>(
-                    <CategoryButton key={category}  value={filters.category} onClick={handleFilterChange}>
-                        {category}
-                    </CategoryButton>
-                ))}
-                </CategoryButtons> */}
-        
-            <FiltersContainer>
-                <input type="text" name="search" placeholder="Search..." value={filters.search} onChange={handleFilterChange}/> 
-                <input type="text" name="category" placeholder="Category..." value={filters.category} onChange={handleFilterChange}/>
-                <input type="number" name="minPrice" placeholder="Min Price" value={filters.minPrice} onChange={handleFilterChange} />
-                <input type="number" name="maxPrice" placeholder="Max Price" value={filters.maxPrice} onChange={handleFilterChange}/>
-                <input type="text" name="location" placeholder="Location..." value={filters.location} onChange={handleFilterChange}/>
-            </FiltersContainer>
-    
-        
-            {loading ? (
-            <p>Loading...</p>
-            ) : error ? (
-            <p style={{ color: "red" }}>{error}</p>
-            ) : (
-                    <FeaturedProductsSection>
-                        <ProductWrapper>
-                            {products.map((product)=>(
-                            <ProductCard key={product._id}>
-                                <img src={product.images} alt={product.imageIds} />
-                                <div>
-                                    <h3>{product.name}</h3>
-                                    <h3>Category: {product.category?.name || "N/A"}</h3>
-                                    <h2>{product.description}</h2>
-                                    <h4>By {product.store} @ {product.location}</h4>
-                                    <p>₦{product.price}</p>
-                                    <button>
-                                        Add to Cart
-                                    </button>
-                                </div>
-                            </ProductCard>
-                            ))}
-                        </ProductWrapper>
-                    </FeaturedProductsSection>
-                )
-            }
-    
-    
-            <Pagination>
-                {Array.from({ length: pagination.totalPages }, (_, index) => (
-                    <button key={index} onClick={() => handlePageChange(index + 1)} disabled={pagination.currentPage === index + 1}>
-                      <p>{index + 1}</p>
-                    </button>
-                ))}
-            </Pagination>
-        </Div>
-        );
-    };
+  useEffect(() => {
+    fetchAndSetProducts();
+  }, [filters]);
 
-  
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
+  };
+
+  const handlePageChange = (page) => {
+    fetchAndSetProducts(page);
+  };
+
+  return (
+    <Div>
+      <Route>
+        <Link to="/">
+          <p className="home">Home</p>
+        </Link>
+        <FaAngleRight style={{ color: "rgb(182,182,182)" }} />
+        <p style={{ color: "rgb(182,182,182)" }}>All Categories</p>
+      </Route>
+
+      <FiltersContainer>
+        <input type="text" name="search" placeholder="Search..." value={filters.search} onChange={handleFilterChange} />
+        <input type="text" name="category" placeholder="Category..." value={filters.category} onChange={handleFilterChange} />
+        <input type="number" name="minPrice" placeholder="Min Price" value={filters.minPrice} onChange={handleFilterChange} />
+        <input type="number" name="maxPrice" placeholder="Max Price" value={filters.maxPrice} onChange={handleFilterChange} />
+        <input type="text" name="location" placeholder="Location..." value={filters.location} onChange={handleFilterChange} />
+      </FiltersContainer>
+
+      {loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p style={{ color: "red" }}>{error}</p>
+      ) : (
+        <FeaturedProductsSection>
+          <ProductWrapper>
+            {products.map((product) => (
+              <ProductCard key={product._id}>
+                <img src={product.images} alt={product.imageIds} />
+                <div>
+                  <h2>{product.name}</h2>
+                  <h3>Category :{product.category?.name || "N/A"}</h3>
+                  <h3>{product.description}</h3>
+                  <h4>By {product.store} @ {product.location}</h4>
+                  <p>₦{product.price}</p>
+                  <p> Only {product.qtyAvailable} units left</p>
+                  <button onClick={() => addToCart(product._id)}>Add to Cart</button>
+                </div>
+              </ProductCard>
+            ))}
+          </ProductWrapper>
+        </FeaturedProductsSection>
+      )}
+
+      <Pagination>
+        {Array.from({ length: pagination.totalPages }, (_, index) => (
+          <button key={index} onClick={() => handlePageChange(index + 1)} disabled={pagination.currentPage === index + 1}>
+            <p>{index + 1}</p>
+          </button>
+        ))}
+      </Pagination>
+    </Div>
+  );
+};
+
 export default StorePage;
+
 
 const Div = styled.div`
   
@@ -670,7 +674,7 @@ const ProductWrapper = styled.div`
   margin: 0 auto;
   padding: 0 1rem;
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
 `
 
@@ -697,7 +701,9 @@ const Pagination = styled.div`
   }
 `
 const ProductCard = styled.div`
+  width: 250px;
   background-color: white;
+  padding: 10px;
   border-radius: 0.375rem;
   overflow: hidden;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -705,11 +711,13 @@ const ProductCard = styled.div`
 
   &:hover {
     box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+    transform: scale(1.1);
   }
 
   img {
-    width: 100%;
-    height: 12rem;
+    width: 230px;
+    height: 10rem;
+    border-radius: 0.375rem;
     object-fit: cover;
   }
 
@@ -723,7 +731,8 @@ const ProductCard = styled.div`
     }
 
     p {
-      color: #16a34a;
+      /* color: #16a34a; */
+      color: black;
       font-weight: 500;
     }
 

@@ -4,7 +4,7 @@ import { ProtectedRoute } from "./pages/admin/ProtectedRoute/ProtectedRoute";
 import SetUpAxiosInterceptors from "./utils/AxiosConfig";
 import { GlobalStyles } from "./styles/GlobalStyle";
 import Navbar from "./components/Navbar";
-import { CartProvider } from "./context/CartContext";
+// import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
 import Footer from "./components/Footer";
 
@@ -14,10 +14,10 @@ import Faq from "./pages/faq";
 import Contact from "./pages/Contact";
 import StorePage from "./pages/StorePage"
 import About from "./pages/About";
+import Cart from "./pages/Cart"
 import SignIn from "./pages/SignIn";
 import ForgotPassword from "./pages/ForgotPassword"
 import CreateAccount from "./pages/CreateAccount";
-import CartPage from "./components/cart/CartPage";
 import Dashboard from "./pages/admin/Dashboard";
 
 export default function App() {
@@ -30,7 +30,7 @@ export default function App() {
 
   return (
     <AuthProvider>
-    <CartProvider>
+    {/* <CartProvider> */}
       <Router>
       <GlobalStyles /> 
       <Navbar /> 
@@ -45,7 +45,7 @@ export default function App() {
           <Route path="/forgotpassword" element={<ForgotPassword/>}/>
           <Route path="/signup" element={<CreateAccount />} />
           <Route path="/buyer-store" element={<StorePage />} />
-          <Route path="/buyer-cart" element={<CartPage />} />
+          <Route path="/buyer-cart" element={<Cart />} />
 
           <Route path="/farmer-dashboard" element={
             
@@ -62,7 +62,7 @@ export default function App() {
       
 
     </Router>
-      </CartProvider>
+      {/* </CartProvider> */}
     </AuthProvider>
 
   );
