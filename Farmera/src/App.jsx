@@ -19,6 +19,7 @@ import SignIn from "./pages/SignIn";
 import ForgotPassword from "./pages/ForgotPassword"
 import CreateAccount from "./pages/CreateAccount";
 import Dashboard from "./pages/admin/Dashboard";
+import SearchResults from "./components/searchResults";
 
 export default function App() {
 
@@ -38,6 +39,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} /> Home Page
           <Route path="/store" element={<StorePage/>}/> Store Page
+          <Route path="/searchResults" element={<SearchResults/>}/> Search Results
           <Route path="/about" element={<About />} /> About Page
           <Route path="/help/faq" element={<Faq/>}/>
           <Route path="/help/contact" element={<Contact/>}/>

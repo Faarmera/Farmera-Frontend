@@ -3,6 +3,7 @@ import { Search, ShoppingCart, Menu, X, Sprout } from "lucide-react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { useNavigate } from 'react-router-dom';
+import axios from "axios";
 
 // Styled Components
 const NavbarContainer = styled.nav`
@@ -236,8 +237,10 @@ const MobileMenuLink = styled(Link)`
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
     const navigate = useNavigate();
   
     const handleMouseEnter = () => {
@@ -251,6 +254,19 @@ export default function Navbar() {
     const navigateToPage = (path) => {
       navigate(path);
       setIsDropdownOpen(false);
+    };
+
+    const handleSearch = async () => {
+      if (searchTerm.trim() === "") return; 
+      try {
+        const response = await axios.get("https://farmera-eyu3.onrender.com/api/v1/product/get/allProducts", {
+          params: { search: searchTerm },
+        });
+        setSearchResults(response.data.products); 
+        navigate("./SearchResults", { state: { results: response.data.products } }); 
+      } catch (error) {
+        console.error("Error fetching search results:", error.message);
+      }
     };
 
   return (
@@ -289,7 +305,10 @@ export default function Navbar() {
             </button>
             {searchOpen && (
               <SearchDropdown>
-                <input type="text" placeholder="Search products..." />
+                 <input type="text" placeholder="Search products..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSearch();
+                  }}
+                />
               </SearchDropdown>
             )}
           </SearchContainer>
