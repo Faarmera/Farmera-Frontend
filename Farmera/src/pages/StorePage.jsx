@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useCart } from '../context/CartContext';
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { FaAngleRight } from "react-icons/fa";
@@ -6,6 +7,8 @@ import axios from "axios";
 
 const StorePage = () => {
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [pagination, setPagination] = useState({ currentPage: 1, totalPages: 1 });
@@ -27,6 +30,45 @@ const StorePage = () => {
     }
   };
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.log("No token")
+      return;
+    }
+    axios.get("https://farmera-eyu3.onrender.com/api/v1/category/get/allCategories" , {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      }
+      
+    })
+      .then((response) => {
+        setCategories(response.data);
+      })
+      .catch((error) => {
+        if (error.response?.status === 401) {
+          // Handle unauthorized error - maybe redirect to login
+          console.error("Unauthorized access:", error);
+        } else {
+          console.error("Error fetching categories:", error);
+        }
+      });
+  }, []);
+
+  const handleCategoryClick = (categoryName) => {
+    axios.get(`https://farmera-eyu3.onrender.com/api/v1/category/get/${categoryName}` , {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      }
+    })
+      .then((response) => {
+        setSelectedCategory(response.data);
+      })
+      .catch((error) => {
+        console.error(`Error fetching category ${categoryName}:`, error);
+      });
+  };
+
   const fetchAndSetProducts = async (page = 1) => {
     setLoading(true);
     setError(null);
@@ -42,22 +84,31 @@ const StorePage = () => {
     }
   };
 
-  const addToCart = async (productId) => {
-    try {
-      const response = await axios.post(
-        "https://farmera-eyu3.onrender.com/api/v1/cart/add",
-        { products: [{ productId, quantity: 1 }] },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`, // Assuming token is stored in localStorage
-          },
-        }
-      );
-      alert("Product added to cart successfully!");
-      console.log("Add to Cart Response:", response.data);
-    } catch (error) {
-      console.error("Error adding product to cart:", error.response?.data || error.message);
-      alert(error.response?.data?.error || "An error occurred while adding to cart.");
+  // const addToCart = async (productId) => {
+  //   try {
+  //     const response = await axios.post(
+  //       "https://farmera-eyu3.onrender.com/api/v1/cart/add",
+  //       { products: [{ productId, quantity: 1 }] },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${localStorage.getItem("token")}`, // Assuming token is stored in localStorage
+  //         },
+  //       }
+  //     );
+  //     alert("Product added to cart successfully!");
+  //     console.log("Add to Cart Response:", response.data);
+  //   } catch (error) {
+  //     console.error("Error adding product to cart:", error.response?.data || error.message);
+  //     alert(error.response?.data?.error || "An error occurred while adding to cart.");
+  //   }
+  // };
+
+  const { addToCart } = useCart();
+
+  const handleAddToCart = async (productId) => {
+    const success = await addToCart(productId);
+    if (success) {
+      alert('Product added to cart successfully!');
     }
   };
 
@@ -91,6 +142,49 @@ const StorePage = () => {
         <input type="text" name="location" placeholder="Location..." value={filters.location} onChange={handleFilterChange} />
       </FiltersContainer>
 
+      <div>
+      {/* Display Categories as Cards */}
+      {!selectedCategory ? (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
+          {categories.map((category) => (
+            <div
+              key={category._id}
+              style={{
+                border: "1px solid #ddd",
+                borderRadius: "8px",
+                padding: "1rem",
+                cursor: "pointer",
+              }}
+              onClick={() => handleCategoryClick(category.name)}
+            >
+              <h3>{category.name}</h3>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div>
+          {/* Display Products in Selected Category */}
+          <button onClick={() => setSelectedCategory(null)}>Back</button>
+          <h2>{selectedCategory.name}</h2>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
+            {selectedCategory.products.map((product) => (
+              <div
+                key={product._id}
+                style={{
+                  border: "1px solid #ddd",
+                  borderRadius: "8px",
+                  padding: "1rem",
+                }}
+              >
+                <h4>{product.name}</h4>
+                <p>Category: {product.category.name}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+
       {loading ? (
         <p>Loading...</p>
       ) : error ? (
@@ -105,8 +199,8 @@ const StorePage = () => {
                   <h2>{product.name}</h2>
                   <p>{product.description}</p>
                   <p id="location">By {product.store} @ {product.location}</p>
-                  <h3>₦{product.price}</h3>
-                  <button onClick={() => addToCart(product._id)}>Add to Cart</button>
+                  <h3>₦ {product.price}</h3>
+                  <button onClick={() => handleAddToCart(product._id)}>Add to Cart</button>
                 </div>
               </ProductCard>
             ))}
@@ -177,7 +271,7 @@ const ProductWrapper = styled.div`
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 50px;
+  gap: 30px;
 `
 
 const Pagination = styled.div`
@@ -253,6 +347,9 @@ const ProductCard = styled.div`
     }
   }
 `
+
+
+
 
 // import React, { useState, useEffect } from "react";
 // import axios from "axios";

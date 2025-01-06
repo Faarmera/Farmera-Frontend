@@ -4,7 +4,7 @@ import { ProtectedRoute } from "./pages/admin/ProtectedRoute/ProtectedRoute";
 import SetUpAxiosInterceptors from "./utils/AxiosConfig";
 import { GlobalStyles } from "./styles/GlobalStyle";
 import Navbar from "./components/Navbar";
-// import { CartProvider } from "./context/CartContext";
+import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
 import Footer from "./components/Footer";
 
@@ -31,7 +31,7 @@ export default function App() {
 
   return (
     <AuthProvider>
-    {/* <CartProvider> */}
+    <CartProvider>
       <Router>
       <GlobalStyles /> 
       <Navbar /> 
@@ -64,7 +64,7 @@ export default function App() {
       
 
     </Router>
-      {/* </CartProvider> */}
+      </CartProvider>
     </AuthProvider>
 
   );

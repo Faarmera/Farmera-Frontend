@@ -16,11 +16,11 @@ const SignIn = () => {
 
     const { dispatch } = useAuth();
 
-    // useEffect(() => {
+    useEffect(() => {
 
-    //     console.log('Current token:', localStorage.getItem("token"));
+        console.log('Current token:', localStorage.getItem("token"));
 
-    // }, []);
+    }, []);
 
     const [showPassword, setShowPassword] = useState(false);
 
@@ -72,17 +72,21 @@ const SignIn = () => {
 
             );
 
-            // console.log("Server Response:", response.data);
-            // console.log("token received:", response.data.token);
+            console.log("Server Response:", response.data);
+            console.log("token received:", response.data.token);
 
             const {token, user} = response.data;
+
+            if (!token) {
+                throw new Error('No token received from server');
+            }
 
             localStorage.setItem("token", token)
             
             localStorage.setItem("user", JSON.stringify(user));
 
-            // console.log("token saved in localStorage:", localStorage.getItem("token"));
-            // console.log("Attempting to navigate to dashboard...");
+            console.log("token saved in localStorage:", localStorage.getItem("token"));
+            console.log("Attempting to navigate to dashboard...");
 
             axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 

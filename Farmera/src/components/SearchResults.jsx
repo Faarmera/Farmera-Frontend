@@ -1,51 +1,43 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
+import { useCart } from '../context/CartContext';
 import styled from "styled-components";
 
 const SearchResults = () => {
   const location = useLocation();
   const results = location.state?.results || [];
 
-  const addToCart = async (productId) => {
-    try {
-      const response = await axios.post(
-        "https://farmera-eyu3.onrender.com/api/v1/cart/add",
-        { products: [{ productId, quantity: 1 }] },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      alert("Product added to cart successfully!");
-      console.log("Add to Cart Response:", response.data);
-    } catch (error) {
-      console.error("Error adding product to cart:", error.response?.data || error.message);
-      alert(error.response?.data?.error || "An error occurred while adding to cart.");
+  const { addToCart } = useCart();
+  
+  const handleAddToCart = async (productId) => {
+    const success = await addToCart(productId);
+    if (success) {
+      alert('Product added to cart successfully!');
     }
   };
 
   return (
+    
     <SearchResultsWrapper>
-      <h1>Search Results</h1>
+        <h1>Search Results</h1>
       {results.length > 0 ? (
-        <ul>
+        <div>
           {results.map((product) => (
             
             <ProductCard>
-                <li key={product._id}></li>
+                <p key={product._id}></p>
                 <img src={product.images} alt={product.imageIds} />
                 <div>
-                <h2>{product.name}</h2>  <br />
-                <p>{product.description}</p>
-                  <p id="location">By {product.store} @ {product.location}</p>
-                  <h3>₦ {product.price}</h3>
-                  <button onClick={() => addToCart(product._id)}>Add to Cart</button>
+                    <h2>{product.name}</h2>  <br />
+                    <p>{product.description}</p>
+                    <p id="location">By {product.store} @ {product.location}</p>
+                    <h3>₦ {product.price}</h3>
+                    <button onClick={() => handleAddToCart(product._id)}>Add to Cart</button>
                 </div>
 
             </ProductCard>           
           ))}
-        </ul>
+        </div>
       ) : (
         <p id="noProducts">No products found.</p>
       )}
@@ -56,15 +48,13 @@ const SearchResults = () => {
 export default SearchResults;
 
 const SearchResultsWrapper = styled.div`
-  max-width: 1200px;
+  /* max-width: 1200px; */
+  padding-left: 300px;
+  padding-right: 300px;
   margin-top: 50px;
   margin-bottom: 50px;
-  /* margin: 0 auto; */
-  padding-left: 25px;
   display: flex;
   justify-content: center;
-  flex-wrap: wrap;
-  gap: 50px;
 
   h1{
     text-align: center;
@@ -75,7 +65,6 @@ const SearchResultsWrapper = styled.div`
     font-size: 30px;
     font-weight: 500;
   }
-
 `
 const ProductCard = styled.div`
   width: 250px;

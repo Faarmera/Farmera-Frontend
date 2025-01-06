@@ -1,15 +1,86 @@
-import React, { useState } from "react";
+// import React, { useState, useCallback, useEffect } from "react";
+// import { Search, ShoppingCart, Menu, X, Sprout } from "lucide-react";
+// import { Link } from "react-router-dom";
+// import styled from "styled-components";
+// import { useNavigate } from 'react-router-dom';
+// import axios from "axios";
+
+import React, { useState, useCallback, useEffect } from "react";
 import { Search, ShoppingCart, Menu, X, Sprout } from "lucide-react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { useNavigate } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 import axios from "axios";
+import debounce from 'lodash/debounce';
 
 // Styled Components
+
+// const SearchContainer = styled.div`
+//   position: relative;
+
+//   button {
+//     background: none;
+//     border: none;
+//     color: #15803d;
+//     cursor: pointer;
+
+//     &:hover {
+//       color: #065f46;
+//     }
+//   }
+// `;
+
+// const SearchDropdown = styled.div`
+//   position: absolute;
+//   right: 0;
+//   margin-top: 0.5rem;
+//   width: 16rem;
+//   background: white;
+//   border-radius: 0.375rem;
+//   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+//   padding: 0.5rem;
+// `;
+
+const SearchInput = styled.input`
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #bbf7d0;
+  border-radius: 0.375rem;
+  outline: none;
+
+  &:focus {
+    border-color: #16a34a;
+  }
+`;
+
+const SuggestionsList = styled.ul`
+  list-style: none;
+  margin: 0.5rem 0 0 0;
+  padding: 0;
+  max-height: 200px;
+  overflow-y: auto;
+`;
+
+const SuggestionItem = styled.li`
+  padding: 0.5rem;
+  cursor: pointer;
+  border-radius: 0.25rem;
+  
+  &:hover {
+    background-color: #f0fdf4;
+  }
+`;
+
+const NoSuggestions = styled.div`
+  padding: 0.5rem;
+  color: #666;
+  font-style: italic;
+`;
+
 const NavbarContainer = styled.nav`
   background-color: #f0fdf4;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  /* position: fixed; */
   width: 100%;
   z-index: 50;
 `;
@@ -238,10 +309,13 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
+  // const [searchResults, setSearchResults] = useState([]);
+  const [suggestions, setSuggestions] = useState([])
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     const navigate = useNavigate();
+    const { cart } = useCart();
+    const itemCount = cart?.cartItems?.length || 0;
   
     const handleMouseEnter = () => {
       setIsDropdownOpen(true);
@@ -256,18 +330,56 @@ export default function Navbar() {
       setIsDropdownOpen(false);
     };
 
+    const debouncedSearch = useCallback(
+      debounce(async (term) => {
+        if (term.trim() === "") {
+          setSuggestions([]);
+          return;
+        }
+        try {
+          const response = await axios.get("https://farmera-eyu3.onrender.com/api/v1/product/get/allProducts", {
+            params: { search: term },
+          });
+          setSuggestions(response.data.products || []);
+        } catch (error) {
+          console.error("Error fetching suggestions:", error);
+          setSuggestions([]);
+        }
+      }, 300),
+      []
+    );
+
+    const handleSearchChange = (e) => {
+      const value = e.target.value;
+      setSearchTerm(value);
+      debouncedSearch(value);
+    };
+  
+    const handleSuggestionClick = (suggestion) => {
+      setSearchTerm(suggestion.name);
+      setSuggestions([]);
+      navigate("./SearchResults", { state: { results: [suggestion] } });
+      setSearchOpen(false);
+    };
+  
     const handleSearch = async () => {
-      if (searchTerm.trim() === "") return; 
+      if (searchTerm.trim() === "") return;
       try {
         const response = await axios.get("https://farmera-eyu3.onrender.com/api/v1/product/get/allProducts", {
           params: { search: searchTerm },
         });
-        setSearchResults(response.data.products); 
-        navigate("./SearchResults", { state: { results: response.data.products } }); 
+        navigate("./SearchResults", { state: { results: response.data.products } });
+        setSearchOpen(false);
       } catch (error) {
         console.error("Error fetching search results:", error.message);
       }
     };
+  
+    useEffect(() => {
+      return () => {
+        debouncedSearch.cancel();
+      };
+    }, [debouncedSearch]);
 
   return (
     <NavbarContainer>
@@ -299,23 +411,43 @@ export default function Navbar() {
                   </DropdownMenu>
                 </NavContainer>
 
-          <SearchContainer>
-            <button onClick={() => setSearchOpen(!searchOpen)}>
-              <Search className="h-5 w-5" />
-            </button>
-            {searchOpen && (
-              <SearchDropdown>
-                 <input type="text" placeholder="Search products..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} onKeyDown={(e) => {
-                  if (e.key === "Enter") handleSearch();
-                  }}
-                />
-              </SearchDropdown>
-            )}
-          </SearchContainer>
+            <SearchContainer>
+              <button onClick={() => setSearchOpen(!searchOpen)}>
+                <Search className="h-5 w-5" />
+              </button>
+              {searchOpen && (
+                <SearchDropdown>
+                  <SearchInput
+                    type="text"
+                    placeholder="Search products..."
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleSearch();
+                    }}
+                  />
+                  {suggestions.length > 0 && (
+                    <SuggestionsList>
+                      {suggestions.map((suggestion, index) => (
+                        <SuggestionItem
+                          key={suggestion._id || index}
+                          onClick={() => handleSuggestionClick(suggestion)}
+                        >
+                          {suggestion.name}
+                        </SuggestionItem>
+                      ))}
+                    </SuggestionsList>
+                  )}
+                  {searchTerm && suggestions.length === 0 && (
+                    <NoSuggestions>No matching products found</NoSuggestions>
+                  )}
+                </SearchDropdown>
+              )}
+            </SearchContainer>
 
           <CartLink to="/buyer-cart">
             <ShoppingCart className="cart-icon" />
-            <span className="cart-badge">0</span>
+            <span className="cart-badge">{itemCount}</span>
           </CartLink>
 
           <AuthButtons>
