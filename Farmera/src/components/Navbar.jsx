@@ -1,10 +1,3 @@
-// import React, { useState, useCallback, useEffect } from "react";
-// import { Search, ShoppingCart, Menu, X, Sprout } from "lucide-react";
-// import { Link } from "react-router-dom";
-// import styled from "styled-components";
-// import { useNavigate } from 'react-router-dom';
-// import axios from "axios";
-
 import React, { useState, useCallback, useEffect } from "react";
 import { Search, ShoppingCart, Menu, X, Sprout } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -15,32 +8,6 @@ import axios from "axios";
 import debounce from 'lodash/debounce';
 
 // Styled Components
-
-// const SearchContainer = styled.div`
-//   position: relative;
-
-//   button {
-//     background: none;
-//     border: none;
-//     color: #15803d;
-//     cursor: pointer;
-
-//     &:hover {
-//       color: #065f46;
-//     }
-//   }
-// `;
-
-// const SearchDropdown = styled.div`
-//   position: absolute;
-//   right: 0;
-//   margin-top: 0.5rem;
-//   width: 16rem;
-//   background: white;
-//   border-radius: 0.375rem;
-//   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-//   padding: 0.5rem;
-// `;
 
 const SearchInput = styled.input`
   width: 100%;
@@ -309,7 +276,6 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  // const [searchResults, setSearchResults] = useState([]);
   const [suggestions, setSuggestions] = useState([])
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 

@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { FaAngleRight } from "react-icons/fa";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const StorePage = () => {
   const [products, setProducts] = useState([]);
@@ -20,6 +21,8 @@ const StorePage = () => {
     search: "",
   });
 
+  const navigate = useNavigate();
+
   const fetchProducts = async (queryParams) => {
     try {
       const response = await axios.get(`https://farmera-eyu3.onrender.com/api/v1/product/get/allProducts`, { params: queryParams });
@@ -32,10 +35,10 @@ const StorePage = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      console.log("No token")
-      return;
-    }
+    // if (!token) {
+    //   console.log("No token")
+    //   return;
+    // }
     axios.get("https://farmera-eyu3.onrender.com/api/v1/category/get/allCategories" , {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -47,7 +50,7 @@ const StorePage = () => {
       })
       .catch((error) => {
         if (error.response?.status === 401) {
-          // Handle unauthorized error - maybe redirect to login
+
           console.error("Unauthorized access:", error);
         } else {
           console.error("Error fetching categories:", error);
@@ -56,13 +59,15 @@ const StorePage = () => {
   }, []);
 
   const handleCategoryClick = (categoryName) => {
-    axios.get(`https://farmera-eyu3.onrender.com/api/v1/category/get/${categoryName}` , {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      }
-    })
+    axios
+      .get(`https://farmera-eyu3.onrender.com/api/v1/category/get/${categoryName}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
       .then((response) => {
         setSelectedCategory(response.data);
+        navigate("./CategoryResults", { state: { category: response.data } });
       })
       .catch((error) => {
         console.error(`Error fetching category ${categoryName}:`, error);
@@ -83,25 +88,6 @@ const StorePage = () => {
       setLoading(false);
     }
   };
-
-  // const addToCart = async (productId) => {
-  //   try {
-  //     const response = await axios.post(
-  //       "https://farmera-eyu3.onrender.com/api/v1/cart/add",
-  //       { products: [{ productId, quantity: 1 }] },
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${localStorage.getItem("token")}`, // Assuming token is stored in localStorage
-  //         },
-  //       }
-  //     );
-  //     alert("Product added to cart successfully!");
-  //     console.log("Add to Cart Response:", response.data);
-  //   } catch (error) {
-  //     console.error("Error adding product to cart:", error.response?.data || error.message);
-  //     alert(error.response?.data?.error || "An error occurred while adding to cart.");
-  //   }
-  // };
 
   const { addToCart } = useCart();
 
@@ -135,55 +121,12 @@ const StorePage = () => {
         <p style={{ color: "rgb(182,182,182)" }}>All Categories</p>
       </Route>
 
-      <FiltersContainer>
+      {/* <FiltersContainer>
         <input type="text" name="category" placeholder="Category..." value={filters.category} onChange={handleFilterChange} />
         <input type="number" name="minPrice" placeholder="Min Price" value={filters.minPrice} onChange={handleFilterChange} />
         <input type="number" name="maxPrice" placeholder="Max Price" value={filters.maxPrice} onChange={handleFilterChange} />
         <input type="text" name="location" placeholder="Location..." value={filters.location} onChange={handleFilterChange} />
-      </FiltersContainer>
-
-      <div>
-      {/* Display Categories as Cards */}
-      {!selectedCategory ? (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
-          {categories.map((category) => (
-            <div
-              key={category._id}
-              style={{
-                border: "1px solid #ddd",
-                borderRadius: "8px",
-                padding: "1rem",
-                cursor: "pointer",
-              }}
-              onClick={() => handleCategoryClick(category.name)}
-            >
-              <h3>{category.name}</h3>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div>
-          {/* Display Products in Selected Category */}
-          <button onClick={() => setSelectedCategory(null)}>Back</button>
-          <h2>{selectedCategory.name}</h2>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
-            {selectedCategory.products.map((product) => (
-              <div
-                key={product._id}
-                style={{
-                  border: "1px solid #ddd",
-                  borderRadius: "8px",
-                  padding: "1rem",
-                }}
-              >
-                <h4>{product.name}</h4>
-                <p>Category: {product.category.name}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
+      </FiltersContainer> */}
 
       {loading ? (
         <p>Loading...</p>
@@ -191,6 +134,23 @@ const StorePage = () => {
         <p style={{ color: "red" }}>{error}</p>
       ) : (
         <FeaturedProductsSection>
+          <div>
+            {!selectedCategory ? (
+              <CategoriesDiv>
+                {categories.map((category) => (
+                  <Categories
+                    key={category._id} onClick={() => handleCategoryClick(category.name)}>
+                    <h3>{category.name}</h3>
+                  </Categories>
+                ))}
+              </CategoriesDiv>
+            ) : (
+              <CategoryDisplay>
+                <button onClick={() => setSelectedCategory(null)}>Back</button>
+                <h2>{selectedCategory.name}</h2>
+              </CategoryDisplay>
+            )}
+          </div>
           <ProductWrapper>
             {products.map((product) => (
               <ProductCard key={product._id}>
@@ -244,19 +204,36 @@ const Route = styled.div`
 }
 `
 
-const FiltersContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  max-width: 1200px;
-  margin: 0px auto;
+// const FiltersContainer = styled.div`
+//   display: flex;
+//   flex-direction: column;
+//   gap: 1rem;
+//   margin-bottom: 2rem;
+//   max-width: 1200px;
+//   margin: 0px auto;
 
-  @media (min-width: 640px) {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
+//   @media (min-width: 640px) {
+//     flex-direction: row;
+//     justify-content: space-between;
+//     align-items: center;
+//   }
+// `
+
+const CategoriesDiv = styled.div`
+  margin-left: 60px;
+  margin-bottom: 100px;
+  max-width: 1200px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+`
+
+const Categories = styled.div`
+  border: none;
+  background-color: #94f0b6;
+  border-radius: 5px;
+  padding: 10px;
+  cursor: pointer;
 `
 
 const FeaturedProductsSection = styled.div`
@@ -347,136 +324,3 @@ const ProductCard = styled.div`
     }
   }
 `
-
-
-
-
-// import React, { useState, useEffect } from "react";
-// import axios from "axios";
-
-// const StorePage = () => {
-//   const [categories, setCategories] = useState([]); // For all categories
-//   const [selectedCategory, setSelectedCategory] = useState(null); // For the selected category and its products
-//   const [loading, setLoading] = useState(false); // To show loading state
-//   const [error, setError] = useState(null); // For error handling
-
-//   const allCategoriesUrl =
-//     "https://farmera-eyu3.onrender.com/api/v1/category/get/allCategories";
-//   const categoryByNameUrl =
-//     "https://farmera-eyu3.onrender.com/api/v1/category/get/";
-
-//   // Fetch all categories on mount
-//   useEffect(() => {
-//     const fetchCategories = async () => {
-//       setLoading(true);
-//       try {
-//         const response = await axios.get(allCategoriesUrl);
-//         setCategories(response.data);
-//         setError(null);
-//       } catch (err) {
-//         console.error("Error fetching categories:", err);
-//         setError("Unable to load categories.");
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchCategories();
-//   }, []);
-
-//   // Fetch a single category by name
-//   const handleCategoryClick = async (categoryName) => {
-//     setLoading(true);
-//     try {
-//       const response = await axios.get(`${categoryByNameUrl}${categoryName}`);
-//       setSelectedCategory(response.data);
-//       setError(null);
-//     } catch (err) {
-//       console.error(`Error fetching category ${categoryName}:`, err);
-//       setError("Unable to load category details.");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   // Reset view to show all categories
-//   const handleBackClick = () => {
-//     setSelectedCategory(null);
-//   };
-
-//   return (
-//     <div style={{ padding: "2rem" }}>
-//       <h1>Store</h1>
-
-//       {/* Show loading spinner */}
-//       {loading && <p>Loading...</p>}
-
-//       {/* Show error message */}
-//       {error && <p style={{ color: "red" }}>{error}</p>}
-
-//       {/* Display categories or products */}
-//       {!loading && !error && (
-//         <>
-//           {!selectedCategory ? (
-//             <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
-//               {categories.map((category) => (
-//                 <div
-//                   key={category._id}
-//                   style={{
-//                     border: "1px solid #ddd",
-//                     borderRadius: "8px",
-//                     padding: "1rem",
-//                     width: "200px",
-//                     textAlign: "center",
-//                     cursor: "pointer",
-//                   }}
-//                   onClick={() => handleCategoryClick(category.name)}
-//                 >
-//                   <h3>{category.name}</h3>
-//                 </div>
-//               ))}
-//             </div>
-//           ) : (
-//             <div>
-//               <button
-//                 onClick={handleBackClick}
-//                 style={{
-//                   marginBottom: "1rem",
-//                   padding: "0.5rem 1rem",
-//                   backgroundColor: "#f0f0f0",
-//                   border: "1px solid #ccc",
-//                   borderRadius: "4px",
-//                   cursor: "pointer",
-//                 }}
-//               >
-//                 Back to Categories
-//               </button>
-
-//               <h2>{selectedCategory.name}</h2>
-//               <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
-//                 {selectedCategory.products.map((product) => (
-//                   <div
-//                     key={product._id}
-//                     style={{
-//                       border: "1px solid #ddd",
-//                       borderRadius: "8px",
-//                       padding: "1rem",
-//                       width: "200px",
-//                       textAlign: "center",
-//                     }}
-//                   >
-//                     <h4>{product.name}</h4>
-//                     <p>Category: {product.category.name}</p>
-//                   </div>
-//                 ))}
-//               </div>
-//             </div>
-//           )}
-//         </>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default StorePage;
-

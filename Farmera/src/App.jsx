@@ -3,12 +3,12 @@ import { useEffect } from "react";
 import { ProtectedRoute } from "./pages/admin/ProtectedRoute/ProtectedRoute";
 import SetUpAxiosInterceptors from "./utils/AxiosConfig";
 import { GlobalStyles } from "./styles/GlobalStyle";
-import Navbar from "./components/Navbar";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
+
+
+import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-
-
 import Home from "./pages/Home";
 import Faq from "./pages/faq";
 import Contact from "./pages/Contact";
@@ -20,6 +20,7 @@ import ForgotPassword from "./pages/ForgotPassword"
 import CreateAccount from "./pages/CreateAccount";
 import Dashboard from "./pages/admin/Dashboard";
 import SearchResults from "./components/searchResults";
+import CategoryResults from "./pages/CategoryResults";
 
 export default function App() {
 
@@ -40,6 +41,7 @@ export default function App() {
           <Route path="/" element={<Home />} /> Home Page
           <Route path="/store" element={<StorePage/>}/> Store Page
           <Route path="/searchResults" element={<SearchResults/>}/> Search Results
+          <Route path="/buyer-store/CategoryResults" element={<CategoryResults/>}/>
           <Route path="/about" element={<About />} /> About Page
           <Route path="/help/faq" element={<Faq/>}/>
           <Route path="/help/contact" element={<Contact/>}/>
@@ -48,7 +50,6 @@ export default function App() {
           <Route path="/signup" element={<CreateAccount />} />
           <Route path="/buyer-store" element={<StorePage />} />
           <Route path="/buyer-cart" element={<Cart />} />
-
           <Route path="/farmer-dashboard" element={
             
             <ProtectedRoute>

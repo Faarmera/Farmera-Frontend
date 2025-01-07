@@ -11,10 +11,10 @@ export const CartProvider = ({ children }) => {
   const fetchCart = async () => {
     try {
         const token = localStorage.getItem("token");
-        if (!token) {
-          console.log("No token")
-          return;
-        }
+        // if (!token) {
+        //   console.log("No token")
+        //   return;
+        // }
       const response = await axios.get('https://farmera-eyu3.onrender.com/api/v1/cart/user', {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -28,7 +28,7 @@ export const CartProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    fetchCart();
+    // fetchCart();
   }, []);
 
   const addToCart = async (productId, quantity = 1) => {
