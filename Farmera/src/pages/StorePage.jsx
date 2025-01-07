@@ -302,6 +302,10 @@ const ProductCard = styled.div`
       margin-bottom: 5px;
     }
 
+    h3{
+      color: #16a34a;
+    }
+
     p {
       color: black;
       font-size: 12px;

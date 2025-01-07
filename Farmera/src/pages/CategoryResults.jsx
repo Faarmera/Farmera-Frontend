@@ -44,7 +44,6 @@ export default CategoryResults;
 
 const CategoryResultsWrapper = styled.div`
   padding: 50px 20px;
-  text-align: center;
 
   h1 {
     font-size: 2rem;
@@ -53,52 +52,63 @@ const CategoryResultsWrapper = styled.div`
 `;
 
 const ProductGrid = styled.div`
-  display: grid;
-  gap: 20px;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    /* max-width: 1200px; */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 40px;
+    margin: auto;
+    border: 1px solid green;
 `;
 
 const ProductCard = styled.div`
-  background: white;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  text-align: left;
+  width: 250px;
+  background-color: white;
+  padding: 10px;
+  border-radius: 0.375rem;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s;
+
+  &:hover {
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+    transform: scale(1.1);
+  }
 
   img {
-    width: 100%;
-    height: 200px;
+    width: 230px;
+    height: 13rem;
+    border-radius: 0.375rem;
     object-fit: cover;
-    border-radius: 4px;
   }
 
   div {
-    margin-top: 10px;
+    padding: 1rem;
 
-    h2 {
-      font-size: 1rem;
+    h2{
+      font-size: 15px;
       margin-bottom: 5px;
     }
 
     p {
-      font-size: 0.875rem;
-      color: #555;
+      color: black;
+      font-size: 12px;
     }
 
-    h3 {
-      color: #16a34a;
-      margin-top: 5px;
+    h3{
+        color: #16a34a;
     }
 
     button {
-      margin-top: 10px;
+      margin-top: 1rem;
       width: 100%;
-      padding: 10px;
       background-color: #16a34a;
       color: white;
+      padding: 0.5rem;
+      border-radius: 0.375rem;
       border: none;
-      border-radius: 4px;
       cursor: pointer;
+      transition: background-color 0.3s;
 
       &:hover {
         background-color: #15803d;
