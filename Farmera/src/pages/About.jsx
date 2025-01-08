@@ -38,7 +38,7 @@ const teamMembers = [
   },
   {
     name: "Adedokun Farouq Adetunji",
-    role: "Backend Developer",
+    role: "Frontend Developer",
     image: "https://res.cloudinary.com/df5zacepv/image/upload/v1733750220/farooq_bperuq.jpg",
   },
 ];
