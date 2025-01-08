@@ -58,7 +58,6 @@ const ProductGrid = styled.div`
     justify-content: center;
     gap: 40px;
     margin: auto;
-    border: 1px solid green;
 `;
 
 const ProductCard = styled.div`
@@ -71,8 +70,9 @@ const ProductCard = styled.div`
   transition: box-shadow 0.3s;
 
   &:hover {
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
-    transform: scale(1.1);
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    cursor: pointer;
+    /* transform: scale(1.1); */
   }
 
   img {

@@ -195,7 +195,7 @@ const HeroContent = styled.div`
 
 
   font-size: 2rem;
-    font-weight: ;
+    /* font-weight: ; */
     margin-bottom: 1.5rem;
 
     @media (min-width: 768px) {

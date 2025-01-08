@@ -25,7 +25,7 @@ const StorePage = () => {
 
   const fetchProducts = async (queryParams) => {
     try {
-      const response = await axios.get(`https://farmera-eyu3.onrender.com/api/v1/product/get/allProducts`, { params: queryParams });
+      const response = await axios.get(`http://localhost:5000/api/v1/product/get/allProducts`, { params: queryParams });
       return response.data;
     } catch (error) {
       console.error("Error fetching products:", error.response?.data || error.message);
@@ -35,10 +35,6 @@ const StorePage = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    // if (!token) {
-    //   console.log("No token")
-    //   return;
-    // }
     axios.get("https://farmera-eyu3.onrender.com/api/v1/category/get/allCategories" , {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -129,7 +125,7 @@ const StorePage = () => {
       </FiltersContainer> */}
 
       {loading ? (
-        <p>Loading...</p>
+        <p style={{textAlign: "center"}}>Loading...</p>
       ) : error ? (
         <p style={{ color: "red" }}>{error}</p>
       ) : (
@@ -146,7 +142,7 @@ const StorePage = () => {
               </CategoriesDiv>
             ) : (
               <CategoryDisplay>
-                <button onClick={() => setSelectedCategory(null)}>Back</button>
+                {/* <button onClick={() => setSelectedCategory(null)}>Back</button> */}
                 <h2>{selectedCategory.name}</h2>
               </CategoryDisplay>
             )}
@@ -219,6 +215,10 @@ const Route = styled.div`
 //   }
 // `
 
+const CategoryDisplay = styled.div`
+  display: none;
+`
+
 const CategoriesDiv = styled.div`
   margin-left: 60px;
   margin-bottom: 100px;
@@ -283,8 +283,9 @@ const ProductCard = styled.div`
   transition: box-shadow 0.3s;
 
   &:hover {
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
-    transform: scale(1.1);
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    cursor: pointer;
+    /* transform: scale(1.1); */
   }
 
   img {

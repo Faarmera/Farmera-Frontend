@@ -11,14 +11,11 @@ export const CartProvider = ({ children }) => {
   const fetchCart = async () => {
     try {
         const token = localStorage.getItem("token");
-        // if (!token) {
-        //   console.log("No token")
-        //   return;
-        // }
-      const response = await axios.get('https://farmera-eyu3.onrender.com/api/v1/cart/user', {
+      const response = await axios.get('http://localhost:5000/api/v1/cart/user', {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${token}`,
         },
+
       });
       setCart(response.data);
     } catch (error) {
@@ -28,20 +25,23 @@ export const CartProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    // fetchCart();
+    fetchCart();
   }, []);
 
   const addToCart = async (productId, quantity = 1) => {
     setLoading(true);
     try {
-      const response = await axios.post(
-        'https://farmera-eyu3.onrender.com/api/v1/cart/add',
+        const token = localStorage.getItem("token");
+        const response = await axios.post('http://localhost:5000/api/v1/cart/add',
         {
           products: [{ productId, quantity }],
         },
+        { 
+          withCredentials: true 
+        },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -58,12 +58,12 @@ export const CartProvider = ({ children }) => {
   const decreaseQuantity = async (productId) => {
     setLoading(true);
     try {
-      const response = await axios.post(
-        'https://farmera-eyu3.onrender.com/api/v1/cart/decrease',
+        const token = localStorage.getItem("token");
+        const response = await axios.patch('http://localhost:5000/api/v1/cart/decrease',
         { productId },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -80,12 +80,12 @@ export const CartProvider = ({ children }) => {
   const removeFromCart = async (productId) => {
     setLoading(true);
     try {
-      const response = await axios.post(
-        'https://farmera-eyu3.onrender.com/api/v1/cart/delete',
+        const token = localStorage.getItem("token");
+      const response = await axios.delete('http://localhost:5000/api/v1/cart/delete',
         { productId },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -102,8 +102,7 @@ export const CartProvider = ({ children }) => {
   const clearCart = async () => {
     setLoading(true);
     try {
-      const response = await axios.post(
-        'https://farmera-eyu3.onrender.com/api/v1/cart/clear',
+      const response = await axios.delete('http://localhost:5000/api/v1/cart/clear',
         {},
         {
           headers: {
