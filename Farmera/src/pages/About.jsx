@@ -9,7 +9,7 @@ const teamMembers = [
   {
     name: "Sulaimon Ibrahim Semako",
     role: "Full Stack Developer",
-    image: "https://res.cloudinary.com/df5zacepv/image/upload/v1733750221/Ibrahim_xpdbo8.jpg",
+    image: "https://res.cloudinary.com/df5zacepv/image/upload/v1733943586/Ibrahim_exl4nj.jpg",
   },
   {
     name: "Blessing Ene Udebuani",
