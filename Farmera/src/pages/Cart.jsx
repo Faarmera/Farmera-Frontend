@@ -7,8 +7,8 @@ import { FaTrash, FaMinus, FaPlus } from 'react-icons/fa';
 const Cart = () => {
   const { cart, loading, error, addToCart, decreaseQuantity, removeFromCart, clearCart } = useCart();
 
-  if (loading) return <div>Loading cart...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (loading) return <div style={{textAlign: "center"}}>Loading cart...</div>;
+  if (error) return <div style={{textAlign: "center"}}>Error: {error}</div>;
   if (!cart || cart.cartItems.length === 0) {
     return (
       <EmptyCartContainer>
@@ -31,7 +31,7 @@ const Cart = () => {
         <CartItems>
           {cart.cartItems.map((item) => (
             <CartItem key={item.product._id}>
-              <ProductImage src={item.product?.images[0]} alt={item.product?.name} />
+              <ProductImage src={item.product?.images[0]} alt={item.product?.name} /> 
               <ProductInfo>
                 <h3>{item.product.name}</h3>
                 <p>{item.product.description}</p>

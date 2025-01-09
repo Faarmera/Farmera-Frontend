@@ -25,7 +25,7 @@ const StorePage = () => {
 
   const fetchProducts = async (queryParams) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/v1/product/get/allProducts`, { params: queryParams });
+      const response = await axios.get(`https://farmera-eyu3.onrender.com/api/v1/product/get/allProducts`, { params: queryParams });
       return response.data;
     } catch (error) {
       console.error("Error fetching products:", error.response?.data || error.message);
