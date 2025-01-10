@@ -66,7 +66,7 @@ const Cart = () => {
             <span>Total Amount:</span>
             <span>₦{cart.totalBill}</span>
           </SummaryItem>
-          <CheckoutButton>Proceed to Checkout</CheckoutButton>
+          <CheckoutButton>Signin to Checkout</CheckoutButton>
           <ContinueShoppingButton to="/buyer-store">
             Continue Shopping
           </ContinueShoppingButton>

@@ -102,6 +102,10 @@ const ProductCard = styled.div`
       font-size: 12px;
     }
 
+    h3{
+      color: #16a34a;
+    }
+
     button {
       margin-top: 1rem;
       width: 100%;

@@ -5,6 +5,7 @@ import SetUpAxiosInterceptors from "./utils/AxiosConfig";
 import { GlobalStyles } from "./styles/GlobalStyle";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
+import { UserProvider } from "./context/UserContext"
 
 
 import Navbar from "./components/Navbar";
@@ -31,6 +32,7 @@ export default function App() {
   }, []);
 
   return (
+    <UserProvider>
     <AuthProvider>
     <CartProvider>
       <Router>
@@ -67,6 +69,7 @@ export default function App() {
     </Router>
       </CartProvider>
     </AuthProvider>
+    </UserProvider>
 
   );
 }
