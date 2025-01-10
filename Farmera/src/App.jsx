@@ -5,11 +5,8 @@ import SetUpAxiosInterceptors from "./utils/AxiosConfig";
 import { GlobalStyles } from "./styles/GlobalStyle";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
-<<<<<<< Updated upstream
 import { UserProvider } from "./context/UserContext"
-=======
 import { useAuth } from "./context/AuthContext";
->>>>>>> Stashed changes
 
 
 import BasicNavbar from "./components/Navbar/Basic-Navbar";

@@ -214,12 +214,17 @@ const AuthButtons = styled.div`
 `;
 
 const SignOutButton = styled.button`
-  
+  background-color: transparent;
+  border: 1px solid #16a34a;
+  color: #16a34a;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
   text-decoration: none;
-  color: #15803d;
+  transition: background-color 0.3s;
 
   &:hover {
-    color: #065f46;
+    background-color: #15803d;
+    color: white;
   }
 `;
 
