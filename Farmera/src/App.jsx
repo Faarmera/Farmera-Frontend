@@ -5,10 +5,17 @@ import SetUpAxiosInterceptors from "./utils/AxiosConfig";
 import { GlobalStyles } from "./styles/GlobalStyle";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
+<<<<<<< Updated upstream
 import { UserProvider } from "./context/UserContext"
+=======
+import { useAuth } from "./context/AuthContext";
+>>>>>>> Stashed changes
 
 
-import Navbar from "./components/Navbar";
+import BasicNavbar from "./components/Navbar/Basic-Navbar";
+import AdminNavbar from "./components/Navbar/Admin-Navbar"
+import BuyerNavbar from "./components/Navbar/Buyer-Navbar";
+import FarmerNavbar from "./components/Navbar/Farmer-Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import Faq from "./pages/faq";
@@ -31,13 +38,14 @@ export default function App() {
 
   }, []);
 
+
   return (
     <UserProvider>
     <AuthProvider>
     <CartProvider>
       <Router>
       <GlobalStyles /> 
-      <Navbar /> 
+      <NavbarRender />
       <main>
         <Routes>
           <Route path="/" element={<Home />} /> Home Page
@@ -73,3 +81,16 @@ export default function App() {
 
   );
 }
+
+const NavbarRender = () => {
+  const { state } = useAuth();
+  const user = state.user
+
+  if (!state.isAuthenticated) return <BasicNavbar />;
+  switch (user.type) {
+    case 'admin': return <AdminNavbar />;
+    case 'buyer': return <BuyerNavbar />;
+    case 'farmer': return <FarmerNavbar />;
+    default: return <BasicNavbar />;
+  }
+};

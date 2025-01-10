@@ -72,7 +72,7 @@ const SignIn = () => {
 
             );
 
-            console.log("Server Response:", response.data);
+            // console.log("Server Response:", response.data);
             console.log("token received:", response.data.token);
 
             const {token, user} = response.data;
@@ -86,7 +86,7 @@ const SignIn = () => {
             localStorage.setItem("user", JSON.stringify(user));
 
             console.log("token saved in localStorage:", localStorage.getItem("token"));
-            console.log("Attempting to navigate to dashboard...");
+            // console.log("Attempting to navigate to dashboard...");
 
             axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 

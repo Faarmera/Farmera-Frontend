@@ -3,9 +3,10 @@ import { Search, ShoppingCart, Menu, X, Sprout } from "lucide-react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { useNavigate } from 'react-router-dom';
-import { useCart } from '../context/CartContext';
+import { useCart } from '../../context/CartContext';
 import axios from "axios";
-import debounce from 'lodash/debounce';
+import debounce from 'lodash/debounce'
+import { useAuth } from "../../context/AuthContext";
 
 // Styled Components
 
@@ -212,7 +213,7 @@ const AuthButtons = styled.div`
   gap: 1rem;
 `;
 
-const SignInButton = styled(Link)`
+const SignOutButton = styled.button`
   text-decoration: none;
   color: #15803d;
 
@@ -272,7 +273,7 @@ const MobileMenuLink = styled(Link)`
 `;
 
 // Component
-export default function Navbar() {
+export default function FarmerNavbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -347,6 +348,17 @@ export default function Navbar() {
       };
     }, [debouncedSearch]);
 
+    const { dispatch } = useAuth();
+  
+    const handleSignOut = () => {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      
+      dispatch({ type: "SIGN_OUT" });
+
+      navigate("/");
+    };
+
   return (
     <NavbarContainer>
       <NavbarWrapper>
@@ -358,6 +370,7 @@ export default function Navbar() {
 
         {/* Desktop Menu */}
         <DesktopMenu>
+          <NavLink to="/farmer-dashboard">Dashboard</NavLink>
           <NavLink to="/buyer-store">Store</NavLink>
           <NavLink to="/about">About Us</NavLink>
           {/* <NavLink to="/help">Help</NavLink> */}
@@ -417,8 +430,8 @@ export default function Navbar() {
           </CartLink>
 
           <AuthButtons>
-            <SignInButton to="/signin">Sign In</SignInButton>
             <SignUpButton to="/signup">Create Account</SignUpButton>
+            <SignOutButton onClick={handleSignOut}>Sign Out</SignOutButton> 
           </AuthButtons>
         </DesktopMenu>
 
@@ -431,12 +444,13 @@ export default function Navbar() {
       {/* Mobile Menu */}
       {isOpen && (
         <MobileMenu>
+          <MobileMenuLink to="/farmer-dashboard">Dashboard</MobileMenuLink>
           <MobileMenuLink to="/buyer-store">Store</MobileMenuLink>
           <MobileMenuLink to="/about">About Us</MobileMenuLink>
           <MobileMenuLink to="/help/contact">Help</MobileMenuLink>
           <MobileMenuLink to="/help/faq">FAQ</MobileMenuLink>
-          <MobileMenuLink to="/signin">Sign In</MobileMenuLink>
           <MobileMenuLink to="/signup">Create Account</MobileMenuLink>
+          <MobileMenuLink as="button" onClick={handleSignOut}>Sign Out</MobileMenuLink>
         </MobileMenu>
       )}
     </NavbarContainer>
