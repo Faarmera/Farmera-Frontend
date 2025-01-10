@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import styled from "styled-components";
+import { UploadOutlined } from '@ant-design/icons';
+import { Button, message, Upload } from 'antd';
+import axios from "axios";
 
 // Styled Components
 const Overlay = styled.div`
@@ -123,21 +126,134 @@ const ButtonGroup = styled.div`
   }
 `;
 
-// Component
-export default function AdminProductForm({ onClose, editingProduct }) {
-  const [formData, setFormData] = useState({
-    name: editingProduct?.name || "",
-    price: editingProduct?.price || "",
-    stock: editingProduct?.stock || "",
-    description: editingProduct?.description || "",
-    category: editingProduct?.category || "",
-    image: editingProduct?.image || "",
-  });
+// const Upload = styled.div`
+// &:hover {
+//   color: #16a34a;
+// }`;
 
-  const handleSubmit = (e) => {
+// Component
+export default function AdminProductForm({ onClose, editingProduct, onSavedProduct }) {
+  const [formData, setFormData] = useState({
+    name: "",
+    price: "",
+    stock: "",
+    description: "",
+    category: "",
+    store: "",
+    location: "",
+    // image: editingProduct?.image || "",
+  });
+  const [imageUpload, setImageUpload] = useState([]);
+  const [error, setError] = useState(null)
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (editingProduct) {
+      setFormData({
+        name: editingProduct.name || "",
+        price: editingProduct.price || "",
+        stock: editingProduct.qtyAvailable || "",
+        description: editingProduct.description || "",
+        category: editingProduct.category ? editingProduct.category.name || "" : "",
+        store: editingProduct.store || "",
+        location: editingProduct.location || "",
+      });
+
+      const previewImages = editingProduct?.images?.map((imageUrl, index) => ({
+        name: imageUrl.split("/").pop(),
+        // name: `image-${index}`,
+        size: 1234,
+        status: "done",
+        url: imageUrl,
+      }))
+      setImageUpload(previewImages);
+      // setImageUpload(editingProduct.images || []);
+    };
+  }, [editingProduct]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setSaving(true);
+    setError(null);
+
+    try {
+      const productFormData = new FormData();
+      productFormData.append("name", formData.name);
+      productFormData.append("price", formData.price)
+      productFormData.append("qtyAvailable", formData.stock)
+      productFormData.append("description", formData.description)
+      productFormData.append("category", formData.category)
+      productFormData.append("store", formData.store)
+      productFormData.append("location", formData.location)
+
+      imageUpload.forEach((file) => productFormData.append("images", file))
+
+      if (editingProduct) {
+        await axios.put(`https://farmera-eyu3.onrender.com/api/v1/product/update/${editingProduct._id}`,
+          productFormData,
+        );
+      } else {
+        await axios.post("https://farmera-eyu3.onrender.com/api/v1/product/create",
+          productFormData,
+          {
+            headers: {
+              "Authorization": `Bearer ${localStorage.getItem("token")}`
+            },
+          },
+          // {
+          //   headers: {
+          //     "Content-Type": "multipart/form-data"
+          //   },
+          // },
+        ); 
+      };
+      // const productResponse = 
+      onSavedProduct();
+      onClose();
+
+    } catch(err) {
+      if (err.response?.data?.error) {
+        setError(err.response?.data?.error)
+      } else {
+        setError(err.response)
+      }
+
+    } finally {
+      setSaving(false)
+    }
     // Handle form submission logic
-    onClose();
+  };
+
+  const props = {
+    name: 'images',
+    action: 'https://farmera-eyu3.onrender.com/api/v1/product/create',
+    headers: {
+      authorization: 'authorization-text',
+    },
+    multiple: true,
+    fileList: imageUpload,
+    // listType: "picture",
+    showUploadList: {
+      showPreviewIcon: true,
+      showRemoveIcon: true,
+    },
+    beforeUpload: (file) => {
+      setImageUpload((prev) => [...prev, file]);
+      return false;
+    },
+    onChange(info) {
+      if (info.file.status !== 'uploading') {
+        console.log(info.file, info.fileList);
+      }
+      if (info.file.status === 'done') {
+        message.success(`${info.file.name} file uploaded successfully`);
+      } else if (info.file.status === 'error') {
+        message.error(`${info.file.name} file upload failed.`);
+      }
+    },
+    onRemove: (file) => {
+      setImageUpload((prev) => prev.filter((i) => i.name !== file.name || file.size !== file.size))
+    },
   };
 
   return (
@@ -184,7 +300,13 @@ export default function AdminProductForm({ onClose, editingProduct }) {
 
           <InputGroup>
             <label>Category</label>
-            <select
+            <input
+                type="text"
+                value={formData.category}
+                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                required
+              />
+            {/* <select
               value={formData.category}
               onChange={(e) => setFormData({ ...formData, category: e.target.value })}
               required
@@ -194,7 +316,7 @@ export default function AdminProductForm({ onClose, editingProduct }) {
               <option value="fruits">Fruits</option>
               <option value="dairy">Dairy</option>
               <option value="meat">Meat</option>
-            </select>
+            </select> */}
           </InputGroup>
 
           <InputGroup>
@@ -207,22 +329,49 @@ export default function AdminProductForm({ onClose, editingProduct }) {
             />
           </InputGroup>
 
+          <TwoColumnGroup>
+            <InputGroup>
+              <label>Store</label>
+              <input
+                type="text"
+                value={formData.store}
+                onChange={(e) => setFormData({ ...formData, store: e.target.value })}
+                required
+              />
+            </InputGroup>
+            <InputGroup>
+              <label>Location</label>
+              <input
+                type="text"
+                value={formData.location}
+                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                required
+              />
+            </InputGroup>
+          </TwoColumnGroup>
+
           <InputGroup>
-            <label>Image URL</label>
-            <input
+            <label>Image</label>
+            <Upload {...props}>
+            <Button icon={<UploadOutlined />}>Click to Upload</Button>
+            </Upload>
+            {/* <input
               type="url"
               value={formData.image}
               onChange={(e) => setFormData({ ...formData, image: e.target.value })}
               required
-            />
+            /> */}
           </InputGroup>
 
           <ButtonGroup>
+            {
+              error ? (<p>{error}</p>) : null
+            }
             <button type="button" className="cancel" onClick={onClose}>
               Cancel
             </button>
-            <button type="submit" className="submit">
-              {editingProduct ? "Update Product" : "Add Product"}
+            <button type="submit" className="submit" disabled={saving}>
+              {saving ? "Saving..." : editingProduct ? "Update Product" : "Add Product"}
             </button>
           </ButtonGroup>
         </Form>

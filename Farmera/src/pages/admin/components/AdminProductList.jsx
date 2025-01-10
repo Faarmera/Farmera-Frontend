@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import AdminProductForm from "./AdminProductForm";
 import styled from "styled-components";
+import axios from "axios";
 
 // Styled Components
 const Container = styled.div`
@@ -123,27 +124,58 @@ const Table = styled.table`
 export default function AdminProductList() {
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [error, setError] = useState(null)
 
-  const products = [
-    {
-      id: 1,
-      name: "Fresh Organic Tomatoes",
-      price: 4.99,
-      stock: 50,
-      status: "In Stock",
-      image: "https://images.unsplash.com/photo-1546470427-f5b713b6f3de?auto=format&fit=crop&q=80",
-    },
-    // Add more products as needed
-  ];
+  // const products = [
+  //   {
+  //     id: 1,
+  //     name: "Fresh Organic Tomatoes",
+  //     price: 4.99,
+  //     stock: 50,
+  //     status: "In Stock",
+  //     image: "https://images.unsplash.com/photo-1546470427-f5b713b6f3de?auto=format&fit=crop&q=80",
+  //   },
+  //   // Add more products as needed
+  // ];
+  
+  const fetchProducts = async () => {
+    setError(null)
+    try {
+      const response = await axios.get("https://farmera-eyu3.onrender.com/api/v1/product/myProducts",
+        {
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+          },
+        },
+      );
+      setProducts(response.data.products)
+    } catch (err) {
+      setError("Unable to fetch products. Please try again later.")
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   const handleEdit = (product) => {
     setEditingProduct(product);
     setShowForm(true);
+    console.log(product);
   };
 
-  const handleDelete = (productId) => {
+  const handleDelete = async (productId) => {
     // Add delete logic here
-    console.log(`Deleted product with ID: ${productId}`);
+    try {
+      await axios.delete(`https://farmera-eyu3.onrender.com/api/v1/product/delete/${productId}`);
+      console.log(`Deleted product with ID: ${productId}`);
+      fetchProducts();
+    } catch (err) {
+      console.log("Error deleting product", err);
+      setError("Unable to delete product. Please try again later.");
+    }
+    
   };
 
   return (
@@ -155,7 +187,6 @@ export default function AdminProductList() {
           <span>Add Product</span>
         </button>
       </Header>
-
       <TableContainer>
         <Table>
           <thead>
@@ -167,26 +198,31 @@ export default function AdminProductList() {
               <th>Actions</th>
             </tr>
           </thead>
+
+          {
+            error ? (<p>{error}</p>) : null
+          }
+
           <tbody>
             {products.map((product) => (
-              <tr key={product.id}>
+              <tr key={product._id}>
                 <td>
                   <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                    <img src={product.image} alt={product.name} />
+                    <img src={product.images[0]} alt={product.name} />
                     <span>{product.name}</span>
                   </div>
                 </td>
-                <td>${product.price}</td>
-                <td>{product.stock}</td>
+                <td>₦{product.price}</td>
+                <td>{product.qtyAvailable}</td>
                 <td>
-                  <span className="status">{product.status}</span>
+                  <span className="status">{product.qtyAvailable > 0 ? "In Stock" : "Out of Stock"}</span>
                 </td>
                 <td>
                   <div className="actions">
                     <button onClick={() => handleEdit(product)}>
                       <Pencil size={16} />
                     </button>
-                    <button className="delete" onClick={() => handleDelete(product.id)}>
+                    <button className="delete" onClick={() => handleDelete(product._id)}>
                       <Trash2 size={16} />
                     </button>
                   </div>
@@ -197,7 +233,7 @@ export default function AdminProductList() {
         </Table>
       </TableContainer>
 
-      {showForm && <AdminProductForm onClose={() => setShowForm(false)} editingProduct={editingProduct} />}
+      {showForm && <AdminProductForm onClose={() => setShowForm(false)} editingProduct={editingProduct} onSavedProduct={fetchProducts} />}
     </Container>
   );
 }
