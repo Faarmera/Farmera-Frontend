@@ -14,7 +14,7 @@ export default function Dashboard() {
         <Wrapper>
           <CenteredMessage>
             <h2>Please Sign In</h2>
-            <p>You need to be signed in to access the admin dashboard.</p>
+            <p>You need to be signed in to access the dashboard.</p>
           </CenteredMessage>
         </Wrapper>
       </Container>

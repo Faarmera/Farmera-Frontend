@@ -4,6 +4,8 @@ import { ArrowRight, Leaf, Truck, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 // import Footer from "../components/Footer";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 
 // Styled Components
@@ -11,6 +13,8 @@ const HeroSection = styled.div`
   position: relative;
   text-align: left;
   color: white;
+
+  margin-bottom: 20px;
 
   h1 {
     font-size: 2rem;
@@ -242,6 +246,17 @@ const ProductCard = styled.div`
   }
 `;
 
+const WelcomeSection = styled.div`
+  margin-left: 85px;
+  h1 {
+    font-size: 18px;
+    font-weight: 500;
+    color: #16a34a;
+  }
+
+`;
+
+
 // Component
 export default function Home() {
   const features = [
@@ -268,6 +283,66 @@ export default function Home() {
     { name: "Organic Carrots", price: "$2.49/lb", image: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&q=80" },
   ];
 
+  const { state: authState } = useAuth();
+  const navigate = useNavigate();
+
+  if (!authState.isAuthenticated) {
+    return (
+        <div>
+        {/* Hero Section */}
+        <HeroSection>
+          <HeroImage
+            src="https://www.ewg.org/sites/default/files/styles/wide_standard_xl/public/2023-10/RiceCropBlog.jpg?h=2e181f1f&itok=dgIuzrRT"
+            alt="Fresh produce"
+          />
+          <Overlay />
+          <HeroContent>
+            <div>
+              <h1>Fresh From Farm to Table</h1>
+              <p>
+                Discover the finest selection of fresh, locally sourced produce delivered right to your doorstep.
+              </p>
+              <Link to="/store">
+                Shop Now
+                <ArrowRight className="icon" />
+              </Link>
+            </div>
+          </HeroContent>
+        </HeroSection>
+
+        {/* Features Section */}
+        <FeaturesSection>
+          <FeaturesWrapper>
+            {features.map((feature, index) => (
+              <FeatureCard key={index}>
+                {feature.icon}
+                <h3>{feature.title}</h3>
+                <p>{feature.description}</p>
+              </FeatureCard>
+            ))}
+          </FeaturesWrapper>
+        </FeaturesSection>
+
+        {/* Featured Products Section */}
+        <FeaturedProductsSection>
+          <ProductsWrapper>
+            <h2>Featured Products</h2>
+            {products.map((product, index) => (
+              <ProductCard key={index}>
+                <img src={product.image} alt={product.name} />
+                <div>
+                  <h3>{product.name}</h3>
+                  <p>{product.price}</p>
+                  <button>Add to Cart</button>
+                </div>
+              </ProductCard>
+            ))}
+          </ProductsWrapper>
+        </FeaturedProductsSection>
+      </div>
+    );
+  }
+
   return (
     <div>
       {/* Hero Section */}
@@ -290,6 +365,10 @@ export default function Home() {
           </div>
         </HeroContent>
       </HeroSection>
+
+      <WelcomeSection>
+          <h1>Welcome to Farmera, {authState.user?.firstname}!</h1>
+      </WelcomeSection>
 
       {/* Features Section */}
       <FeaturesSection>
