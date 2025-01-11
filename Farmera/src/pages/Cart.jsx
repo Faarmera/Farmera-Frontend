@@ -47,10 +47,10 @@ const Cart = () => {
       </CartHeader>
 
       <CartGrid>
-        <CartItems>
+        {/* <CartItems>
           {cart.cartItems.map((item) => (
             <CartItem key={item.product._id}>
-              <ProductImage src={item.product?.images[0]} alt={item.product?.name} /> 
+              <ProductImage src={item.product.image} alt={item.product?.name} /> 
               <ProductInfo>
                 <h3>{item.product.name}</h3>
                 <p>{item.product.description}</p>
@@ -72,6 +72,39 @@ const Cart = () => {
                 </DeleteButton>
               </PriceInfo>
             </CartItem>
+          ))}
+        </CartItems> */}
+
+        <CartItems>
+          {cart.cartItems?.map((item) => (
+            item.product ? (  // Check if product exists
+              <CartItem key={item.product._id}>
+                <ProductImage 
+                  src={item.product?.image || '/placeholder-image.jpg'} 
+                  alt={item.product?.name || 'Product'} 
+                />
+                <ProductInfo>
+                  <h3>{item.product?.name}</h3>
+                  <p>{item.product?.description}</p>
+                  <p>Store: {item.product?.store}</p>
+                </ProductInfo>
+                <QuantityControl>
+                  <button onClick={() => decreaseQuantity(item.product?._id)}>
+                    <FaMinus />
+                  </button>
+                  <span>{item?.quantity || 0}</span>
+                  <button onClick={() => addToCart(item.product?._id, 1)}>
+                    <FaPlus />
+                  </button>
+                </QuantityControl>
+                <PriceInfo>
+                  <p>₦{item?.price || 0}</p>
+                  <DeleteButton onClick={() => removeFromCart(item.product?._id)}>
+                    <FaTrash />
+                  </DeleteButton>
+                </PriceInfo>
+              </CartItem>
+            ) : null
           ))}
         </CartItems>
 
