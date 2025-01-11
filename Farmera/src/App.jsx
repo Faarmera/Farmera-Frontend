@@ -79,6 +79,7 @@ export default function App() {
   );
 }
 
+
 const NavbarRender = () => {
   const { state } = useAuth();
   const user = state.user
