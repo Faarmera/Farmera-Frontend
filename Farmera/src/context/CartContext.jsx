@@ -11,7 +11,7 @@ export const CartProvider = ({ children }) => {
   const fetchCart = async () => {
     try {
         const token = localStorage.getItem("token");
-      const response = await axios.get('http://localhost:5000/api/v1/cart/user', {
+      const response = await axios.get('https://farmera-eyu3.onrender.com/api/v1/cart/user', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -32,7 +32,7 @@ export const CartProvider = ({ children }) => {
     setLoading(true);
     try {
         const token = localStorage.getItem("token");
-        const response = await axios.post('http://localhost:5000/api/v1/cart/add',
+        const response = await axios.post('https://farmera-eyu3.onrender.com/api/v1/cart/add',
         {
           products: [{ productId, quantity }],
         },
@@ -59,7 +59,7 @@ export const CartProvider = ({ children }) => {
     setLoading(true);
     try {
         const token = localStorage.getItem("token");
-        const response = await axios.patch('http://localhost:5000/api/v1/cart/decrease',
+        const response = await axios.patch('https://farmera-eyu3.onrender.com/api/v1/cart/decrease',
         { productId },
         {
           headers: {
@@ -81,7 +81,7 @@ export const CartProvider = ({ children }) => {
     setLoading(true);
     try {
         const token = localStorage.getItem("token");
-      const response = await axios.delete('http://localhost:5000/api/v1/cart/delete',
+      const response = await axios.delete('https://farmera-eyu3.onrender.com/api/v1/cart/delete',
         { productId },
         {
           headers: {
@@ -102,7 +102,7 @@ export const CartProvider = ({ children }) => {
   const clearCart = async () => {
     setLoading(true);
     try {
-      const response = await axios.delete('http://localhost:5000/api/v1/cart/clear',
+      const response = await axios.delete('https://farmera-eyu3.onrender.com/api/v1/v1/cart/clear',
         {},
         {
           headers: {

@@ -1,11 +1,15 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useAuth } from "../context/AuthContext";
 import { FaTrash, FaMinus, FaPlus } from 'react-icons/fa';
 
 const Cart = () => {
   const { cart, loading, error, addToCart, decreaseQuantity, removeFromCart, clearCart } = useCart();
+
+  const navigate = useNavigate();
+  const { state: { isAuthenticated } } = useAuth();
 
   if (loading) return <div style={{textAlign: "center"}}>Loading cart...</div>;
   if (error) return <div style={{textAlign: "center"}}>Error: {error}</div>;
@@ -18,7 +22,22 @@ const Cart = () => {
         </Link>
       </EmptyCartContainer>
     );
+
   }
+  
+  const handleCheckout = () => {
+    if (isAuthenticated) {
+      navigate('/checkout');
+    } else {
+      // Save the return path more explicitly
+      navigate('/signin', { 
+        state: { 
+          returnTo: '/checkout',
+          message: 'Please sign in to complete your checkout'
+        } 
+      });
+    }
+  };
 
   return (
     <CartContainer>
@@ -57,19 +76,21 @@ const Cart = () => {
         </CartItems>
 
         <CartSummary>
-          <h2>Cart Summary</h2>
-          <SummaryItem>
-            <span>Total Items:</span>
-            <span>{cart.cartItems.reduce((sum, item) => sum + item.quantity, 0)}</span>
-          </SummaryItem>
-          <SummaryItem>
-            <span>Total Amount:</span>
-            <span>₦{cart.totalBill}</span>
-          </SummaryItem>
-          <CheckoutButton>Signin to Checkout</CheckoutButton>
-          <ContinueShoppingButton to="/buyer-store">
-            Continue Shopping
-          </ContinueShoppingButton>
+            <h2>Cart Summary</h2>
+            <SummaryItem>
+                <span>Total Items:</span>
+                <span>{cart.cartItems.reduce((sum, item) => sum + item.quantity, 0)}</span>
+            </SummaryItem>
+            <SummaryItem>
+                <span>Total Amount:</span>
+                <span>₦{cart.totalBill}</span>
+            </SummaryItem>
+            <CheckoutButton onClick={handleCheckout} disabled={cart.cartItems.length === 0}>
+            {isAuthenticated ? 'Proceed to Checkout' : 'Sign in to Checkout'}
+            </CheckoutButton>
+            <ContinueShoppingButton to="/buyer-store">
+                Continue Shopping
+            </ContinueShoppingButton>
         </CartSummary>
       </CartGrid>
     </CartContainer>
@@ -222,6 +243,11 @@ const CheckoutButton = styled.button`
 
   &:hover {
     background: #15803d;
+  }
+
+  &:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
   }
 `;
 

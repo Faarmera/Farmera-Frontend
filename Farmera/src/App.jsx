@@ -5,7 +5,7 @@ import SetUpAxiosInterceptors from "./utils/AxiosConfig";
 import { GlobalStyles } from "./styles/GlobalStyle";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
-import { UserProvider } from "./context/UserContext"
+import { PickupStationProvider } from "./context/PickupStationContext";
 import { useAuth } from "./context/AuthContext";
 
 
@@ -26,6 +26,7 @@ import CreateAccount from "./pages/CreateAccount";
 import Dashboard from "./pages/admin/Dashboard";
 import SearchResults from "./components/searchResults";
 import CategoryResults from "./pages/CategoryResults";
+import Checkout from "./pages/Checkout";
 
 export default function App() {
 
@@ -37,9 +38,10 @@ export default function App() {
 
 
   return (
-    <UserProvider>
+   
     <AuthProvider>
     <CartProvider>
+    <PickupStationProvider>
       <Router>
       <GlobalStyles /> 
       <NavbarRender />
@@ -57,6 +59,7 @@ export default function App() {
           <Route path="/signup" element={<CreateAccount />} />
           <Route path="/buyer-store" element={<StorePage />} />
           <Route path="/buyer-cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout/>}/>
           <Route path="/farmer-dashboard" element={
             
             <ProtectedRoute>
@@ -69,12 +72,11 @@ export default function App() {
   
       </main>
       <Footer /> 
-      
 
     </Router>
+      </PickupStationProvider>
       </CartProvider>
     </AuthProvider>
-    </UserProvider>
 
   );
 }
