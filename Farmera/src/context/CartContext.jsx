@@ -14,9 +14,11 @@ export const CartProvider = ({ children }) => {
       const response = await axios.get('https://farmera-eyu3.onrender.com/api/v1/cart/user', {
         headers: {
           Authorization: `Bearer ${token}`,
+        }},
+        {
+          withCredentials: true
         },
-
-      });
+      );
       setCart(response.data);
     } catch (error) {
       console.error('Error fetching cart:', error);
@@ -36,8 +38,8 @@ export const CartProvider = ({ children }) => {
         {
           products: [{ productId, quantity }],
         },
-        { 
-          withCredentials: true 
+        {
+          withCredentials: true
         },
         {
           headers: {
@@ -62,6 +64,9 @@ export const CartProvider = ({ children }) => {
         const response = await axios.patch('https://farmera-eyu3.onrender.com/api/v1/cart/decrease',
         { productId },
         {
+          withCredentials: true
+        },
+        {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -84,6 +89,9 @@ export const CartProvider = ({ children }) => {
       const response = await axios.delete('https://farmera-eyu3.onrender.com/api/v1/cart/delete',
         { productId },
         {
+          withCredentials: true
+        },
+        {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -102,13 +110,15 @@ export const CartProvider = ({ children }) => {
   const clearCart = async () => {
     setLoading(true);
     try {
-      const response = await axios.delete('https://farmera-eyu3.onrender.com/api/v1/v1/cart/clear',
-        {},
+      const response = await axios.delete('https://farmera-eyu3.onrender.com/api/v1/cart/clear',
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
-        }
+        },
+        {
+          withCredentials: true
+        },
       );
       setCart(response.data.cart);
       return true;
