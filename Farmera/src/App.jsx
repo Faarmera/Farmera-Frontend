@@ -5,7 +5,6 @@ import SetUpAxiosInterceptors from "./utils/AxiosConfig";
 import { GlobalStyles } from "./styles/GlobalStyle";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
-// import { PickupStationProvider } from "./context/PickupStationContext";
 import { useAuth } from "./context/AuthContext";
 
 
@@ -40,9 +39,7 @@ export default function App() {
   return (
     <CartProvider>
     <AuthProvider>
-  
-    {/* <PickupStationProvider> */}
-      <Router>
+        <Router>
       <GlobalStyles /> 
       <NavbarRender />
       <main>
@@ -74,7 +71,6 @@ export default function App() {
       <Footer /> 
 
     </Router>
-      {/* </PickupStationProvider> */}
       
     </AuthProvider>
     </CartProvider>
