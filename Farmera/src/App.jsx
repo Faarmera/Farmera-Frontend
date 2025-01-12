@@ -38,9 +38,9 @@ export default function App() {
 
 
   return (
-   
-    <AuthProvider>
     <CartProvider>
+    <AuthProvider>
+  
     {/* <PickupStationProvider> */}
       <Router>
       <GlobalStyles /> 
@@ -75,8 +75,9 @@ export default function App() {
 
     </Router>
       {/* </PickupStationProvider> */}
-      </CartProvider>
+      
     </AuthProvider>
+    </CartProvider>
 
   );
 }

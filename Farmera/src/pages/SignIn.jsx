@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 import { useAuth } from "../context/AuthContext";
+import { useCart } from "../context/CartContext";
 
 import styled from "styled-components";
 
@@ -15,6 +16,7 @@ import axios from "axios";
 const SignIn = () => {
 
     const { dispatch } = useAuth();
+    const { mergeCartsAfterLogin } = useCart();
 
     useEffect(() => {
 
@@ -89,6 +91,8 @@ const SignIn = () => {
             // console.log("Attempting to navigate to dashboard...");
 
             axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+            await mergeCartsAfterLogin(token);
 
             dispatch({
                 type: "SIGN_IN",

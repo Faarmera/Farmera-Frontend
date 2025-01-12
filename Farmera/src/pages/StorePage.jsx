@@ -88,7 +88,7 @@ const StorePage = () => {
   const { addToCart } = useCart();
 
   const handleAddToCart = async (productId) => {
-    const success = await addToCart(productId);
+    const success = await addToCart(productId, 1);
     if (success) {
       alert('Product added to cart successfully!');
     }
