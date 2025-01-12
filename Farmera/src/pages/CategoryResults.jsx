@@ -17,7 +17,7 @@ const CategoryResults = () => {
 
   return (
     <CategoryResultsWrapper>
-      <h1>{category.name}</h1>
+      <h1 style={{textAlign: "center"}}>{category.name}</h1>
       <ProductGrid>
         {category.products?.length > 0 ? (
           category.products.map((product) => (
