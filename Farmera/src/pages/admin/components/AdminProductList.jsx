@@ -208,7 +208,7 @@ export default function AdminProductList() {
               <tr key={product._id}>
                 <td>
                   <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                    <img src={product.images[0]} alt={product.name} />
+                    <img src={product.image} alt={product.name} />
                     <span>{product.name}</span>
                   </div>
                 </td>

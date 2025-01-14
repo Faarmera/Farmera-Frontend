@@ -141,11 +141,34 @@ export default function AdminProductForm({ onClose, editingProduct, onSavedProdu
     category: "",
     store: "",
     location: "",
-    // image: editingProduct?.image || "",
+    image: editingProduct?.image || "",
   });
-  const [imageUpload, setImageUpload] = useState([]);
-  const [error, setError] = useState(null)
+  const [imageUpload, setImageUpload] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get('https://farmera-eyu3.onrender.com/api/v1/category/get/allCategories');
+      setCategories(response.data.categories);
+    } catch (err) {
+      console.error('Error fetching categories:', err);
+      setError('Failed to load categories');
+    }
+  };
+  
+  // Add this to see if categories state is being updated
+  // useEffect(() => {
+  //   console.log('Categories state:', categories);
+  // }, [categories]);
+  
+  // In your render, before the select:
+  // console.log('Current categories in render:', categories);
 
   useEffect(() => {
     if (editingProduct) {
@@ -154,106 +177,85 @@ export default function AdminProductForm({ onClose, editingProduct, onSavedProdu
         price: editingProduct.price || "",
         stock: editingProduct.qtyAvailable || "",
         description: editingProduct.description || "",
-        category: editingProduct.category ? editingProduct.category.name || "" : "",
+        category: editingProduct.category?._id || "", // Use category ID instead of name
         store: editingProduct.store || "",
         location: editingProduct.location || "",
+        image: editingProduct.image || "",
       });
 
-      const previewImages = editingProduct?.images?.map((imageUrl, index) => ({
-        name: imageUrl.split("/").pop(),
-        // name: `image-${index}`,
-        size: 1234,
-        status: "done",
-        url: imageUrl,
-      }))
-      setImageUpload(previewImages);
-      // setImageUpload(editingProduct.images || []);
-    };
+      if (editingProduct.image) {
+        const previewImage = {
+          name: editingProduct.image.split("/").pop(),
+          size: 1234,
+          status: "done",
+          url: editingProduct.image,
+        };
+        setImageUpload(previewImage);
+      }
+    }
   }, [editingProduct]);
+
+  // Configure Upload component props
+  const uploadProps = {
+    beforeUpload: (file) => {
+      setImageUpload(file);
+      return false; // Prevent automatic upload
+    },
+    maxCount: 1,
+    showUploadList: true,
+    onRemove: () => {
+      setImageUpload(null);
+    },
+    fileList: imageUpload ? [imageUpload] : [],
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
     setError(null);
-
     try {
       const productFormData = new FormData();
       productFormData.append("name", formData.name);
-      productFormData.append("price", formData.price)
-      productFormData.append("qtyAvailable", formData.stock)
-      productFormData.append("description", formData.description)
-      productFormData.append("category", formData.category)
-      productFormData.append("store", formData.store)
-      productFormData.append("location", formData.location)
-
-      imageUpload.forEach((file) => productFormData.append("images", file))
+      productFormData.append("price", formData.price);
+      productFormData.append("qtyAvailable", formData.stock);
+      productFormData.append("description", formData.description);
+      productFormData.append("category", formData.category);
+      productFormData.append("store", formData.store);
+      productFormData.append("location", formData.location);
+      
+      // Handle single image upload
+      if (imageUpload) {
+        productFormData.append("image", imageUpload);
+      }
 
       if (editingProduct) {
-        await axios.put(`https://farmera-eyu3.onrender.com/api/v1/product/update/${editingProduct._id}`,
-          productFormData,
+        await axios.put(
+          `https://farmera-eyu3.onrender.com/api/v1/product/update/${editingProduct._id}`,
+          productFormData
         );
       } else {
-        await axios.post("https://farmera-eyu3.onrender.com/api/v1/product/create",
+        await axios.post(
+          "https://farmera-eyu3.onrender.com/api/v1/product/create",
           productFormData,
           {
             headers: {
               "Authorization": `Bearer ${localStorage.getItem("token")}`
             },
-          },
-          // {
-          //   headers: {
-          //     "Content-Type": "multipart/form-data"
-          //   },
-          // },
-        ); 
-      };
-      // const productResponse = 
+          }
+        );
+      }
+      
       onSavedProduct();
       onClose();
-
     } catch(err) {
       if (err.response?.data?.error) {
-        setError(err.response?.data?.error)
+        setError(err.response.data.error);
       } else {
-        setError(err.response)
+        setError(err.response);
       }
-
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-    // Handle form submission logic
-  };
-
-  const props = {
-    name: 'images',
-    action: 'https://farmera-eyu3.onrender.com/api/v1/product/create',
-    headers: {
-      authorization: 'authorization-text',
-    },
-    multiple: true,
-    fileList: imageUpload,
-    // listType: "picture",
-    showUploadList: {
-      showPreviewIcon: true,
-      showRemoveIcon: true,
-    },
-    beforeUpload: (file) => {
-      setImageUpload((prev) => [...prev, file]);
-      return false;
-    },
-    onChange(info) {
-      if (info.file.status !== 'uploading') {
-        console.log(info.file, info.fileList);
-      }
-      if (info.file.status === 'done') {
-        message.success(`${info.file.name} file uploaded successfully`);
-      } else if (info.file.status === 'error') {
-        message.error(`${info.file.name} file upload failed.`);
-      }
-    },
-    onRemove: (file) => {
-      setImageUpload((prev) => prev.filter((i) => i.name !== file.name || file.size !== file.size))
-    },
   };
 
   return (
@@ -299,24 +301,19 @@ export default function AdminProductForm({ onClose, editingProduct, onSavedProdu
           </TwoColumnGroup>
 
           <InputGroup>
-            <label>Category</label>
-            <input
-                type="text"
-                value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                required
-              />
-            {/* <select
-              value={formData.category}
-              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-              required
-            >
-              <option value="">Select a category</option>
-              <option value="vegetables">Vegetables</option>
-              <option value="fruits">Fruits</option>
-              <option value="dairy">Dairy</option>
-              <option value="meat">Meat</option>
-            </select> */}
+          <label>Category</label>
+          <select
+            value={formData.category}
+            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+            required
+          >
+            <option value="" >Select a category</option>
+            {categories?.map((category) => (
+              <option key={category._id} value={category._id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
           </InputGroup>
 
           <InputGroup>
@@ -351,9 +348,9 @@ export default function AdminProductForm({ onClose, editingProduct, onSavedProdu
           </TwoColumnGroup>
 
           <InputGroup>
-            <label>Image</label>
-            <Upload {...props}>
-            <Button icon={<UploadOutlined />}>Click to Upload</Button>
+          <label>Image</label>
+            <Upload {...uploadProps}>
+              <Button icon={<UploadOutlined />}>Click to Upload</Button>
             </Upload>
             {/* <input
               type="url"

@@ -85,15 +85,23 @@ const ContactWrapper = styled.div`
 `
 
 const ContactHeader = styled.div`
-    height: 15vh; 
+    height: 229px;
+    background-color: blue;
     background-image:url("/Farmera-helpPage-background-image.jpg") ;
-    background-repeat: no-repeat;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background-size: contain;
+
+
+
     h1{
-    font-size: 70px;
-    color: white;
+        font-size: 70px;
+        color: white;
+        text-align: center;
+
+        @media (max-width: 400px) {
+        h1{
+            text-align: center;
+        }
+    }
 
         @media(max-width: 370px){
             font-size: 50px;

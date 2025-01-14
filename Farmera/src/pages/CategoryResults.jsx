@@ -22,7 +22,7 @@ const CategoryResults = () => {
         {category.products?.length > 0 ? (
           category.products.map((product) => (
             <ProductCard key={product._id}>
-              <img src={product.images} alt={product.imageIds} />
+              <img src={product.image} alt={product.imageId} />
               <div>
                 <h2>{product.name}</h2>
                 <p>{product.description}</p>
@@ -52,7 +52,6 @@ const CategoryResultsWrapper = styled.div`
 `;
 
 const ProductGrid = styled.div`
-    /* max-width: 1200px; */
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -72,7 +71,6 @@ const ProductCard = styled.div`
   &:hover {
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
     cursor: pointer;
-    /* transform: scale(1.1); */
   }
 
   img {

@@ -2,9 +2,6 @@
 import styled from "styled-components";
 import { Users, Leaf, Heart, } from "lucide-react";
 
-//Hello ma'am, you have done a beautiful job with the cards.
-//However, I just think they should be bigger. They are thin.
-//They could be wider.
 const teamMembers = [
   {
     name: "Sulaimon Ibrahim Semako",

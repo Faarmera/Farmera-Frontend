@@ -26,6 +26,7 @@ import Dashboard from "./pages/admin/Dashboard";
 import SearchResults from "./components/searchResults";
 import CategoryResults from "./pages/CategoryResults";
 import Checkout from "./pages/Checkout";
+import Payment from "./pages/Payment";
 
 export default function App() {
 
@@ -57,6 +58,7 @@ export default function App() {
           <Route path="/buyer-store" element={<StorePage />} />
           <Route path="/buyer-cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout/>}/>
+          <Route path="/payment" element={<Payment/>}/>
           <Route path="/farmer-dashboard" element={
             
             <ProtectedRoute>

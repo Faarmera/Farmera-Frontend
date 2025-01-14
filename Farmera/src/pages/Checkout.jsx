@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useCart } from '../context/CartContext';
 import OrderContext from '../context/OrderContext';
+import Payment from './Payment';
 
 const Checkout = () => {
 
@@ -101,6 +102,34 @@ const Checkout = () => {
         resolve({ success: true });
       }, 2000);
     });
+  };
+
+  const handlePaymentSuccess = async (response) => {
+    try {
+      const verificationResponse = await fetch('/api/verify-payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          reference: response.reference,
+          provider: response.provider
+        }),
+      });
+
+      const result = await verificationResponse.json();
+      
+      if (result.success) {
+        // Handle successful payment
+        console.log('Payment verified successfully');
+      }
+    } catch (error) {
+      console.error('Payment verification failed:', error);
+    }
+  };
+
+  const handlePaymentClose = () => {
+    console.log('Payment cancelled');
   };
 
   if (!cart || cart.cartItems.length === 0) {
@@ -274,6 +303,15 @@ const Checkout = () => {
           </Button>
         </Section>
       )}
+
+      <PageContainer>
+          <PaymentComponent 
+            amount={1000} // Amount in Naira
+            email="customer@example.com"
+            onSuccess={handlePaymentSuccess}
+            onClose={handlePaymentClose}
+          />
+        </PageContainer>
     </Container>
   );
 };
@@ -372,6 +410,17 @@ const AddressInput = styled.div`
 const PaymentOptions = styled(DeliveryOptions)``;
 
 const PaymentOption = styled(DeliveryOption)``;
+
+const PageContainer = styled.div`
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem 0;
+`;
+
+const PaymentComponent = styled.div`
+  
+`
 
 const CardDetails = styled.div`
   margin: 1.5rem 0;

@@ -136,7 +136,7 @@ const StorePage = () => {
                 {categories.map((category) => (
                   <Categories
                     key={category._id} onClick={() => handleCategoryClick(category.name)}>
-                    <h3>{category.name}</h3>
+                    <h5>{category.name}</h5>
                   </Categories>
                 ))}
               </CategoriesDiv>
@@ -179,7 +179,7 @@ export default StorePage;
 
 
 const Div = styled.div`
-  
+  margin-top: 30px;
 `
 
 const Route = styled.div`
@@ -189,14 +189,13 @@ const Route = styled.div`
   margin: 0px auto;
   align-items: center;
   gap: 5px;
-  margin-bottom: 1rem;
-  margin-top: 1rem;
- .home {
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  &:hover {
-  background-color: #e5e7eb;
- }
+
+  .home {
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+      &:hover {
+      background-color: #e5e7eb;
+    }
 }
 `
 
@@ -216,12 +215,12 @@ const Route = styled.div`
 // `
 
 const CategoryDisplay = styled.div`
-  display: none;
+  
 `
 
 const CategoriesDiv = styled.div`
   margin-left: 60px;
-  margin-bottom: 100px;
+  margin-bottom: 30px;
   max-width: 1200px;
   display: flex;
   flex-wrap: wrap;
@@ -230,10 +229,16 @@ const CategoriesDiv = styled.div`
 
 const Categories = styled.div`
   border: none;
-  background-color: #94f0b6;
+  /* background-color: #94f0b6; */
+  background-color: transparent;
   border-radius: 5px;
   padding: 10px;
   cursor: pointer;
+
+  &:hover {
+    background-color: #9bddb3;
+    border: 1px solid black;
+  }
 `
 
 const FeaturedProductsSection = styled.div`
@@ -280,12 +285,10 @@ const ProductCard = styled.div`
   border-radius: 0.375rem;
   overflow: hidden;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.3s;
 
   &:hover {
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
     cursor: pointer;
-    /* transform: scale(1.1); */
   }
 
   img {

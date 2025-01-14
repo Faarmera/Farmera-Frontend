@@ -26,7 +26,7 @@ const SearchResults = () => {
             
             <ProductCard>
                 <p key={product._id}></p>
-                <img src={product.images} alt={product.imageIds} />
+                <img src={product.image} alt={product.imageId} />
                 <div>
                     <h2>{product.name}</h2>  <br />
                     <p>{product.description}</p>
@@ -48,7 +48,6 @@ const SearchResults = () => {
 export default SearchResults;
 
 const SearchResultsWrapper = styled.div`
-  /* max-width: 1200px; */
   padding-left: 300px;
   padding-right: 300px;
   margin-top: 50px;
@@ -79,7 +78,6 @@ const ProductCard = styled.div`
   &:hover {
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
     cursor: pointer;
-    /* transform: scale(1.1); */
   }
 
   img {

@@ -47,9 +47,9 @@ const Faq = () => {
 
             <FaqWrapper>
 
-                <FaqTitle>
-                  <h1>FAQs</h1>
-                </FaqTitle>
+              <FaqImage>
+              <h1 style={{ display: "flex", textAlign: "center", justifyContent: "center"}}>FAQs</h1>
+              </FaqImage>
 
                 <Questions>
 
@@ -117,9 +117,13 @@ const FaqPage = styled.div`
     
 `
 
+const FaqImage = styled.div`
+  height: 229px;
+`
+
 const FaqWrapper = styled.div`
     background-image:url("/Farmera-helpPage-background-image.jpg") ;
-    background-repeat: no-repeat;
+    background-size: contain;
 
     h1{
         font-size: 70px;
