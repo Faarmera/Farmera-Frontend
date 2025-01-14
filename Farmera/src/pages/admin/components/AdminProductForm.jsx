@@ -126,74 +126,142 @@ const ButtonGroup = styled.div`
   }
 `;
 
-// const Upload = styled.div`
-// &:hover {
-//   color: #16a34a;
-// }`;
-
-// Component
-export default function AdminProductForm({ onClose, editingProduct, onSavedProduct }) {
-  const [formData, setFormData] = useState({
-    name: "",
-    price: "",
-    stock: "",
-    description: "",
-    category: "",
-    store: "",
-    location: "",
-    image: editingProduct?.image || "",
-  });
-  const [imageUpload, setImageUpload] = useState(null);
+export default function AdminProductForm({ onClose, editingProduct, onSavedProduct, showForm }) {
+  const [formData, setFormData] = useState(
+    {
+      name: "",
+      price: "",
+      stock: "",
+      description: "",
+      category: "",
+      store: "",
+      location: ""
+    }
+  );
   const [categories, setCategories] = useState([]);
+  const [imageUpload, setImageUpload] = useState(null);
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
+
+  const fetchDetails = async () => {
+    if (editingProduct) {
+      try {
+        const response = await axios.get(`https://farmera-eyu3.onrender.com/api/v1/product/get/${editingProduct._id}`);
+        const details = response.data
+        setFormData({
+          name: details.name || "",
+          price: details.price || "",
+          stock: details.qtyAvailable || "",
+          description: details.description || "",
+          category: details.category?.name || "",
+          store: details.store || "",
+          location: details.location || "",
+        });
+  
+        if (details.image) {
+          setImageUpload({
+            uid: -1,
+            name: details.image.split("/").pop(),
+            status: "done",
+            url: details.image,
+          })
+        };
+      } catch (err) {
+        if (err.response?.data?.error) {
+          setError(err.response?.data?.error)
+        } else {
+          setError(err.response.data?.message)
+        }
+      }
+    }
+  }
 
   useEffect(() => {
-    fetchCategories();
-  }, []);
+    setIsUpdate(!!editingProduct)
+    fetchDetails()
+  }, [editingProduct])
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get('https://farmera-eyu3.onrender.com/api/v1/category/get/allCategories');
-      setCategories(response.data.categories);
+      const response = await axios.get("https://farmera-eyu3.onrender.com/api/v1/category/get/allCategories")
+      setCategories(response.data)
+
     } catch (err) {
-      console.error('Error fetching categories:', err);
-      setError('Failed to load categories');
-    }
-  };
-  
-  // Add this to see if categories state is being updated
-  // useEffect(() => {
-  //   console.log('Categories state:', categories);
-  // }, [categories]);
-  
-  // In your render, before the select:
-  // console.log('Current categories in render:', categories);
-
-  useEffect(() => {
-    if (editingProduct) {
-      setFormData({
-        name: editingProduct.name || "",
-        price: editingProduct.price || "",
-        stock: editingProduct.qtyAvailable || "",
-        description: editingProduct.description || "",
-        category: editingProduct.category?._id || "", // Use category ID instead of name
-        store: editingProduct.store || "",
-        location: editingProduct.location || "",
-        image: editingProduct.image || "",
-      });
-
-      if (editingProduct.image) {
-        const previewImage = {
-          name: editingProduct.image.split("/").pop(),
-          size: 1234,
-          status: "done",
-          url: editingProduct.image,
-        };
-        setImageUpload(previewImage);
+      if (err.response?.data?.error) {
+        setError(err.response?.data?.error)
+      } else {
+        setError(err.response.data?.message)
       }
     }
-  }, [editingProduct]);
+  }
+
+  useEffect(() => {
+    if (showForm) {
+      fetchCategories()
+    }
+  }, [showForm])
+ 
+  // useEffect(() => {
+  //   if (editingProduct) {
+  //     setFormData({
+  //       name: editingProduct.name || "",
+  //       price: editingProduct.price || "",
+  //       stock: editingProduct.qtyAvailable || "",
+  //       description: editingProduct.description || "",
+  //       category: editingProduct.category ? editingProduct.category.name || "" : "",
+  //       store: editingProduct.store || "",
+  //       location: editingProduct.location || "",
+  //       image: null
+  //     });
+
+  //     // if (editingProduct.image) {
+  //     //   setImageUpload({
+  //     //     name: editingProduct.image.split("/").pop(),
+  //     //     // name: `image-${index}`,
+  //     //     size: 1234,
+  //     //     status: "done",
+  //     //     url: editingProduct.image,
+  //     //   })
+  //     // }
+      
+  //     // setImageUpload(editingProduct.image || null);
+  //   };
+  // }, [editingProduct]);
+
+  const updateProduct = async (productFormData) => {
+    try {
+      const response = await axios.put(`https://farmera-eyu3.onrender.com/api/v1/product/update/${editingProduct._id}`,
+        productFormData,
+      );
+      console.log(response.data);
+    } catch (err) {
+      if (err.response?.data?.error) {
+        setError(err.response?.data?.error)
+      } else {
+        setError(err.response?.data?.message)
+      }
+    }
+  }
+
+  const createProduct = async (productFormData) => {
+    try {
+      await axios.post("https://farmera-eyu3.onrender.com/api/v1/product/create",
+        productFormData,
+        {
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+          },
+        },
+      ); 
+    } catch (err) {
+      if (err.response?.data?.error) {
+        setError(err.response?.data?.error)
+      } else {
+        setError(err.response?.data?.message)
+      }
+    }
+  }
 
   // Configure Upload component props
   const uploadProps = {
@@ -213,49 +281,63 @@ export default function AdminProductForm({ onClose, editingProduct, onSavedProdu
     e.preventDefault();
     setSaving(true);
     setError(null);
+
+    const productFormData = new FormData();
+    productFormData.append("name", formData.name);
+    productFormData.append("price", formData.price)
+    productFormData.append("qtyAvailable", formData.stock)
+    productFormData.append("description", formData.description)
+    productFormData.append("category", formData.category)
+    productFormData.append("store", formData.store)
+    productFormData.append("location", formData.location)
+
+    if (imageUpload) {
+      productFormData.append("image", imageUpload)
+    }
+    
     try {
-      const productFormData = new FormData();
-      productFormData.append("name", formData.name);
-      productFormData.append("price", formData.price);
-      productFormData.append("qtyAvailable", formData.stock);
-      productFormData.append("description", formData.description);
-      productFormData.append("category", formData.category);
-      productFormData.append("store", formData.store);
-      productFormData.append("location", formData.location);
-      
-      // Handle single image upload
-      if (imageUpload) {
-        productFormData.append("image", imageUpload);
+      if (isUpdate) {
+        await updateProduct(productFormData)
+      } else {
+        await createProduct(productFormData)
       }
 
-      if (editingProduct) {
-        await axios.put(
-          `https://farmera-eyu3.onrender.com/api/v1/product/update/${editingProduct._id}`,
-          productFormData
-        );
-      } else {
-        await axios.post(
-          "https://farmera-eyu3.onrender.com/api/v1/product/create",
-          productFormData,
-          {
-            headers: {
-              "Authorization": `Bearer ${localStorage.getItem("token")}`
-            },
-          }
-        );
-      }
-      
       onSavedProduct();
       onClose();
     } catch(err) {
       if (err.response?.data?.error) {
         setError(err.response.data.error);
       } else {
-        setError(err.response);
+        setError(err.response?.data?.message)
       }
     } finally {
       setSaving(false);
     }
+  };
+
+  const props = {
+    name: 'image',
+    fileList: imageUpload ? [imageUpload] : [],
+    // listType: "picture",
+    showUploadList: !!imageUpload,
+    beforeUpload: (file) => {
+      setImageUpload(file);
+      return false;
+    },
+    onChange(info) {
+      if (info.file.status !== 'uploading') {
+        console.log(info.file, info.fileList);
+      }
+      if (info.file.status === 'done') {
+        setImageUpload(info.file.originFileObj)
+        message.success(`${info.file.name} file uploaded successfully`);
+      } else if (info.file.status === 'error') {
+        message.error(`${info.file.name} file upload failed.`);
+      }
+    },
+    onRemove: () => {
+      setImageUpload(null)
+    },
   };
 
   return (
@@ -294,33 +376,34 @@ export default function AdminProductForm({ onClose, editingProduct, onSavedProdu
               <input
                 type="number"
                 value={formData.stock}
-                onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
+                onChange={(e) => setFormData({...formData, stock: e.target.value })}
                 required
               />
             </InputGroup>
           </TwoColumnGroup>
 
           <InputGroup>
-          <label>Category</label>
-          <select
-            value={formData.category}
-            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-            required
-          >
-            <option value="" >Select a category</option>
-            {categories?.map((category) => (
-              <option key={category._id} value={category._id}>
-                {category.name}
-              </option>
-            ))}
-          </select>
+            <label>Category</label>
+            <select
+              type="text"
+              value={formData.category}
+              onChange={(e) => setFormData({...formData, category: e.target.value })}
+              required
+            >
+              <option value="" disabled>Select a category</option>
+              {
+                categories.map((category) => (
+                  <option key={category._id} value={category.name}>{category.name}</option>
+                ))
+              }
+            </select>   
           </InputGroup>
 
           <InputGroup>
             <label>Description</label>
             <textarea
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              onChange={(e) => setFormData({...formData, description: e.target.value })}
               rows={3}
               required
             />
@@ -332,7 +415,7 @@ export default function AdminProductForm({ onClose, editingProduct, onSavedProdu
               <input
                 type="text"
                 value={formData.store}
-                onChange={(e) => setFormData({ ...formData, store: e.target.value })}
+                onChange={(e) => setFormData({...formData, store: e.target.value })}
                 required
               />
             </InputGroup>
@@ -341,7 +424,7 @@ export default function AdminProductForm({ onClose, editingProduct, onSavedProdu
               <input
                 type="text"
                 value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                onChange={(e) => setFormData({...formData, location: e.target.value})}
                 required
               />
             </InputGroup>
@@ -352,12 +435,6 @@ export default function AdminProductForm({ onClose, editingProduct, onSavedProdu
             <Upload {...uploadProps}>
               <Button icon={<UploadOutlined />}>Click to Upload</Button>
             </Upload>
-            {/* <input
-              type="url"
-              value={formData.image}
-              onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-              required
-            /> */}
           </InputGroup>
 
           <ButtonGroup>
@@ -368,7 +445,7 @@ export default function AdminProductForm({ onClose, editingProduct, onSavedProdu
               Cancel
             </button>
             <button type="submit" className="submit" disabled={saving}>
-              {saving ? "Saving..." : editingProduct ? "Update Product" : "Add Product"}
+              {saving ? "Saving..." : isUpdate ? "Update Product" : "Add Product"}
             </button>
           </ButtonGroup>
         </Form>

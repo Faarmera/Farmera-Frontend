@@ -127,18 +127,6 @@ export default function AdminProductList() {
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null)
 
-  // const products = [
-  //   {
-  //     id: 1,
-  //     name: "Fresh Organic Tomatoes",
-  //     price: 4.99,
-  //     stock: 50,
-  //     status: "In Stock",
-  //     image: "https://images.unsplash.com/photo-1546470427-f5b713b6f3de?auto=format&fit=crop&q=80",
-  //   },
-  //   // Add more products as needed
-  // ];
-  
   const fetchProducts = async () => {
     setError(null)
     try {
@@ -151,7 +139,11 @@ export default function AdminProductList() {
       );
       setProducts(response.data.products)
     } catch (err) {
-      setError("Unable to fetch products. Please try again later.")
+      if (err.response?.data?.error) {
+        setError(err.response?.data?.error || "Unable to fetch products. Please try again later.")
+      } else {
+        setError(err.response?.data?.message) 
+      }
     }
   };
 
@@ -166,14 +158,21 @@ export default function AdminProductList() {
   };
 
   const handleDelete = async (productId) => {
-    // Add delete logic here
+    setError(null)
     try {
-      await axios.delete(`https://farmera-eyu3.onrender.com/api/v1/product/delete/${productId}`);
+      const response = await axios.delete(`https://farmera-eyu3.onrender.com/api/v1/product/delete/${productId}`);
       console.log(`Deleted product with ID: ${productId}`);
       fetchProducts();
+
+      if (response.status === 200) {
+        alert("Product deleted successfully.")
+      }
     } catch (err) {
-      console.log("Error deleting product", err);
-      setError("Unable to delete product. Please try again later.");
+      if (err.response?.data?.message) {
+        alert(err.response?.data?.message)
+      } else {
+        setError("Unable to delete product. Please try again later.");
+      }
     }
     
   };
@@ -233,7 +232,10 @@ export default function AdminProductList() {
         </Table>
       </TableContainer>
 
-      {showForm && <AdminProductForm onClose={() => setShowForm(false)} editingProduct={editingProduct} onSavedProduct={fetchProducts} />}
+      {showForm && <AdminProductForm onClose={() => {
+        setShowForm(false)
+        setEditingProduct(null)
+        }} editingProduct={editingProduct} onSavedProduct={fetchProducts} showForm={showForm} />}
     </Container>
   );
 }
