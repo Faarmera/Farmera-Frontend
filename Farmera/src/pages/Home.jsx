@@ -1,10 +1,13 @@
 
 // import React from "react";
+import { useState, useEffect } from "react";
+import axios from "axios"
 import { ArrowRight, Leaf, Truck, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 // import Footer from "../components/Footer";
 import { useAuth } from "../context/AuthContext";
+import { useCart } from '../context/CartContext';
 import { useNavigate } from "react-router-dom";
 
 
@@ -169,6 +172,7 @@ const FeatureCard = styled.div`
 const FeaturedProductsSection = styled.div`
   background-color: #f9fafb;
   padding: 4rem 0;
+  display: grid;
 `;
 
 const ProductsWrapper = styled.div`
@@ -265,26 +269,58 @@ export default function Home() {
     { icon: <Shield className="icon" />, title: "Quality Guaranteed", description: "Satisfaction guaranteed" },
   ];
 
-  const products = [
-    { name: "Fresh Tomatoes", price: "$4.99/lb", image: "https://media.istockphoto.com/id/171589415/photo/tomatoes.jpg?s=1024x1024&w=is&k=20&c=RfvJQIdupuk1aPuykMJEfQvdErdbVfSGldpLaqH-Rgo=" },
-    { name: "Organic Apples", price: "$3.99/lb", image: "https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?auto=format&fit=crop&q=80" },
-    { name: "Fresh Lettuce", price: "$2.99/head", image: "https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?auto=format&fit=crop&q=80" },
-    { name: "Organic Carrots", price: "$2.49/lb", image: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&q=80" },
-    { name: "Organic Carrots", price: "$2.49/lb", image: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&q=80" },
-    { name: "Organic Carrots", price: "$2.49/lb", image: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&q=80" },
-    { name: "Organic Carrots", price: "$2.49/lb", image: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&q=80" },
-    { name: "Organic Carrots", price: "$2.49/lb", image: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&q=80" },
-    { name: "Organic Carrots", price: "$2.49/lb", image: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&q=80" },
-    { name: "Organic Carrots", price: "$2.49/lb", image: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&q=80" },
-    { name: "Organic Carrots", price: "$2.49/lb", image: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&q=80" },
-    { name: "Organic Carrots", price: "$2.49/lb", image: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&q=80" },
-    { name: "Organic Carrots", price: "$2.49/lb", image: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&q=80" },
-    { name: "Organic Carrots", price: "$2.49/lb", image: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&q=80" },
-    { name: "Organic Carrots", price: "$2.49/lb", image: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&q=80" },
-  ];
+  // const products = [
+  //   { name: "Fresh Tomatoes", price: "$4.99/lb", image: "https://media.istockphoto.com/id/171589415/photo/tomatoes.jpg?s=1024x1024&w=is&k=20&c=RfvJQIdupuk1aPuykMJEfQvdErdbVfSGldpLaqH-Rgo=" },
+  //   { name: "Organic Apples", price: "$3.99/lb", image: "https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?auto=format&fit=crop&q=80" },
+  //   { name: "Fresh Lettuce", price: "$2.99/head", image: "https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?auto=format&fit=crop&q=80" },
+  //   { name: "Organic Carrots", price: "$2.49/lb", image: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&q=80" },
+  //   { name: "Organic Carrots", price: "$2.49/lb", image: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&q=80" },
+  //   { name: "Organic Carrots", price: "$2.49/lb", image: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&q=80" },
+  //   { name: "Organic Carrots", price: "$2.49/lb", image: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&q=80" },
+  //   { name: "Organic Carrots", price: "$2.49/lb", image: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&q=80" },
+  //   { name: "Organic Carrots", price: "$2.49/lb", image: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&q=80" },
+  //   { name: "Organic Carrots", price: "$2.49/lb", image: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&q=80" },
+  //   { name: "Organic Carrots", price: "$2.49/lb", image: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&q=80" },
+  //   { name: "Organic Carrots", price: "$2.49/lb", image: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&q=80" },
+  //   { name: "Organic Carrots", price: "$2.49/lb", image: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&q=80" },
+  //   { name: "Organic Carrots", price: "$2.49/lb", image: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&q=80" },
+  //   { name: "Organic Carrots", price: "$2.49/lb", image: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&q=80" },
+  // ];
 
   const { state: authState } = useAuth();
-  const navigate = useNavigate();
+  const [products, setProducts] = useState([]);
+
+
+  const fetchProducts = async (queryParams) => {
+    try {
+      const response = await axios.get(`https://farmera-eyu3.onrender.com/api/v1/product/get/allProducts`, { params: queryParams },
+        {
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+          },
+        },
+      );
+      console.log(response.data);
+      return setProducts(response.data.products);
+
+    } catch (error) {
+      console.error("Error fetching products:", error.response?.data || error.message);
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+    const { addToCart } = useCart();
+  
+    const handleAddToCart = async (productId) => {
+      const success = await addToCart(productId, 1);
+      if (success) {
+        alert('Product added to cart successfully!');
+      }
+    };
 
   if (!authState.isAuthenticated) {
     return (
@@ -326,14 +362,18 @@ export default function Home() {
         {/* Featured Products Section */}
         <FeaturedProductsSection>
           <ProductsWrapper>
-            <h2>Featured Products</h2>
-            {products.map((product, index) => (
-              <ProductCard key={index}>
-                <img src={product.image} alt={product.name} />
+            <div>
+              <h2>Featured Products</h2>
+            </div>
+            {products.map((product) => (
+              <ProductCard key={product._id}>
+                <img src={product.image} alt={product.imageId} />
                 <div>
                   <h3>{product.name}</h3>
-                  <p>{product.price}</p>
-                  <button>Add to Cart</button>
+                  <p>{product.description}</p>
+                  <p id="location">By {product.store} @ {product.location}</p>
+                  <p>₦ {product.price}</p>
+                  <button onClick={() => handleAddToCart(product._id)}>Add to Cart</button>
                 </div>
               </ProductCard>
             ))}
@@ -387,8 +427,8 @@ export default function Home() {
       <FeaturedProductsSection>
         <ProductsWrapper>
           <h2>Featured Products</h2>
-          {products.map((product, index) => (
-            <ProductCard key={index}>
+          {products.map((product) => (
+            <ProductCard key={product._id}>
               <img src={product.image} alt={product.name} />
               <div>
                 <h3>{product.name}</h3>
@@ -402,3 +442,75 @@ export default function Home() {
     </div>
   );
 }
+// import React from 'react';
+// import { useState, useEffect } from "react";
+// import styled from "styled-components";
+// import axios from "axios";
+
+
+// const App = () => {
+//   const [products, setProducts] = useState([]);
+//   const fetchProducts = async (queryParams) => {
+//     try {
+//       const response = await axios.get(`https://farmera-eyu3.onrender.com/api/v1/product/get/allProducts`, { params: queryParams },
+//         {
+//           headers: {
+//             "Authorization": `Bearer ${localStorage.getItem("token")}`
+//           },
+//         },
+//       );
+      
+      
+//       console.log(response.data);
+//       return setProducts(response.data.products);
+//     } catch (error) {
+//       console.error("Error fetching products:", error.response?.data || error.message);
+//       throw error;
+//     }
+//   };
+
+//   useEffect(() => {
+//     fetchProducts();
+//   }, []);
+
+//   return (
+//     <Div>
+//       <h1>Home page</h1>
+   
+//                     <FeaturedProductsSection>
+//                         <ProductWrapper>
+//                             {products.map((product)=>(
+//                             <ProductCard key={product._id}>
+//                                 <img src={product.images} alt={product.imageIds} />
+//                                 <div>
+//                                     <h3>{product.name}</h3>
+//                                     <h2>{product.description}</h2>
+//                                     <h4>By {product.store} @ {product.location}</h4>
+//                                     <p>₦{product.price}</p>
+//                                     <button>
+//                                         Add to Cart
+//                                     </button>
+//                                 </div>
+//                             </ProductCard>
+//                             ))}
+//                         </ProductWrapper>
+//                     </FeaturedProductsSection>
+//     </Div>
+//   );
+// };
+
+// export default App;
+
+// const Div = styled.div`
+
+// `
+// const FeaturedProductsSection = styled.div`
+  
+// `
+// const ProductWrapper = styled.div`
+  
+// `
+// const ProductCard = styled.div`
+  
+// `
+
