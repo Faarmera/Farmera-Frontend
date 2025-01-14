@@ -338,7 +338,7 @@ export default function Home() {
               <p>
                 Discover the finest selection of fresh, locally sourced produce delivered right to your doorstep.
               </p>
-              <Link to="/store">
+              <Link to="/buyer-store">
                 Shop Now
                 <ArrowRight className="icon" />
               </Link>
