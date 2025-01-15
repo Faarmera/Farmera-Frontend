@@ -405,10 +405,10 @@ export default function Home() {
               <ProductCard key={product._id}>
                 <img src={product.image} alt={product.imageId} />
                 <div>
-                  <h3>{product.name}</h3>
+                  <h2>{product.name}</h2>
                   <p>{product.description}</p>
                   <p id="location">By {product.store} @ {product.location}</p>
-                  <p>₦ {product.price}</p>
+                  <h3>₦ {product.price}</h3>
                   <button onClick={() => handleAddToCart(product._id)}>Add to Cart</button>
                 </div>
               </ProductCard>
