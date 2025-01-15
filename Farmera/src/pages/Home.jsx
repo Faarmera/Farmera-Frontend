@@ -304,6 +304,7 @@ const ProductCard = styled.div`
 
 const WelcomeSection = styled.div`
   margin-left: 6.4%;
+  padding: 1rem;
   h1 {
     font-size: 18px;
     font-weight: 500;
