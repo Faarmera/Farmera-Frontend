@@ -461,8 +461,9 @@ export default function Home() {
 
       {/* Featured Products Section */}
       <FeaturedProductsSection>
+      <h2 style={{textAlign: "center", padding: "1rem"}}>Featured Products</h2>
         <ProductsWrapper>
-          <h2>Featured Products</h2>
+          {/* <h2>Featured Products</h2> */}
           {products.map((product) => (
             <ProductCard key={product._id}>
               <img src={product.image} alt={product.imageId} />
