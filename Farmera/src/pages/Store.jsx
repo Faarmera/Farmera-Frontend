@@ -185,13 +185,15 @@ const Div = styled.div`
 const Route = styled.div`
   display: flex;
   text-align: center;
-  max-width: 1200px;
+  max-width: 1100px;
   margin: 0px auto;
   align-items: center;
   gap: 5px;
+  /* border: 1px solid; */
 
   .home {
     padding: 0.5rem 1rem;
+    /* padding: 0.5rem; */
     border-radius: 0.375rem;
       &:hover {
       background-color: #e5e7eb;
@@ -219,12 +221,14 @@ const CategoryDisplay = styled.div`
 `
 
 const CategoriesDiv = styled.div`
-  margin-left: 60px;
+  /* margin-left: 60px; */
+  margin: 0px auto;
   margin-bottom: 30px;
-  max-width: 1200px;
+  max-width: 1100px;
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
+  /* border: 1px solid; */
 `
 
 const Categories = styled.div`
@@ -236,14 +240,15 @@ const Categories = styled.div`
   cursor: pointer;
 
   &:hover {
-    background-color: #9bddb3;
+    /* background-color: #9bddb3; */
+    background-color: #16A34A;
     border: 1px solid black;
   }
 `
 
 const FeaturedProductsSection = styled.div`
   background-color: #f9fafb;
-  padding: 4rem 0;
+  /* padding: 4rem 0; */
   max-width: 1200px;
   margin: 0px auto;
 `
@@ -261,6 +266,8 @@ const Pagination = styled.div`
   justify-content: center;
   flex-direction: row;
   gap: 5px;
+  padding: 1rem;
+  margin-top: 0.5rem;
 
   button{
     background-color: transparent;
