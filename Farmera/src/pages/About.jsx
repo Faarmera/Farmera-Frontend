@@ -273,7 +273,7 @@ const Text = styled.p`
 const TeamGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 2rem;
+  gap: 1rem;
   margin-top: 2rem;
   @media (min-width: 768px) {
     grid-template-columns: repeat(3, 1fr);
