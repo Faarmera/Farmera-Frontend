@@ -115,7 +115,7 @@ const About = () => {
 </Section>
       {/* Team Section */}
       <Section>
-        <SectionContent columns={3}>
+        <SectionContent columns={4}>
           <SubTitle>Our Team</SubTitle>
           <Text>
             We are a group of passionate individuals committed to bridging the gap between farmers and the market using
@@ -272,7 +272,7 @@ const Text = styled.p`
 
 const TeamGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 2rem;
   margin-top: 2rem;
   @media (min-width: 768px) {
