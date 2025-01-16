@@ -150,7 +150,7 @@ const Store = () => {
           <ProductWrapper>
             {products.map((product) => (
               <ProductCard key={product._id}>
-                <img src={product.image} alt={product.imageId} />
+                <img src={product.images} alt={product.imageIds} />
                 <div>
                   <h2>{product.name}</h2>
                   <p>{product.description}</p>

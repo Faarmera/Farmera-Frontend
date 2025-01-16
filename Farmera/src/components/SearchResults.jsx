@@ -1,4 +1,4 @@
-import React from "react";
+ import React from "react";
 import { useLocation } from "react-router-dom";
 import { useCart } from '../context/CartContext';
 import styled from "styled-components";
@@ -26,7 +26,7 @@ const SearchResults = () => {
             
             <ProductCard>
                 <p key={product._id}></p>
-                <img src={product.image} alt={product.imageId} />
+                <img src={product.images} alt={product.imageIds} />
                 <div>
                     <h2>{product.name}</h2>  <br />
                     <p>{product.description}</p>
