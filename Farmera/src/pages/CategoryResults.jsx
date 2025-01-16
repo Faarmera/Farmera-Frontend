@@ -22,7 +22,7 @@ const CategoryResults = () => {
         {category.products?.length > 0 ? (
           category.products.map((product) => (
             <ProductCard key={product._id}>
-              <img src={product.images} alt={product.imageIds} />
+              <img src={product.images[0]} alt={product.imageIds[0]} />
               <div>
                 <h2>{product.name}</h2>
                 <p>{product.description}</p>

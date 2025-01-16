@@ -26,7 +26,7 @@ const SearchResults = () => {
             
             <ProductCard>
                 <p key={product._id}></p>
-                <img src={product.images} alt={product.imageIds} />
+                <img src={product.images[0]} alt={product.imageIds[0]} />
                 <div>
                     <h2>{product.name}</h2>  <br />
                     <p>{product.description}</p>
