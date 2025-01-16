@@ -404,7 +404,7 @@ export default function Home() {
             </div> */}
             {products.map((product) => (
               <ProductCard key={product._id}>
-                <img src={product.image} alt={product.imageId} />
+                <img src={product.images[0]} alt={product.imageIds[0]} />
                 <div>
                   <h2>{product.name}</h2>
                   <p>{product.description}</p>

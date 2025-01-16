@@ -79,7 +79,7 @@ const CreateAccount = () => {
 
             // console.log("SignupBuyer Successful:", signupBuyer.data);
             
-            navigate("/signin")
+            navigate("/verify-email")
 
             setBuyerData({
                 firstname: "",
@@ -134,7 +134,7 @@ const CreateAccount = () => {
                 payload: signupFarmer.data
             })
 
-            navigate("/farmer-dashboard")
+            navigate("/verify-email")
             // Navigate("/signin")
 
             setFarmerData({
