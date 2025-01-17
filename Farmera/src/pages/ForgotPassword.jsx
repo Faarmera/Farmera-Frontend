@@ -18,7 +18,7 @@ const ForgotPassword = () =>{
 
     });
 
-    const [successMessage, setSuccessMessage] = useState(false)
+    // const [successMessage, setSuccessMessage] = useState(false)
 
     const [loading, setLoading] = useState(false);
 
@@ -58,13 +58,13 @@ const ForgotPassword = () =>{
 
             if (response.data.message) {
 
-                setSuccessMessage(true)
+                // setSuccessMessage(true)
 
                 setTimeout(() => {
 
-                    navigate("/signin")
+                    navigate("/check-email")
 
-                }, 3000);
+                }, 500);
 
             }
     
@@ -120,9 +120,9 @@ const ForgotPassword = () =>{
                     )}
 
 
-                    {successMessage && (
+                    {/* {successMessage && (
                         <p className="successMessage">Password reset instructions have been sent to your email</p>
-                    )}
+                    )} */}
 
                     <button 
                         type="submit"
@@ -299,10 +299,10 @@ const ContainerDiv = styled.div`
         margin-top: 5px;
     }
 
-    .successMessage{
+    /* .successMessage{
         color: green;
         font-size: 12px;
         margin-top: 5px;
-    }
+    } */
 
 `

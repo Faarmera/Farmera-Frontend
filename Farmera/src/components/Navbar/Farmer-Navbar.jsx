@@ -7,6 +7,7 @@ import { useCart } from '../../context/CartContext';
 import axios from "axios";
 import debounce from 'lodash/debounce'
 import { useAuth } from "../../context/AuthContext";
+import { VscAccount } from "react-icons/vsc";
 
 // Styled Components
 
@@ -110,19 +111,29 @@ const NavTrigger = styled.div`
 
 const DropdownMenu = styled.div`
   position: absolute;
-  top: 100%;
-  left: 0;
+  top: 1.6rem;
   min-width: 150px;
+  color: #15803d;
+  border: 1px solid #f8f9fa;
   background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   z-index: 1000;
   display: ${props => props.isOpen ? 'block' : 'none'};
 `;
 
 const DropdownItem = styled.div`
-  padding: 10px 15px;
+  width: 100%;
+  height: 40px;
+  border-radius: 5px;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   cursor: pointer;
   
   &:hover {
@@ -134,6 +145,14 @@ const NavLink = styled(Link)`
   text-decoration: none;
   color: #15803d;
   transition: color 0.3s;
+  font-size: 16px;
+  font-weight: 500;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 5px;
 
   &:hover {
     color: #065f46;
@@ -142,15 +161,25 @@ const NavLink = styled(Link)`
 
 const SearchContainer = styled.div`
   position: relative;
+  z-index: 10;
+  
+  display: flex;
+  align-items: center;
 
+  &:hover {
+    color: #065f46;
+  }
+  
   button {
     background: none;
     border: none;
     color: #15803d;
     cursor: pointer;
-
     &:hover {
       color: #065f46;
+    }
+    .search{
+      width: 30px;
     }
   }
 `;
@@ -182,22 +211,27 @@ const CartLink = styled(Link)`
   position: relative;
   color: #15803d;
 
+  display: flex;
+  align-items: center;
+
+
   &:hover {
     color: #065f46;
   }
 
   .cart-icon {
-    height: 1.25rem;
-    width: 1.25rem;
+    width: 30px;
+
   }
 
   .cart-badge {
     position: absolute;
     top: -0.5rem;
     right: -0.5rem;
-    background-color: #16a34a;
-    color: white;
-    font-size: 0.75rem;
+    background-color: transparent;
+    color: #15803d;
+    font-size: 12px;
+    font-weight: 500;
     height: 1rem;
     width: 1rem;
     border-radius: 50%;
@@ -213,33 +247,6 @@ const AuthButtons = styled.div`
   gap: 1rem;
 `;
 
-const SignOutButton = styled.button`
-  background-color: transparent;
-  border: 1px solid #16a34a;
-  color: #16a34a;
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  text-decoration: none;
-  transition: background-color 0.3s;
-
-  &:hover {
-    background-color: #15803d;
-    color: white;
-  }
-`;
-
-const SignUpButton = styled(Link)`
-  background-color: #16a34a;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  text-decoration: none;
-  transition: background-color 0.3s;
-
-  &:hover {
-    background-color: #15803d;
-  }
-`;
 
 const MobileMenuButton = styled.button`
   display: flex;
@@ -278,13 +285,18 @@ const MobileMenuLink = styled(Link)`
   }
 `;
 
+const Account = styled(VscAccount)`
+  font-size: 20px;
+`
+
 // Component
-export default function FarmerNavbar() {
+export default function AdminNavbar () {
   const [isOpen, setIsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState([])
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isAccountdownOpen, setIsAccountdownOpen] = useState(false);
 
     const navigate = useNavigate();
     const { cart } = useCart();
@@ -293,14 +305,27 @@ export default function FarmerNavbar() {
     const handleMouseEnter = () => {
       setIsDropdownOpen(true);
     };
+
+    const handleMouseOn = () =>{
+      setIsAccountdownOpen(true);
+    };
   
     const handleMouseLeave = () => {
       setIsDropdownOpen(false);
+    };
+
+    const handleMouseOff = () =>{
+      setIsAccountdownOpen(false);
     };
   
     const navigateToPage = (path) => {
       navigate(path);
       setIsDropdownOpen(false);
+    };
+
+    const goToPage = (path) => {
+      navigate(path);
+      setIsAccountdownOpen(false);
     };
 
     const debouncedSearch = useCallback(
@@ -376,29 +401,27 @@ export default function FarmerNavbar() {
 
         {/* Desktop Menu */}
         <DesktopMenu>
-          <NavLink to="/farmer-dashboard">Dashboard</NavLink>
           <NavLink to="/buyer-store">Store</NavLink>
-          <NavLink to="/about">About Us</NavLink>
-          {/* <NavLink to="/help">Help</NavLink> */}
+          {/* <NavLink to="/about">About Us</NavLink> */}
 
               <NavContainer 
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
               >
-                  <NavLink>Help</NavLink>
-                  <DropdownMenu isOpen={isDropdownOpen}>
-                    <DropdownItem onClick={() => navigateToPage('help/faq')}>
-                      FAQ
-                    </DropdownItem>
-                    <DropdownItem onClick={() => navigateToPage('/help/contact')}>
-                      Contact
-                    </DropdownItem>
-                  </DropdownMenu>
-                </NavContainer>
+                <NavLink>Help</NavLink>
+                <DropdownMenu isOpen={isDropdownOpen}>
+                  <DropdownItem onClick={() => navigateToPage('help/faq')}>
+                    FAQ
+                  </DropdownItem>
+                  <DropdownItem onClick={() => navigateToPage('/help/contact')}>
+                    Contact
+                  </DropdownItem>
+                </DropdownMenu>
+              </NavContainer>
 
             <SearchContainer>
               <button onClick={() => setSearchOpen(!searchOpen)}>
-                <Search className="h-5 w-5" />
+                <Search className="search"/>
               </button>
               {searchOpen && (
                 <SearchDropdown>
@@ -435,10 +458,27 @@ export default function FarmerNavbar() {
             <span className="cart-badge">{itemCount}</span>
           </CartLink>
 
-          <AuthButtons>
-            <SignUpButton to="/signup">Create Account</SignUpButton>
-            <SignOutButton onClick={handleSignOut}>Sign Out</SignOutButton> 
-          </AuthButtons>
+          <NavContainer 
+            onMouseEnter={handleMouseOn}
+            onMouseLeave={handleMouseOff}
+          >
+            <NavLink>
+              <Account/>
+              <p>Account</p>
+            </NavLink>
+            <DropdownMenu isOpen={isAccountdownOpen}>
+              <DropdownItem onClick={() => goToPage('')}>
+                My Profile Page
+              </DropdownItem>
+              <DropdownItem onClick={() => goToPage('')}>
+                My Orders
+              </DropdownItem>
+              <DropdownItem onClick={handleSignOut}>
+                Sign Out
+              </DropdownItem>
+            </DropdownMenu>
+          </NavContainer>
+
         </DesktopMenu>
 
         {/* Mobile Menu Button */}
@@ -450,13 +490,13 @@ export default function FarmerNavbar() {
       {/* Mobile Menu */}
       {isOpen && (
         <MobileMenu>
-          <MobileMenuLink to="/farmer-dashboard">Dashboard</MobileMenuLink>
+          <MobileMenuLink to="">My Profile</MobileMenuLink>
+          <MobileMenuLink to="">Dashboard</MobileMenuLink>
+
           <MobileMenuLink to="/buyer-store">Store</MobileMenuLink>
-          <MobileMenuLink to="/about">About Us</MobileMenuLink>
-          <MobileMenuLink to="/help/contact">Help</MobileMenuLink>
-          <MobileMenuLink to="/help/faq">FAQ</MobileMenuLink>
-          <MobileMenuLink to="/signup">Create Account</MobileMenuLink>
-          <MobileMenuLink as="button" onClick={handleSignOut}>Sign Out</MobileMenuLink>
+          <MobileMenuLink to="">My Orders</MobileMenuLink>
+
+          <MobileMenuLink onClick={handleSignOut}>Sign Out</MobileMenuLink>
         </MobileMenu>
       )}
     </NavbarContainer>

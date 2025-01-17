@@ -28,6 +28,7 @@ import CategoryResults from "./pages/CategoryResults";
 import Checkout from "./pages/Checkout";
 import Payment from "./pages/Payment";
 import VerifyEmail from "./pages/VerifyEmail";
+import CheckEmail from "./pages/CheckEmail"
 import EmailVerification from "./pages/EmailVerification";
 
 export default function App() {
@@ -54,6 +55,7 @@ export default function App() {
           <Route path="/help/faq" element={<Faq/>}/>
           <Route path="/help/contact" element={<Contact/>}/>
           <Route path="/verify-email" element={<VerifyEmail/>}/>
+          <Route path="/check-email" element={<CheckEmail/>}/>
           <Route path="/verify/${userId}/${uniqueString}" element={<EmailVerification/>}/>
           <Route path="/signin" element={<SignIn />} /> Sign-In Page
           <Route path="/forgotpassword" element={<ForgotPassword/>}/>

@@ -1,4 +1,3 @@
-
 // import React from "react";
 import { useState, useEffect } from "react";
 import axios from "axios"
@@ -422,64 +421,66 @@ export default function Home() {
 
   return (
     <div>
-      {/* Hero Section */}
-      <HeroSection>
-        <HeroImage
-          src="https://www.ewg.org/sites/default/files/styles/wide_standard_xl/public/2023-10/RiceCropBlog.jpg?h=2e181f1f&itok=dgIuzrRT"
-          alt="Fresh produce"
-        />
-        <Overlay />
-        <HeroContent>
-          <div>
-            <h1>Fresh From Farm to Table</h1>
-            <p>
-              Discover the finest selection of fresh, locally sourced produce delivered right to your doorstep.
-            </p>
-            <Link to="/store">
-              Shop Now
-              <ArrowRight className="icon" />
-            </Link>
-          </div>
-        </HeroContent>
-      </HeroSection>
+    {/* Hero Section */}
+    <HeroSection>
+      <HeroImage
+        src="https://www.ewg.org/sites/default/files/styles/wide_standard_xl/public/2023-10/RiceCropBlog.jpg?h=2e181f1f&itok=dgIuzrRT"
+        alt="Fresh produce"
+      />
+      <Overlay />
+      <HeroContent>
+        <div>
+          <h1>Fresh From Farm to Table</h1>
+          <p>
+            Discover the finest selection of fresh, locally sourced produce delivered right to your doorstep.
+          </p>
+          <Link to="/buyer-store">
+            Shop Now
+            <ArrowRight className="icon" />
+          </Link>
+        </div>
+      </HeroContent>
+    </HeroSection>
 
-      <WelcomeSection>
+    <WelcomeSection>
           <h1>Welcome to Farmera, {authState.user?.firstname}!</h1>
-      </WelcomeSection>
+    </WelcomeSection>
 
-      {/* Features Section */}
-      <FeaturesSection>
-        <FeaturesWrapper>
-          {features.map((feature, index) => (
-            <FeatureCard key={index}>
-              {feature.icon}
-              <h3>{feature.title}</h3>
-              <p>{feature.description}</p>
-            </FeatureCard>
-          ))}
-        </FeaturesWrapper>
-      </FeaturesSection>
+    {/* Features Section */}
+    <FeaturesSection>
+      <FeaturesWrapper>
+        {features.map((feature, index) => (
+          <FeatureCard key={index}>
+            {feature.icon}
+            <h3>{feature.title}</h3>
+            <p>{feature.description}</p>
+          </FeatureCard>
+        ))}
+      </FeaturesWrapper>
+    </FeaturesSection>
 
-      {/* Featured Products Section */}
-      <FeaturedProductsSection>
+    {/* Featured Products Section */}
+    <FeaturedProductsSection>
       <h2 style={{textAlign: "center", padding: "1rem"}}>Featured Products</h2>
-        <ProductsWrapper>
-          {/* <h2>Featured Products</h2> */}
-          {products.map((product) => (
-            <ProductCard key={product._id}>
-              <img src={product.image} alt={product.imageId} />
-              <div>
-                <h2>{product.name}</h2>
-                <p>{product.description}</p>
-                <p id="location">By {product.store} @ {product.location}</p>
-                <h3>₦ {product.price}</h3>
-                <button onClick={() => handleAddToCart(product._id)}>Add to Cart</button>
-              </div>
-            </ProductCard>
-          ))}
-        </ProductsWrapper>
-      </FeaturedProductsSection>
-    </div>
+      <ProductsWrapper>
+        {/* <div>
+          <h2>Featured Products</h2>
+        </div> */}
+        {products.map((product) => (
+          <ProductCard key={product._id}>
+            <img src={product.images[0]} alt={product.imageIds[0]} />
+            <div>
+              <h2>{product.name}</h2>
+              <p>{product.description}</p>
+              <p id="location">By {product.store} @ {product.location}</p>
+              <h3>₦ {product.price}</h3>
+              <button onClick={() => handleAddToCart(product._id)}>Add to Cart</button>
+            </div>
+          </ProductCard>
+        ))}
+      </ProductsWrapper>
+    </FeaturedProductsSection>
+  </div>
   );
 }
 // import React from 'react';
