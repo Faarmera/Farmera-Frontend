@@ -92,7 +92,7 @@ const About = () => {
               consumers. We believe in creating a sustainable food system that benefits both producers and consumers.
             </Text>
             <Text>
-              Our platform has grown to support hundreds of local farmers, making fresh produce accessible to
+              Our platform hopes to  grow and support hundreds of local farmers, making fresh produce accessible to
               thousands of households while promoting sustainable farming practices.
             </Text>
             <Text>
@@ -186,8 +186,11 @@ const HeroContent = styled.div`
   margin: 0 auto;
   padding:  1rem;
   height: 100%;
-  display: grid;
-  align-items: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Center vertically */
+  align-items: center; /* Center horizontally */
+  text-align: center; /* Ensure text is centered */
   color: white;
 
 
@@ -272,19 +275,25 @@ const Text = styled.p`
 
 const TeamGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(1, 1fr); /* Default for small screens */
   gap: 1rem;
   margin-top: 2rem;
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(3, 1fr);
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, 1fr); /* Two columns on medium screens */
+  }
+
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(4, 1fr); /* Four columns on large screens */
   }
 `;
 
+
 const TeamCard = styled.div`
   background: #F0FDF4;
-  padding: 1.5rem;
+  padding: 1rem;
   text-align: center;
-  border-radius: 15px;
+  border-radius: 10px;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
   img {
     width: 100%;
