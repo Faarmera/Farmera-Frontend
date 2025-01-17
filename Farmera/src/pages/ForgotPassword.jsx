@@ -170,6 +170,8 @@ const ContainerDiv = styled.div`
         text-align: center;
         width: inherit;
 
+        color: #15803d;
+
         margin-bottom: 35px;
     }
 

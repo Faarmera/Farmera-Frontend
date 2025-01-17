@@ -186,7 +186,7 @@ const SearchContainer = styled.div`
 
 const SearchDropdown = styled.div`
   position: absolute;
-  right: 0;
+  top: 1.6rem;
   margin-top: 0.5rem;
   width: 16rem;
   background: white;
@@ -200,6 +200,8 @@ const SearchDropdown = styled.div`
     border: 1px solid #bbf7d0;
     border-radius: 0.375rem;
     outline: none;
+
+    box-sizing: border-box;
 
     &:focus {
       border-color: #16a34a;
@@ -391,7 +393,7 @@ export default function AdminNavbar () {
     };
 
   return (
-    <NavbarContainer>
+    <NavbarContainer onClick={() => setSearchOpen(false)}>
       <NavbarWrapper>
         {/* Brand */}
         <Brand to="/">
@@ -419,8 +421,8 @@ export default function AdminNavbar () {
                 </DropdownMenu>
               </NavContainer>
 
-            <SearchContainer>
-              <button onClick={() => setSearchOpen(!searchOpen)}>
+            <SearchContainer onClick={(e) => e.stopPropagation()}>
+              <button onClick={() => setSearchOpen(true)}>
                 <Search className="search"/>
               </button>
               {searchOpen && (

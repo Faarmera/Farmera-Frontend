@@ -267,6 +267,8 @@ const FormWrapper = styled.div`
         text-align: center;
         width: inherit;
 
+        color: #15803d;
+
         margin-top: 0px;
         margin-bottom: 35px;
     }

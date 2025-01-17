@@ -172,6 +172,7 @@ const FeaturedProductsSection = styled.div`
   background-color: #f9fafb;
   padding: 2rem 0;
   display: grid;
+
 `;
 
 const ProductsWrapper = styled.div`
@@ -396,7 +397,7 @@ export default function Home() {
 
         {/* Featured Products Section */}
         <FeaturedProductsSection>
-          <h2 style={{textAlign: "center", padding: "1rem"}}>Featured Products</h2>
+        <h2 style={{textAlign: "center", padding: "1rem", color: "#15803d"}}>Featured Products</h2>
           <ProductsWrapper>
             {/* <div>
               <h2>Featured Products</h2>
@@ -447,7 +448,7 @@ export default function Home() {
     </WelcomeSection>
 
     {/* Features Section */}
-    <FeaturesSection>
+    {/* <FeaturesSection>
       <FeaturesWrapper>
         {features.map((feature, index) => (
           <FeatureCard key={index}>
@@ -457,11 +458,11 @@ export default function Home() {
           </FeatureCard>
         ))}
       </FeaturesWrapper>
-    </FeaturesSection>
+    </FeaturesSection> */}
 
     {/* Featured Products Section */}
     <FeaturedProductsSection>
-      <h2 style={{textAlign: "center", padding: "1rem"}}>Featured Products</h2>
+      <h2 style={{textAlign: "center", padding: "1rem", color: "#15803d"}}>Featured Products</h2>
       <ProductsWrapper>
         {/* <div>
           <h2>Featured Products</h2>
