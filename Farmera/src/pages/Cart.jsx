@@ -80,7 +80,7 @@ const Cart = () => {
             item.product ? (  // Check if product exists
               <CartItem key={item.product._id}>
                 <ProductImage 
-                  src={item.product?.image || '/placeholder-image.jpg'} 
+                  src={item.product?.images[0] || '/placeholder-image.jpg'} 
                   alt={item.product?.name || 'Product'} 
                 />
                 <ProductInfo>
