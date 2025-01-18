@@ -128,7 +128,7 @@ const DropdownItem = styled.div`
   border-radius: 5px;
 
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 400;
 
   display: flex;
   align-items: center;
@@ -146,7 +146,7 @@ const NavLink = styled(Link)`
   color: #15803d;
   transition: color 0.3s;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 400;
 
   display: flex;
   align-items: center;
@@ -233,7 +233,7 @@ const CartLink = styled(Link)`
     background-color: transparent;
     color: #15803d;
     font-size: 12px;
-    font-weight: 500;
+    font-weight: 700;
     height: 1rem;
     width: 1rem;
     border-radius: 50%;

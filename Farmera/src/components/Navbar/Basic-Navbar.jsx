@@ -128,7 +128,7 @@ const DropdownItem = styled.div`
   border-radius: 5px;
 
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 400;
 
   display: flex;
   align-items: center;
@@ -146,7 +146,7 @@ const NavLink = styled(Link)`
   color: #15803d;
   transition: color 0.3s;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 400;
 
   display: flex;
   align-items: center;
@@ -233,7 +233,7 @@ const CartLink = styled(Link)`
     background-color: transparent;
     color: #15803d;
     font-size: 12px;
-    font-weight: 500;
+    font-weight: 700;
     height: 1rem;
     width: 1rem;
     border-radius: 50%;
@@ -292,7 +292,7 @@ const SignInButton = styled(Link)`
   color: #15803d;
   transition: color 0.3s;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 400;
 
   display: flex;
   align-items: center;
@@ -310,10 +310,10 @@ const SignUpButton = styled(Link)`
   height: fit-content;
   background: transparent;
 
-  font-weight: 500;
+  font-weight: 400;
   color: #15803d;
 
-  border: 2px solid #15803d;
+  border: 1px solid #15803d;
   border-radius: 5px;
 
   text-decoration: none;
@@ -511,11 +511,11 @@ export default function AdminNavbar () {
       {/* Mobile Menu */}
       {isOpen && (
         <MobileMenu>
-          <MobileMenuLink to="">My Profile</MobileMenuLink>
           <MobileMenuLink to="/buyer-store">Store</MobileMenuLink>
-          <MobileMenuLink to="">My Orders</MobileMenuLink>
-          <MobileMenuLink to="/help/faq">FAQ</MobileMenuLink>
-          <MobileMenuLink onClick={handleSignOut}>Sign Out</MobileMenuLink>
+          <MobileMenuLink to="/buyer-cart">Cart</MobileMenuLink>
+          <MobileMenuLink to="/help/faq">Help</MobileMenuLink>
+          <MobileMenuLink to="/signin">Sign In</MobileMenuLink>
+          <MobileMenuLink to="/signup">Create Account</MobileMenuLink>
         </MobileMenu>
       )}
     </NavbarContainer>
