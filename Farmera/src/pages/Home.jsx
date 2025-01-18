@@ -448,7 +448,7 @@ export default function Home() {
     </WelcomeSection>
 
     {/* Features Section */}
-    {/* <FeaturesSection>
+    <FeaturesSection>
       <FeaturesWrapper>
         {features.map((feature, index) => (
           <FeatureCard key={index}>
@@ -458,7 +458,7 @@ export default function Home() {
           </FeatureCard>
         ))}
       </FeaturesWrapper>
-    </FeaturesSection> */}
+    </FeaturesSection>
 
     {/* Featured Products Section */}
     <FeaturedProductsSection>
