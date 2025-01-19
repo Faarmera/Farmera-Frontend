@@ -4,37 +4,37 @@ import { Users, Leaf, Heart, } from "lucide-react";
 
 const teamMembers = [
   {
-    name: "Sulaimon Ibrahim Semako",
+    name: "SULAIMON IBRAHIM SEMAKO",
     role: "Full Stack Developer",
     image: "https://res.cloudinary.com/df5zacepv/image/upload/v1733943586/Ibrahim_exl4nj.jpg",
   },
   {
-    name: "Blessing Ene Udebuani",
+    name: "BLESSING ENE UDEBUANI",
     role: "Frontend Developer",
     image: "https://res.cloudinary.com/df5zacepv/image/upload/v1730437040/profile_zqrc6m.jpg",
   },
   {
-    name: "Owonubi Toluwalase Itunuoluwa",
+    name: "OWONUBI TOLUWASE ITUNUOLUWA",
     role: "Frontend Developer",
     image: "https://res.cloudinary.com/df5zacepv/image/upload/v1733750364/tolu_y6l8xv.jpg",
   },
   {
-    name: "Ogunsina Taiwo Dolapo",
+    name: "OGUNSINA TAIWO DOLAPO",
     role: "Frontend Developer",
     image: "https://res.cloudinary.com/df5zacepv/image/upload/v1733750286/taiwo_n1lfsy.jpg",
   },
   {
-    name: "Oluwafemi Opeoluwa Oluwaseun",
+    name: "OLUWAFEMI OPEOLUWA OLUWASEUN",
     role: "Frontend Developer",
     image: "https://res.cloudinary.com/df5zacepv/image/upload/v1733750220/femi_wamqzf.jpg",
   },
   {
-    name: "Obasi Chukwuemeka Ude",
+    name: "OBASI CHUKWWUEMEKA UDE",
     role: "Full Stack Developer",
     image: "https://res.cloudinary.com/df5zacepv/image/upload/v1733750241/emeka_aeg4ua.jpg",
   },
   {
-    name: "Adedokun Farouq Adetunji",
+    name: "ADEDOKUN FAROUQ ADETUNJI",
     role: "Frontend Developer",
     image: "https://res.cloudinary.com/df5zacepv/image/upload/v1733750220/farooq_bperuq.jpg",
   },
