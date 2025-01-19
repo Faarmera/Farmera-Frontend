@@ -290,16 +290,22 @@ const TeamGrid = styled.div`
 
 
 const TeamCard = styled.div`
-  background: #F0FDF4;
-  padding: 1rem;
-  text-align: center;
-  border-radius: 10px;
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+   width: 250px;
+   background-color: #e8f5ed;
+  padding: 10px;
+  border-radius: 0.375rem;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    cursor: pointer;
+  }
   img {
-    width: 100%;
-    height: 200px;
+    width: 230px;
+    height: 13rem;
+    border-radius: 0.375rem;
     object-fit: cover;
-    border-radius: 8px;
   }
 
   h3 {
@@ -310,7 +316,7 @@ const TeamCard = styled.div`
 
   p {
     font-size: 1rem;
-    color: #6b7280;
+    color: #02050f;
   }
 `;
 
