@@ -178,27 +178,31 @@ const FeaturedProductsSection = styled.div`
 const ProductsWrapper = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1rem;
+  /* padding: 0 1rem; */
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 30px;
 
-  h2 {
+  /* h2 {
     display: block;
     font-size: 2rem;
     font-weight: bold;
     text-align: left;
     margin-bottom: 3rem;
-  }
+  } */
 
-  display: grid;
+  /* display: grid;
   grid-template-columns: 1fr;
-  gap: 2rem;
+  gap: 2rem; */
 
-  @media (min-width: 640px) {
+  /* @media (min-width: 640px) {
     grid-template-columns: repeat(2, 1fr);
   }
 
   @media (min-width: 1024px) {
     grid-template-columns: repeat(4, 1fr);
-  }
+  } */
 `;
 
 const ProductCard = styled.div`
