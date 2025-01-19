@@ -5,7 +5,6 @@ import { UploadOutlined } from '@ant-design/icons';
 import { Button, message, Upload } from 'antd';
 import axios from "axios";
 
-// Styled Components
 const Overlay = styled.div`
   position: fixed;
   inset: 0;
@@ -134,12 +133,11 @@ export default function AdminProductForm({ onClose, editingProduct, onSavedProdu
       stock: "",
       description: "",
       category: "",
-      store: "",
-      location: ""
     }
   );
   const [categories, setCategories] = useState([]);
-  const [imageUpload, setImageUpload] = useState(null);
+  const [imageUpload, setImageUpload] = useState([]);
+  const [removeImage, setRemoveImage] = useState([])
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
@@ -155,17 +153,16 @@ export default function AdminProductForm({ onClose, editingProduct, onSavedProdu
           stock: details.qtyAvailable || "",
           description: details.description || "",
           category: details.category?.name || "",
-          store: details.store || "",
-          location: details.location || "",
         });
   
-        if (details.image) {
-          setImageUpload({
-            uid: -1,
-            name: details.image.split("/").pop(),
+        if (details.images) {
+          const previewImages = details.images.map((image, index) => ({
+            uid: index,
+            name: image.split("/").pop(),
             status: "done",
-            url: details.image,
-          })
+            url: image,
+          }))
+          setImageUpload(previewImages)
         };
       } catch (err) {
         if (err.response?.data?.error) {
@@ -202,33 +199,6 @@ export default function AdminProductForm({ onClose, editingProduct, onSavedProdu
     }
   }, [showForm])
  
-  // useEffect(() => {
-  //   if (editingProduct) {
-  //     setFormData({
-  //       name: editingProduct.name || "",
-  //       price: editingProduct.price || "",
-  //       stock: editingProduct.qtyAvailable || "",
-  //       description: editingProduct.description || "",
-  //       category: editingProduct.category ? editingProduct.category.name || "" : "",
-  //       store: editingProduct.store || "",
-  //       location: editingProduct.location || "",
-  //       image: null
-  //     });
-
-  //     // if (editingProduct.image) {
-  //     //   setImageUpload({
-  //     //     name: editingProduct.image.split("/").pop(),
-  //     //     // name: `image-${index}`,
-  //     //     size: 1234,
-  //     //     status: "done",
-  //     //     url: editingProduct.image,
-  //     //   })
-  //     // }
-      
-  //     // setImageUpload(editingProduct.image || null);
-  //   };
-  // }, [editingProduct]);
-
   const updateProduct = async (productFormData) => {
     try {
       const response = await axios.put(`https://farmera-eyu3.onrender.com/api/v1/product/update/${editingProduct._id}`,
@@ -263,20 +233,6 @@ export default function AdminProductForm({ onClose, editingProduct, onSavedProdu
     }
   }
 
-  // Configure Upload component props
-  const uploadProps = {
-    beforeUpload: (file) => {
-      setImageUpload(file);
-      return false; // Prevent automatic upload
-    },
-    maxCount: 1,
-    showUploadList: true,
-    onRemove: () => {
-      setImageUpload(null);
-    },
-    fileList: imageUpload ? [imageUpload] : [],
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
@@ -288,12 +244,11 @@ export default function AdminProductForm({ onClose, editingProduct, onSavedProdu
     productFormData.append("qtyAvailable", formData.stock)
     productFormData.append("description", formData.description)
     productFormData.append("category", formData.category)
-    productFormData.append("store", formData.store)
-    productFormData.append("location", formData.location)
-
-    if (imageUpload) {
-      productFormData.append("image", imageUpload)
-    }
+    imageUpload
+      .filter((file) => !removeImage.includes(file.url))
+      .forEach((file) => {
+        productFormData.append("images", file.originFileObj || file)
+    })
     
     try {
       if (isUpdate) {
@@ -316,28 +271,28 @@ export default function AdminProductForm({ onClose, editingProduct, onSavedProdu
   };
 
   const props = {
-    name: 'image',
-    fileList: imageUpload ? [imageUpload] : [],
-    // listType: "picture",
-    showUploadList: !!imageUpload,
-    beforeUpload: (file) => {
-      setImageUpload(file);
-      return false;
-    },
+    name: 'images',
+    multiple: true,
+    showUploadList: true,
+    beforeUpload: () => false,
     onChange(info) {
-      if (info.file.status !== 'uploading') {
-        console.log(info.file, info.fileList);
+      let { fileList } = info
+
+      if (fileList.length > 3) {
+        message.error("You can only upload up to 3 images")
+        fileList = fileList.slice(0, 3)
       }
-      if (info.file.status === 'done') {
-        setImageUpload(info.file.originFileObj)
-        message.success(`${info.file.name} file uploaded successfully`);
-      } else if (info.file.status === 'error') {
-        message.error(`${info.file.name} file upload failed.`);
+      setImageUpload(fileList)
+    },
+    onRemove: (file) => {
+      if (file.url) {
+        setRemoveImage((prev) => [...prev, file.url])
       }
+      const newFileList = imageUpload.filter((f) => f.uid !== file.uid)
+      setImageUpload(newFileList)
+      console.log(newFileList)
     },
-    onRemove: () => {
-      setImageUpload(null)
-    },
+    fileList: imageUpload,
   };
 
   return (
@@ -408,31 +363,9 @@ export default function AdminProductForm({ onClose, editingProduct, onSavedProdu
               required
             />
           </InputGroup>
-
-          <TwoColumnGroup>
-            <InputGroup>
-              <label>Store</label>
-              <input
-                type="text"
-                value={formData.store}
-                onChange={(e) => setFormData({...formData, store: e.target.value })}
-                required
-              />
-            </InputGroup>
-            <InputGroup>
-              <label>Location</label>
-              <input
-                type="text"
-                value={formData.location}
-                onChange={(e) => setFormData({...formData, location: e.target.value})}
-                required
-              />
-            </InputGroup>
-          </TwoColumnGroup>
-
           <InputGroup>
           <label>Image</label>
-            <Upload {...uploadProps}>
+            <Upload {...props}>
               <Button icon={<UploadOutlined />}>Click to Upload</Button>
             </Upload>
           </InputGroup>
