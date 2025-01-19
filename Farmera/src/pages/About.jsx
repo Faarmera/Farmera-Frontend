@@ -264,6 +264,7 @@ const SubTitle = styled.h2`
   font-weight: bold;
   color: #065f46;
   margin-bottom: 1rem;
+  text-align: center;
 `;
 
 const Text = styled.p`
@@ -271,21 +272,31 @@ const Text = styled.p`
   line-height: 1.5;
   margin-bottom: 1rem;
   color: ${(props) => props.color || "#6b7280"};
+  text-align: center;
 `;
 
 const TeamGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(1, 1fr); /* Default for small screens */
+  /* display: grid;
+  grid-template-columns: repeat(1, 1fr);
   gap: 1rem;
   margin-top: 2rem;
 
   @media (min-width: 640px) {
-    grid-template-columns: repeat(2, 1fr); /* Two columns on medium screens */
+    grid-template-columns: repeat(2, 1fr);
   }
 
   @media (min-width: 1024px) {
-    grid-template-columns: repeat(4, 1fr); /* Four columns on large screens */
-  }
+    grid-template-columns: repeat(4, 1fr);
+  } */
+
+  max-width: 1200px;
+  margin: 0 auto;
+  /* padding: 0 1rem; */
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 30px;
+  margin-top: 30px;
 `;
 
 
@@ -296,6 +307,8 @@ const TeamCard = styled.div`
   border-radius: 0.375rem;
   overflow: hidden;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  /* border: 1px solid; */
+  text-align: center;
 
   &:hover {
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
