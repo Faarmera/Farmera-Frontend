@@ -472,6 +472,9 @@ export default function AdminNavbar () {
               <DropdownItem onClick={() => goToPage('')}>
                 My Profile Page
               </DropdownItem>
+              <DropdownItem onClick={() => goToPage('farmer-dashboard')}>
+                My Dashboard
+              </DropdownItem>
               <DropdownItem onClick={() => goToPage('')}>
                 My Orders
               </DropdownItem>
