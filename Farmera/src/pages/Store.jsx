@@ -229,12 +229,24 @@ const CategoryDisplay = styled.div`
 const CategoriesDiv = styled.div`
   /* margin-left: 60px; */
   margin: 0px auto;
-  margin-bottom: 30px;
+  margin-top: 10px;
   max-width: 1100px;
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
-  /* border: 1px solid; */
+  /* border: 1px solid;
+  text-align: center;
+  align-items: center; */
+  display: flex;
+  justify-content: space-around;
+  h5{
+    /* border: 1px solid red;
+    margin: 0px auto;
+    text-align: center;
+    align-items: center;
+    display: flex;
+    justify-content: space-around; */
+  }
 `
 
 const Categories = styled.div`
@@ -271,6 +283,8 @@ const ProductWrapper = styled.div`
   justify-content: center;
   flex-wrap: wrap;
   gap: 30px;
+  /* border: 1px solid; */
+  margin-top: 20px;
 `
 
 const Pagination = styled.div`
