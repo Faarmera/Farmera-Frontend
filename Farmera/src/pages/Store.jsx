@@ -21,6 +21,13 @@ const Store = () => {
     search: "",
   });
 
+  const nigerianStates = [
+    "Abia", "Adamawa", "Akwa Ibom", "Anambra", "Bauchi", "Bayelsa", "Benue", "Borno", "Cross River", 
+    "Delta", "Ebonyi", "Edo", "Ekiti", "Enugu", "Gombe", "Imo", "Jigawa", "Kaduna", "Kano", "Katsina",
+    "Kebbi", "Kogi", "Kwara", "Lagos", "Nasarawa", "Niger", "Ogun", "Ondo", "Osun", "Oyo", "Plateau",
+    "Rivers", "Sokoto", "Taraba", "Yobe", "Zamfara"
+  ];
+
   const navigate = useNavigate();
 
   const fetchProducts = async (queryParams) => {
@@ -119,12 +126,20 @@ const Store = () => {
         <p style={{ color: "rgb(182,182,182)" }}>All Categories</p>
       </Route>
 
-      {/* <FiltersContainer>
-        <input type="text" name="category" placeholder="Category..." value={filters.category} onChange={handleFilterChange} />
+      <FiltersContainer>
+        {/* <input type="text" name="category" placeholder="Category..." value={filters.category} onChange={handleFilterChange} /> */}
         <input type="number" name="minPrice" placeholder="Min Price" value={filters.minPrice} onChange={handleFilterChange} />
         <input type="number" name="maxPrice" placeholder="Max Price" value={filters.maxPrice} onChange={handleFilterChange} />
-        <input type="text" name="location" placeholder="Location..." value={filters.location} onChange={handleFilterChange} />
-      </FiltersContainer> */}
+        {/* <input type="text" name="location" placeholder="Location..." value={filters.location} onChange={handleFilterChange} /> */}
+        <select name="location" value= {filters.location} onChange={handleFilterChange}>
+          <option value="">Select Location (State)</option>
+          {nigerianStates.map((state, index)=>(
+            <option key= {index} value={state}>
+              {state}
+            </option>
+          ))}
+        </select>
+      </FiltersContainer> 
 
       {loading ? (
         <p style={{textAlign: "center"}}>Loading...</p>
@@ -223,6 +238,9 @@ const Route = styled.div`
 // `
 
 const CategoryDisplay = styled.div`
+  
+`
+const FiltersContainer = styled.div`
   
 `
 
