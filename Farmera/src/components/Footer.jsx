@@ -240,7 +240,7 @@ export default function Footer() {
               <SectionTitle>Quick Links</SectionTitle>
               <LinkList>
                 <li>
-                  <Link to="/store">Store</Link>
+                  <Link to="/buyer-store">Store</Link>
                 </li>
                 <li>
                   <Link to="/about">About Us</Link>
@@ -252,7 +252,7 @@ export default function Footer() {
                   <Link to="/help/contact">Contact Us</Link>
                 </li>
                 <li>
-                  <Link to="/admin">Sell on Farmera</Link>
+                  <Link to="/signup">Sell on Farmera</Link>
                 </li>
               </LinkList>
             </div>
