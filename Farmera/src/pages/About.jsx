@@ -31,7 +31,7 @@ const teamMembers = [
   {
     name: "OBASI CHUKWWUEMEKA UDE",
     role: "Full Stack Developer",
-    image: "https://res.cloudinary.com/df5zacepv/image/upload/v1733750241/emeka_aeg4ua.jpg",
+    image: "https://res.cloudinary.com/df5zacepv/image/upload/v1737401985/WhatsApp_Image_2025-01-20_at_10.49.27_58ddba97_eihwrt.jpg",
   },
   {
     name: "ADEDOKUN FAROUQ ADETUNJI",
@@ -257,6 +257,7 @@ const Title = styled.h1`
   font-size: 2rem;
   font-weight: bold;
   color: #ffffff;
+  margin-bottom: 1rem;
 `;
 
 const SubTitle = styled.h2`
