@@ -204,6 +204,14 @@ const BottomLinks = styled.div`
   }
 `;
 
+// Function to scroll to the top of the page
+const scrollToTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
+};
+
 export default function Footer() {
   return (
     <>
@@ -215,7 +223,7 @@ export default function Footer() {
           <Grid>
             {/* Brand Section */}
             <BrandSection>
-              <BrandLink to="/">
+              <BrandLink to="/" onClick={scrollToTop}>
                 <Sprout className="logo" />
                 <span>Farmera</span>
               </BrandLink>
@@ -240,19 +248,19 @@ export default function Footer() {
               <SectionTitle>Quick Links</SectionTitle>
               <LinkList>
                 <li>
-                  <Link to="/buyer-store">Store</Link>
+                  <Link to="/buyer-store" onClick={scrollToTop}>Store</Link>
                 </li>
                 <li>
-                  <Link to="/about">About Us</Link>
+                  <Link to="/about" onClick={scrollToTop}>About Us</Link>
                 </li>
                 <li>
-                  <Link to="/help/faq">Help Center</Link>
+                  <Link to="/help/faq" onClick={scrollToTop}>Help Center</Link>
                 </li>
                 <li>
-                  <Link to="/help/contact">Contact Us</Link>
+                  <Link to="/help/contact" onClick={scrollToTop}>Contact Us</Link>
                 </li>
                 <li>
-                  <Link to="/signup">Sell on Farmera</Link>
+                  <Link to="/signup" onClick={scrollToTop}>Sell on Farmera</Link>
                 </li>
               </LinkList>
             </div>
@@ -271,7 +279,7 @@ export default function Footer() {
                   <Phone className="icon" />
                   <span>
                     <p>
-                      <a href="tel:+2349000000000">(+234) 09000 0000 00</a>
+                      <a href="tel:+2349000000000">(+234) 08087 4381 17</a>
                     </p>
                     <p>
                       <a href="tel:+2349000000000">(+234) 09000 0000 00</a>
@@ -303,8 +311,8 @@ export default function Footer() {
           <BottomBar>
             <BottomText>© 2024 Farmera. All rights reserved.</BottomText>
             <BottomLinks>
-              <Link to="/privacy">Privacy Policy</Link>
-              <Link to="/terms">Terms of Service</Link>
+              <Link to="/privacy" onClick={scrollToTop}>Privacy Policy</Link>
+              <Link to="/terms" onClick={scrollToTop}>Terms of Service</Link>
             </BottomLinks>
           </BottomBar>
         </ContentWrapper>
