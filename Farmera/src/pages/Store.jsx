@@ -55,19 +55,21 @@ const Store = () => {
   }, []);
 
   const handleCategoryClick = (categoryName) => {
-    axios
-      .get(`https://farmera-eyu3.onrender.com/api/v1/category/get/${categoryName}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
-      .then((response) => {
-        setSelectedCategory(response.data);
-        navigate("./CategoryResults", { state: { category: response.data } });
-      })
-      .catch((error) => {
-        console.error(`Error fetching category ${categoryName}:`, error);
-      });
+    // axios
+    //   .get(`https://farmera-eyu3.onrender.com/api/v1/category/get/${categoryName}`, {
+    //     headers: {
+    //       Authorization: `Bearer ${localStorage.getItem("token")}`,
+    //     },
+    //   })
+    //   .then((response) => {
+    //     setSelectedCategory(response.data);
+    //     navigate("./CategoryResults", { state: { category: response.data } });
+    //   })
+    //   .catch((error) => {
+    //     console.error(`Error fetching category ${categoryName}:`, error);
+    //   });
+    setSelectedCategory(categoryName);
+    setFilters((prevFilters) => ({ ...prevFilters, category: categoryName }));
   };
 
   const fetchAndSetProducts = async (page = 1) => {
@@ -131,20 +133,24 @@ const Store = () => {
       ) : (
         <FeaturedProductsSection>
           <div>
-            {!selectedCategory ? (
+            {/* {!selectedCategory ? ( */}
               <CategoriesDiv>
                 {categories.map((category) => (
                   <Categories
-                    key={category._id} onClick={() => handleCategoryClick(category.name)}>
+                    key={category._id}  className={`category ${selectedCategory === category.name ? 'focused' : ''}`} onClick={() => handleCategoryClick(category.name)}>
+                    {/* onClick={() => handleFocus(category.id)} */}
                     <h5>{category.name}</h5>
                   </Categories>
                 ))}
               </CategoriesDiv>
-            ) : (
+      
+              {selectedCategory && (
               <CategoryDisplay>
                 {/* <button onClick={() => setSelectedCategory(null)}>Back</button> */}
-                <h2>{selectedCategory.name}</h2>
+                {/* <h2>{selectedCategory}</h2> */}
+
               </CategoryDisplay>
+            
             )}
           </div>
           <ProductWrapper>
@@ -238,6 +244,12 @@ const Categories = styled.div`
   border-radius: 5px;
   padding: 10px;
   cursor: pointer;
+  .focused {
+  background-color: #cce7ff;
+  border-color: #0066cc;
+  transform: scale(1.1);
+  box-shadow: 0 0 5px 2px rgba(0, 102, 204, 0.4);
+  }
 
   &:hover {
     /* background-color: #9bddb3; */
