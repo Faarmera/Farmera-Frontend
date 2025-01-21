@@ -32,6 +32,8 @@ import VerifyEmail from "./pages/VerifyEmail";
 import CheckEmail from "./pages/CheckEmail"
 import EmailVerification from "./pages/EmailVerification";
 
+// import ProductDetail from './pages/ProductDetail'
+
 
 export default function App() {
 
@@ -66,6 +68,8 @@ export default function App() {
           <Route path="/buyer-cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout/>}/>
           <Route path="/payment" element={<Payment/>}/>
+
+          {/* <Route path="/product/:id" element={<ProductDetail />} /> */}
           <Route path="/farmer-dashboard" element={
             
             <ProtectedRoute>

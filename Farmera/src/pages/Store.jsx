@@ -10,7 +10,7 @@ const Store = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  // const [selectedProduct, setSelectedProduct] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [pagination, setPagination] = useState({ currentPage: 1, totalPages: 1 });
@@ -68,26 +68,8 @@ const Store = () => {
       // fetchCategories();
   }, []);
 
-  const handleProductClick = (product) => {
-    setSelectedProduct(product); // Set clicked product to state
-  };
-  const handleCloseModal = () => {
-    setSelectedProduct(null); // Close the modal by setting the state to null
-  };
+
   const handleCategoryClick = (categoryName) => {
-    // axios
-    //   .get(`https://farmera-eyu3.onrender.com/api/v1/category/get/${categoryName}`, {
-    //     headers: {
-    //       Authorization: `Bearer ${localStorage.getItem("token")}`,
-    //     },
-    //   })
-    //   .then((response) => {
-    //     setSelectedCategory(response.data);
-    //     navigate("./CategoryResults", { state: { category: response.data } });
-    //   })
-    //   .catch((error) => {
-    //     console.error(`Error fetching category ${categoryName}:`, error);
-    //   });
     setSelectedCategory(categoryName);
     setFilters((prevFilters) => ({ ...prevFilters, category: categoryName }));
     fetchAndSetProducts();
@@ -263,7 +245,7 @@ const FiltersContainer = styled.div`
   flex-direction: column;
   gap: 1rem;
   margin-bottom: 2rem;
-  max-width: 1090px;
+  max-width: 1050px;
   margin: 0px auto;
   justify-content: center;
   align-items: center;
@@ -391,6 +373,11 @@ const Spinner = styled.div`
   }
 `;
 const Toast = styled.div`
+
+
+position: fixed;  
+  top: 20px;  
+  right: 40%;
   width: fit-content;
   margin: 0px auto;
   text-align: center;
