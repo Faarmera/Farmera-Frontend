@@ -27,7 +27,7 @@ import Dashboard from "./pages/admin/Dashboard";
 import SearchResults from "./components/SearchResults";
 import CategoryResults from "./pages/CategoryResults";
 import Checkout from "./pages/Checkout";
-import Payment from "./pages/Payment";
+// import Payment from "./pages/Payment";
 import VerifyEmail from "./pages/VerifyEmail";
 import CheckEmail from "./pages/CheckEmail"
 import EmailVerification from "./pages/EmailVerification";
@@ -71,7 +71,7 @@ export default function App() {
           <Route path="/buyer-cart" element={<Cart />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/checkout" element={<Checkout/>}/>
-          <Route path="/payment" element={<Payment/>}/>
+          {/* <Route path="/payment" element={<Payment/>}/> */}
 
           {/* <Route path="/product/:id" element={<ProductDetail />} /> */}
           <Route path="/order-success" element={<OrderSuccess/>}/>
