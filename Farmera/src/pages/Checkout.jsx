@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useCart } from '../context/CartContext';
-import OrderContext from '../context/OrderContext';
 import axios from 'axios';
 import { PaystackButton } from 'react-paystack';
+import { validateAddress } from '../utils/Validation';
+import ErrorBoundary from '../utils/ErrorBoundary';
 
 const Checkout = () => {
-
   const [userEmail, setUserEmail] = useState('');
   const [price, setPrice] = useState(null);
   const navigate = useNavigate();
@@ -16,66 +16,17 @@ const Checkout = () => {
   const [deliveryMethod, setDeliveryMethod] = useState('');
   const [shippingAddress, setShippingAddress] = useState('');
   const [pickupStation, setPickupStation] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const { clearCart } = useCart();
+  const [pageLoading, setPageLoading] = useState(true);
+  const [errors, setErrors] = useState({
+    profile: null,
+    cart: null,
+    payment: null,
+    order: null,
+    validation: {},
+  });
+
   const token = localStorage.getItem('token');
-
-  useEffect(() => {
-      const fetchUserProfile = async () => {
-          try {
-              const response = await axios.get(
-                 'http://localhost:5000/api/v1/user/profile/get/SignedinUserProfile',
-                  {
-                      headers: {
-                          Authorization: `Bearer ${token}`,
-                      },
-                  }
-              );
-
-              const userProfile = response.data;
-              setUserEmail(userProfile.email);
-          } catch (error) {
-              console.error('Error fetching user profile:', error);
-          }
-      };
-
-      fetchUserProfile();
-  }, [token]);
-
-  useEffect(() => {
-    const fetchCartDetails = async () => {
-        try {
-            const response = await axios.get(
-                'http://localhost:5000/api/v1/cart/user',
-                {
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                  },
-                }
-            );
-
-            const cartData = response.data;
-            console.log(cartData)
-            setPrice(cartData.totalBill);
-            console.log('Total Bill:', cartData.totalBill);
-        } catch (error) {
-            console.error('Error fetching cart details:', error);
-        }
-    };
-
-    fetchCartDetails();
-}, [token]);
-
-  // const cost = 300
-
-  const config = {
-    reference: (new Date()).getTime().toString(),
-    email: userEmail,
-    amount: price * 100,
-    publicKey: 'pk_test_b5202d3d874ecb280c84d15f6ff56c905bd2442e',
-  };
 
   const pickupStations = [
     {
@@ -104,332 +55,321 @@ const Checkout = () => {
     }
   ];
 
-  const handlePaymentMethodChange = (method) => {
-    setPaymentMethod(method);
-    setError('');
+  const handleError = (error, errorType) => {
+    const errorMessage = error.response?.data?.message || 
+                        error.response?.data?.error || 
+                        error.message || 
+                        'An unexpected error occurred';
+
+    setErrors(prev => ({
+      ...prev,
+      [errorType]: errorMessage
+    }));
+
+    // Auto-clear error after 5 seconds
+    setTimeout(() => {
+      setErrors(prev => ({
+        ...prev,
+        [errorType]: null
+      }));
+    }, 5000);
   };
 
-  const handleDeliveryMethodChange = (method) => {
-    setDeliveryMethod(method);
-    setError('');
+  useEffect(() => {
+    const loadInitialData = async () => {
+      try {
+        setPageLoading(true);
+        await Promise.all([
+          fetchUserProfile(),
+          fetchCartDetails()
+        ]);
+      } catch (error) {
+        handleError(error, 'profile');
+      } finally {
+        setPageLoading(false);
+      }
+    };
+
+    loadInitialData();
+  }, [token]);
+
+  const fetchUserProfile = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get('http://localhost:5000/api/v1/user/profile/get/SignedinUserProfile', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUserEmail(response.data.email);
+    } catch (err) {
+      handleError(err, 'profile');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchCartDetails = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        'http://localhost:5000/api/v1/cart/user',
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      setPrice(response.data.totalBill);
+    } catch (error) {
+      handleError(error, 'cart');
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const paystackConfig = {
+    reference: (new Date()).getTime().toString(),
+    email: userEmail,
+    // amount: price * 100,
+    amount: 500,
+    publicKey: 'pk_test_b5202d3d874ecb280c84d15f6ff56c905bd2442e',
   };
 
   const handleAddressSubmit = () => {
-    if (deliveryMethod === 'delivery' && !shippingAddress.trim()) {
-      setError('Please enter a shipping address');
-      return;
-    }
-    if (deliveryMethod === 'pickup' && !pickupStation) {
-      setError('Please select a pickup station');
+    if (!validateDeliveryDetails()) {
       return;
     }
     setStep(2);
   };
 
-  const handlePaystackSuccessAction = async (reference) => {
+  const handleDeliveryMethodChange = (method) => {
+    setDeliveryMethod(method);
+    setErrors(prev => ({
+      ...prev,
+      validation: {}
+    }));
+  };
+
+  const validateDeliveryDetails = () => {
+    if (deliveryMethod === 'delivery') {
+      const validationResult = validateAddress(shippingAddress);
+      setErrors(prev => ({
+        ...prev,
+        validation: validationResult.errors
+      }));
+      return validationResult.isValid;
+    }
+    if (deliveryMethod === 'pickup' && !pickupStation) {
+      setErrors(prev => ({
+        ...prev,
+        validation: { pickup: 'Please select a pickup station' }
+      }));
+      return false;
+    }
+    return true;
+  };
+
+  const handlePaystackSuccess = async (reference) => {
     try {
       setLoading(true);
-  
+      
       const orderData = {
         deliveryMethod,
         shippingAddress: deliveryMethod === 'delivery' ? shippingAddress : pickupStation,
         paymentMethod: 'Paystack',
         isPaid: true,
         cartItems: cart.cartItems,
-        paymentReference: reference.reference, 
+        paymentReference: reference.reference,
       };
-  
+
       const response = await axios.post(
         'http://localhost:5000/api/v1/order/add',
         orderData,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` }
         }
       );
 
-      console.log('Order created successfully:', response.data);
-      navigate(`/order-success/${response.order._id}`, { state: { order: response.data } });
-    } catch (error) {
-      console.error('Error creating order:', error);
-      setError('Failed to create order. Please contact support.');
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-  const handlePaystackCloseAction = () => {
-    console.log('Payment dialog closed');
-    setError('Payment was canceled. Please try again.');
-
-    setStep(3);
-  };
-  
-
-  const componentProps = {
-      ...config,
-      text: 'Pay with Paystack',
-      onSuccess: (reference) => handlePaystackSuccessAction(reference),
-      onClose: handlePaystackCloseAction,
-  };
-
-
-
-
-
-
-
-
-  const handlePaymentSubmit = () => {
-    if (!paymentMethod) {
-      setError('Please select a payment method');
-      return;
-    }
-    setStep(3);
-  };
-
-  const handleOrderSubmit = async () => {
-    try {
-      setLoading(true);
-      setError('');
-
-      const paymentResult = await processPayment();
-      
-      if (paymentResult.success) {
-        const address = deliveryMethod === 'delivery' ? shippingAddress : pickupStation;
-        const response = await OrderContext.createOrder(address);
-        
-        navigate(`/order-success/${response.order._id}`);
-      } else {
-        setError('Payment failed. Please try again.');
-      }
-    } catch (err) {
-      setError(err.message || 'Failed to process payment and create order');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const processPayment = async () => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({ success: true });
-      }, 2000);
-    });
-  };
-
-  const handlePaymentSuccess = async (response) => {
-    try {
-      const verificationResponse = await fetch('/api/verify-payment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          reference: response.reference,
-          provider: response.provider
-        }),
+      navigate(`/order-success/${response.data.order._id}`, { 
+        state: { order: response.data } 
       });
-
-      const result = await verificationResponse.json();
-      
-      if (result.success) {
-        console.log('Payment verified successfully');
-      }
     } catch (error) {
-      console.error('Payment verification failed:', error);
+      handleError(error, 'order');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handlePaymentClose = () => {
-    console.log('Payment cancelled');
+  const handlePaystackClose = () => {
+    handleError({ message: 'Payment was canceled. Please try again.' }, 'payment');
   };
 
-  if (!cart || cart.cartItems.length === 0) {
+
+  const renderOrderSummary = () => (
+    <OrderSummarySection>
+      <h2>Order Summary</h2>
+      <SummaryList>
+        <SummaryTerm>Items Total:</SummaryTerm>
+        <SummaryValue>₦{cart?.totalBill?.toLocaleString() || 0}</SummaryValue>
+        
+        <SummaryTerm>Delivery Method:</SummaryTerm>
+        <SummaryValue>
+          {deliveryMethod === 'delivery' ? 'Home Delivery' : 'Pickup Station'}
+        </SummaryValue>
+        
+        <SummaryTerm>Delivery Location:</SummaryTerm>
+        <SummaryValue>
+          {deliveryMethod === 'delivery' ? shippingAddress : pickupStation}
+        </SummaryValue>
+        
+        <SummaryTerm>Number of Items:</SummaryTerm>
+        <SummaryValue>{cart?.cartItems?.length || 0}</SummaryValue>
+      </SummaryList>
+    </OrderSummarySection>
+  );
+
+  if (pageLoading) {
+    return (
+      <Container>
+        <LoadingSpinner />
+        <p>Loading checkout...</p>
+      </Container>
+    );
+  }
+
+  if (!cart?.cartItems?.length) {
     return (
       <Container>
         <EmptyMessage>Your cart is empty</EmptyMessage>
-        <BackButton onClick={() => navigate('/buyer-cart')}>Return to Cart</BackButton>
+        <BackButton onClick={() => navigate('/buyer-cart')}>
+          Return to Cart
+        </BackButton>
       </Container>
     );
   }
 
   return (
-    <Container>
-      <ProgressBar>
-        <ProgressStep active={step >= 1}>1. Delivery</ProgressStep>
-        <ProgressStep active={step >= 2}>2. Payment</ProgressStep>
-        {/* <ProgressStep active={step >= 3}>3. Confirm</ProgressStep> */}
-      </ProgressBar>
+    <ErrorBoundary>
+      <Container>
+        {loading && (
+          <LoadingOverlay>
+            <LoadingSpinner />
+          </LoadingOverlay>
+        )}
 
-      {error && <ErrorMessage>{error}</ErrorMessage>}
+        <ProgressBar>
+          <ProgressStep active={step >= 1}>1. Delivery</ProgressStep>
+          <ProgressStep active={step >= 2}>2. Payment</ProgressStep>
+        </ProgressBar>
 
-      {step === 1 && (
-        <Section>
-          <h2>Delivery Method</h2>
-          <DeliveryOptions>
-            <DeliveryOption
-              selected={deliveryMethod === 'delivery'}
-              onClick={() => handleDeliveryMethodChange('delivery')}
-            >
-              <h3>Home Delivery</h3>
-              <p>Deliver to your address</p>
-            </DeliveryOption>
+        {/* Error Display Section */}
+        <ErrorContainer>
+          {Object.entries(errors).map(([key, error]) => {
+            if (error && key !== 'validation') {
+              return (
+                <ErrorMessage key={key} severity={key === 'profile' ? 'error' : 'warning'}>
+                  {error}
+                </ErrorMessage>
+              );
+            }
+            return null;
+          })}
+        </ErrorContainer>
 
-            <DeliveryOption
-              selected={deliveryMethod === 'pickup'}
-              onClick={() => handleDeliveryMethodChange('pickup')}
-            >
-              <h3>Pickup Station</h3>
-              <p>Collect from nearest pickup point</p>
-            </DeliveryOption>
-          </DeliveryOptions>
+        {step === 1 && (
+          <Section>
+            <h2>Delivery Method</h2>
+            <DeliveryOptions>
+              <DeliveryOption
+                selected={deliveryMethod === 'delivery'}
+                onClick={() => handleDeliveryMethodChange('delivery')}
+              >
+                <h3>Home Delivery</h3>
+                <p>Deliver to your address</p>
+              </DeliveryOption>
 
-          {deliveryMethod === 'delivery' && (
-            <AddressInput>
-              <label>Shipping Address</label>
-              <textarea
-                value={shippingAddress}
-                onChange={(e) => setShippingAddress(e.target.value)}
-                placeholder="Enter your complete shipping address"
-                rows="3"
-              />
-            </AddressInput>
-          )}
+              <DeliveryOption
+                selected={deliveryMethod === 'pickup'}
+                onClick={() => handleDeliveryMethodChange('pickup')}
+              >
+                <h3>Pickup Station</h3>
+                <p>Collect from nearest pickup point</p>
+              </DeliveryOption>
+            </DeliveryOptions>
 
-          {deliveryMethod === 'pickup' && (
-            <PickupStations>
-              <label>Select Pickup Station</label>
-              <div>
-                {pickupStations.map(station => (
-                  <PickupStation
-                    key={station.id}
-                    selected={pickupStation === station.address}
-                    onClick={() => setPickupStation(station.address)}
-                  >
-                    <h4>{station.name}</h4>
-                    <p>{station.address}</p>
-                    <div className="hours">Operating Hours: {station.openHours}</div>
-                  </PickupStation>
+            {deliveryMethod === 'delivery' && (
+              <AddressInput>
+                <label>Shipping Address</label>
+                <textarea
+                  value={shippingAddress}
+                  onChange={(e) => {
+                    setShippingAddress(e.target.value);
+                    setErrors(prev => ({
+                      ...prev,
+                      validation: {}
+                    }));
+                  }}
+                  placeholder="Enter your complete shipping address"
+                  rows="3"
+                />
+                {Object.entries(errors.validation).map(([key, error]) => (
+                  <ValidationMessage key={key} type="error">
+                    {error}
+                  </ValidationMessage>
                 ))}
-              </div>
-            </PickupStations>
-          )}
+              </AddressInput>
+            )}
 
-          <Button 
-            onClick={handleAddressSubmit}
-            disabled={!deliveryMethod || loading}
-          >
-            Continue to Payment
-          </Button>
-        </Section>
-      )}
+            {deliveryMethod === 'pickup' && (
+              <PickupStations>
+                <label>Select Pickup Station</label>
+                <div>
+                  {pickupStations.map(station => (
+                    <PickupStation
+                      key={station.id}
+                      selected={pickupStation === station.address}
+                      onClick={() => setPickupStation(station.address)}
+                    >
+                      <h4>{station.name}</h4>
+                      <p>{station.address}</p>
+                      <div className="hours">
+                        Operating Hours: {station.openHours}
+                      </div>
+                    </PickupStation>
+                  ))}
+                </div>
+              </PickupStations>
+            )}
 
-{step === 2 && (
-        <Section>
-          <h2>Payment Method</h2>
-          <StyledPaystackButton as={PaystackButton} {...componentProps}>
-            Pay Now
-          </StyledPaystackButton>
-          {/* <PaymentOptions>
-            <PaymentOption
-              selected={paymentMethod === 'card'}
-              onClick={() => handlePaymentMethodChange('card')}
+            <Button 
+              onClick={handleAddressSubmit}
+              disabled={!deliveryMethod || loading}
             >
-              <h3>Card Payment</h3>
-              <p>Pay with your debit or credit card</p>
-            </PaymentOption>
+              Continue to Payment
+            </Button>
 
-            <PaymentOption
-              selected={paymentMethod === 'transfer'}
-              onClick={() => handlePaymentMethodChange('transfer')}
-            >
-              <h3>Bank Transfer</h3>
-              <p>Pay via bank transfer</p>
-            </PaymentOption>
+            {renderOrderSummary()}
+          </Section>
+        )}
 
-            <PaymentOption
-              selected={paymentMethod === 'ussd'}
-              onClick={() => handlePaymentMethodChange('ussd')}
-            >
-              <h3>USSD</h3>
-              <p>Pay using USSD code</p>
-            </PaymentOption>
-          </PaymentOptions>
-
-          {paymentMethod === 'card' && (
-            <CardDetails>
-              <InputGroup>
-                <label>Card Number</label>
-                <input type="text" placeholder="1234 5678 9012 3456" />
-              </InputGroup>
-              <Row>
-                <InputGroup>
-                  <label>Expiry Date</label>
-                  <input type="text" placeholder="MM/YY" />
-                </InputGroup>
-                <InputGroup>
-                  <label>CVV</label>
-                  <input type="text" placeholder="123" />
-                </InputGroup>
-              </Row>
-            </CardDetails>
-          )}
-
-          <Button 
-            onClick={handlePaymentSubmit}
-            disabled={!paymentMethod || loading}
-          >
-            Continue to Review
-          </Button> */}
-        </Section>
-      )}
-
-{/* {step === 3 && (
-        <Section>
-          <h2>Order Summary</h2>
-          <OrderSummary>
-            <SummaryItem>
-              <span>Delivery Method:</span>
-              <span>{deliveryMethod === 'delivery' ? 'Home Delivery' : 'Pickup'}</span>
-            </SummaryItem>
-            <SummaryItem>
-              <span>Address:</span>
-              <span>{deliveryMethod === 'delivery' ? shippingAddress : pickupStation}</span>
-            </SummaryItem>
-            <SummaryItem>
-              <span>Total Items:</span>
-              <span>{cart.cartItems.length}</span>
-            </SummaryItem>
-            <SummaryItem total>
-              <span>Total Amount:</span>
-              <span>₦{cart?.totalBill || 0}</span>
-            </SummaryItem>
-          </OrderSummary>
-
-          <Button 
-            onClick={handleOrderSubmit}
-            disabled={loading}
-          >
-            {loading ? 'Processing Payment...' : 'Pay and Place Order'}
-          </Button>
-        </Section>
-      )} */}
-
-      {/* <PageContainer>
-          <PaymentComponent 
-            amount={1000} // Amount in Naira
-            email="customer@example.com"
-            onSuccess={handlePaymentSuccess}
-            onClose={handlePaymentClose}
-          />
-        </PageContainer> */}
-    </Container>
+        {step === 2 && (
+          <Section>
+            <h2>Payment Method</h2>
+            {renderOrderSummary()}
+            <StyledPaystackButton
+              as={PaystackButton}
+              {...paystackConfig}
+              text="Pay Now"
+              onSuccess={handlePaystackSuccess}
+              onClose={handlePaystackClose}
+            />
+          </Section>
+        )}
+      </Container>
+    </ErrorBoundary>
   );
 };
 
-export default Checkout;
+export default Checkout
 
 // Styled Components
 const Container = styled.div`
@@ -451,6 +391,10 @@ const ProgressBar = styled.div`
 const ProgressStep = styled.div`
   color: ${props => props.active ? '#16a34a' : '#94a3b8'};
   font-weight: ${props => props.active ? 'bold' : 'normal'};
+`;
+
+const ErrorContainer = styled.div`
+  margin-bottom: 1rem;
 `;
 
 const Section = styled.section`
@@ -520,20 +464,63 @@ const AddressInput = styled.div`
   }
 `;
 
-const PaymentOptions = styled(DeliveryOptions)``;
+const LoadingSpinner = styled.div`
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #16a34a;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
 
-const PaymentOption = styled(DeliveryOption)``;
-
-const PageContainer = styled.div`
-  width: 100%;
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem 0;
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
 `;
 
-const PaymentComponent = styled.div`
-  
-`
+const OrderSummarySection = styled(Section)`
+  background: #f8fafc;
+  margin-top: 1rem;
+`;
+
+const SummaryList = styled.dl`
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem 1rem;
+  margin: 0;
+`;
+
+const SummaryTerm = styled.dt`
+  font-weight: 600;
+  color: #475569;
+`;
+
+const SummaryValue = styled.dd`
+  margin: 0;
+  text-align: right;
+  color: #1e293b;
+`;
+
+const LoadingOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
+
+const ValidationMessage = styled.span`
+  color: ${props => props.type === 'error' ? '#ef4444' : '#16a34a'};
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  display: block;
+`;
 
 const StyledPaystackButton = styled.button`
   background-color: #16a34a;
@@ -553,38 +540,6 @@ const StyledPaystackButton = styled.button`
   &:active {
     background-color: #166534;
   }
-`;
-
-const CardDetails = styled.div`
-  margin: 1.5rem 0;
-`;
-
-const InputGroup = styled.div`
-  margin-bottom: 1rem;
-
-  label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-  }
-
-  input {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #e5e7eb;
-    border-radius: 4px;
-
-    &:focus {
-      outline: none;
-      border-color: #16a34a;
-    }
-  }
-`;
-
-const Row = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
 `;
 
 const PickupStations = styled.div`
@@ -654,13 +609,19 @@ const Button = styled.button`
 `;
 
 const ErrorMessage = styled.div`
-  color: #ef4444;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  background: #fee2e2;
-  border-radius: 4px;
-`;
+color: ${props => props.severity === 'error' ? '#ef4444' : '#f59e0b'};
+padding: 1rem;
+margin-bottom: 0.5rem;
+background: ${props => props.severity === 'error' ? '#fee2e2' : '#fef3c7'};
+border-radius: 4px;
+display: flex;
+align-items: center;
+font-size: 0.875rem;
 
+&:last-child {
+  margin-bottom: 0;
+}
+`;
 const OrderSummary = styled.div`
   margin-bottom: 1.5rem;
 `;

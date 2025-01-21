@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { FaAngleRight } from "react-icons/fa";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { Button } from "antd";
 
 const Store = () => {
   const [products, setProducts] = useState([]);
@@ -196,6 +197,15 @@ const Store = () => {
             ))
           )}
           </ProductWrapper>
+
+          {/* FOR FAROUQ */}
+          {/* <button 
+              onClick={fetchAndSetProducts} 
+              style={{ backgroundColor: "#16A34A", color: "#fff", padding: "10px 20px", border: "none",
+                borderRadius: "5px", cursor: "pointer", fontSize: "16px", marginBottom: "1rem"}}
+            >
+              All Products
+            </button> */}
         </FeaturedProductsSection>
       )}
 
