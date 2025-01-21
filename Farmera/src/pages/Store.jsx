@@ -241,14 +241,13 @@ const Div = styled.div`
 const Route = styled.div`
   display: flex;
   text-align: center;
-  max-width: 1100px;
+  max-width: 1090px;
   margin: 0px auto;
   align-items: center;
   gap: 5px;
 
   .home {
     padding: 0.5rem 1rem;
-    /* padding: 0.5rem; */
     border-radius: 0.375rem;
       &:hover {
       background-color: #e5e7eb;
@@ -264,7 +263,7 @@ const FiltersContainer = styled.div`
   flex-direction: column;
   gap: 1rem;
   margin-bottom: 2rem;
-  max-width: 1100px;
+  max-width: 1090px;
   margin: 0px auto;
   justify-content: center;
   align-items: center;
