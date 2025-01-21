@@ -325,7 +325,7 @@ const CreateAccount = () => {
                 <TextWrapper>
                     <TextBox>
                         <h1>Get Started with Famera</h1>
-                        <p>By creating an account, you agree to Famera's <a href="">Terms & Conditions</a> and <a href="">Privacy Policy</a></p>
+                        <p>By creating an account, you agree to Famera's <a href="https://drive.google.com/file/d/1l6TrUTG7zIpFoy964wvtj0bgRnAt2J1I/view" target="_blank">Terms & Conditions</a> and <a href="">Privacy Policy</a></p>
                     </TextBox>
                     <SignupBox>
                         <div>

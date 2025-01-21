@@ -68,13 +68,10 @@ const SignIn = () => {
                 "https://farmera-eyu3.onrender.com/api/v1/auth/signin",
                 formData
             );
-<<<<<<< Updated upstream
 
             // console.log("Server Response:", response.data);
             // console.log("token received:", response.data.token);
 
-=======
->>>>>>> Stashed changes
     
             console.log("token received:", response.data.token);
             const {token, user} = response.data;
@@ -86,7 +83,6 @@ const SignIn = () => {
             // First store the token and user data
             localStorage.setItem("token", token);
             localStorage.setItem("user", JSON.stringify(user));
-<<<<<<< Updated upstream
 
             // console.log("token saved in localStorage:", localStorage.getItem("token"));
             // console.log("Attempting to navigate to dashboard...");
@@ -95,8 +91,6 @@ const SignIn = () => {
 
             await mergeCartsAfterLogin(token);
 
-=======
->>>>>>> Stashed changes
             console.log("token saved in localStorage:", localStorage.getItem("token"));
     
             // Dispatch user authentication first

@@ -32,12 +32,10 @@ import VerifyEmail from "./pages/VerifyEmail";
 import CheckEmail from "./pages/CheckEmail"
 import EmailVerification from "./pages/EmailVerification";
 import OrderSuccess from "./pages/OrderSuccess";
-<<<<<<< Updated upstream
 
 // import ProductDetail from './pages/ProductDetail'
+import Profile from "./pages/Profile";
 
-=======
->>>>>>> Stashed changes
 
 export default function App() {
 
@@ -63,24 +61,19 @@ export default function App() {
           <Route path="/help/faq" element={<Faq/>}/>
           <Route path="/help/contact" element={<Contact/>}/>
           <Route path="/verify-email" element={<VerifyEmail/>}/>
-<<<<<<< Updated upstream
           <Route path="/check-email" element={<CheckEmail/>}/>
           <Route path="/verify/${userId}/${uniqueString}" element={<EmailVerification/>}/>
-=======
->>>>>>> Stashed changes
           <Route path="/verify/:userId/:uniqueString" element={<EmailVerification/>}/>
           <Route path="/signin" element={<SignIn />} /> Sign-In Page
           <Route path="/forgotpassword" element={<ForgotPassword/>}/>
           <Route path="/signup" element={<CreateAccount />} />
           <Route path="/buyer-store" element={<Store />} />
           <Route path="/buyer-cart" element={<Cart />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/checkout" element={<Checkout/>}/>
           <Route path="/payment" element={<Payment/>}/>
-<<<<<<< Updated upstream
 
           {/* <Route path="/product/:id" element={<ProductDetail />} /> */}
-=======
->>>>>>> Stashed changes
           <Route path="/order-success" element={<OrderSuccess/>}/>
           <Route path="/farmer-dashboard" element={
             

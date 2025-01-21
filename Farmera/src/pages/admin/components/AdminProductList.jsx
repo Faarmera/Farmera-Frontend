@@ -121,7 +121,7 @@ const Table = styled.table`
   }
 `;
 
-export default function AdminProductList() {
+export default function AdminProductList({handleProductNo}) {
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [products, setProducts] = useState([]);
@@ -138,6 +138,7 @@ export default function AdminProductList() {
         },
       );
       setProducts(response.data.products)
+      handleProductNo(response.data.products.length)
     } catch (err) {
       if (err.response?.data?.error) {
         setError(err.response?.data?.error || "Unable to fetch products. Please try again later.")
