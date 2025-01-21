@@ -27,10 +27,6 @@ import Dashboard from "./pages/admin/Dashboard";
 import SearchResults from "./components/SearchResults";
 import CategoryResults from "./pages/CategoryResults";
 import Checkout from "./pages/Checkout";
-<<<<<<< Updated upstream
-// import Payment from "./pages/Payment";
-=======
->>>>>>> Stashed changes
 import VerifyEmail from "./pages/VerifyEmail";
 import CheckEmail from "./pages/CheckEmail"
 import EmailVerification from "./pages/EmailVerification";
@@ -74,10 +70,6 @@ export default function App() {
           <Route path="/buyer-cart" element={<Cart />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/checkout" element={<Checkout/>}/>
-<<<<<<< Updated upstream
-          {/* <Route path="/payment" element={<Payment/>}/> */}
-=======
->>>>>>> Stashed changes
 
           {/* <Route path="/product/:id" element={<ProductDetail />} /> */}
           <Route path="/order-success" element={<OrderSuccess/>}/>
