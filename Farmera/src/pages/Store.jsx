@@ -14,6 +14,8 @@ const Store = () => {
   // const [selectedProduct, setSelectedProduct] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showProductModal, setShowProductModal] = useState(false);
   const [pagination, setPagination] = useState({ currentPage: 1, totalPages: 1 });
   const [filters, setFilters] = useState({
     category: "",
@@ -69,6 +71,30 @@ const Store = () => {
       // fetchCategories();
   }, []);
 
+  const fetchProductDetails = async (id) => {
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `https://farmera-eyu3.onrender.com/api/v1/product/get/${id}`
+      );
+      setSelectedProduct(response.data); // Set the product details
+      setShowProductModal(true); // Show the modal
+    } catch (error) {
+      console.error("Error fetching product details:", error.response?.data || error.message);
+      setError("Failed to fetch product details.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleProductClick = (id) => {
+    fetchProductDetails(id);
+  };
+
+  const closeProductModal = () => {
+    setShowProductModal(false);
+    setSelectedProduct(null);
+  };
 
   const handleCategoryClick = (categoryName) => {
     setSelectedCategory(categoryName);
@@ -185,8 +211,8 @@ const Store = () => {
             ) : (
             products.map((product) => (
               <ProductCard key={product._id}>
-                <img src={product.images[0]} alt={product.imageIds[0]} />
-                <div>
+                <img src={product.images[0]} alt={product.imageIds[0]}/>
+                <div onClick={() => handleProductClick(product._id)}>
                   <h2>{product.name}</h2>
                   <p>{product.description}</p>
                   <p id="location">By {product.store} @ {product.location}</p>
@@ -197,6 +223,20 @@ const Store = () => {
             ))
           )}
           </ProductWrapper>
+
+          {/* For Farouq */}
+
+          {showProductModal && selectedProduct && (
+          <ProductModal>
+            <ModalContent>
+              <CloseButton onClick={closeProductModal}>×</CloseButton>
+              <h2>{selectedProduct.name}</h2>
+              <img src={selectedProduct.images[0]} alt={selectedProduct.name} />
+              <p>{selectedProduct.description}</p>
+              <h3>₦ {selectedProduct.price}</h3>
+            </ModalContent>
+          </ProductModal>
+          )}
 
           {/* FOR FAROUQ */}
           {/* <button 
@@ -250,6 +290,36 @@ const Route = styled.div`
 const CategoryDisplay = styled.div`
   
 `
+
+const ProductModal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const ModalContent = styled.div`
+  background: white;
+  padding: 20px;
+  border-radius: 5px;
+  max-width: 500px;
+  text-align: center;
+`;
+
+const CloseButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+`;
 const FiltersContainer = styled.div`
   display: flex;
   flex-direction: column;

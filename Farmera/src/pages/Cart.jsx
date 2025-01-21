@@ -29,7 +29,6 @@ const Cart = () => {
     if (isAuthenticated) {
       navigate('/checkout');
     } else {
-      // Save the return path more explicitly
       navigate('/signin', { 
         state: { 
           returnTo: '/checkout',
@@ -47,42 +46,17 @@ const Cart = () => {
       </CartHeader>
 
       <CartGrid>
-        {/* <CartItems>
-          {cart.cartItems.map((item) => (
-            <CartItem key={item.product._id}>
-              <ProductImage src={item.product.image} alt={item.product?.name} /> 
-              <ProductInfo>
-                <h3>{item.product.name}</h3>
-                <p>{item.product.description}</p>
-                <p>Store: {item.product.store}</p>
-              </ProductInfo>
-              <QuantityControl>
-                <button onClick={() => decreaseQuantity(item.product._id)}>
-                  <FaMinus />
-                </button>
-                <span>{item.quantity}</span>
-                <button onClick={() => addToCart(item.product._id, 1)}>
-                  <FaPlus />
-                </button>
-              </QuantityControl>
-              <PriceInfo>
-                <p>₦{item.price}</p>
-                <DeleteButton onClick={() => removeFromCart(item.product._id)}>
-                  <FaTrash />
-                </DeleteButton>
-              </PriceInfo>
-            </CartItem>
-          ))}
-        </CartItems> */}
-
         <CartItems>
           {cart.cartItems?.map((item) => (
             item.product ? (  // Check if product exists
               <CartItem key={item.product._id}>
                 <ProductImage 
-                  src={item.product?.images[0] || '/placeholder-image.jpg'} 
-                  alt={item.product?.name || 'Product'} 
-                />
+                src={Array.isArray(item.product?.images) && item.product?.images.length > 0 
+                  ? item.product.images[0] 
+                  : '/placeholder-image.jpg'
+                } alt={item.product?.name || 'Product'} 
+/>
+
                 <ProductInfo>
                   <h3>{item.product?.name}</h3>
                   <p>{item.product?.description}</p>
