@@ -8,6 +8,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { useAuth } from "./context/AuthContext";
 
 
+
 import BasicNavbar from "./components/Navbar/Basic-Navbar";
 import AdminNavbar from "./components/Navbar/Admin-Navbar"
 import BuyerNavbar from "./components/Navbar/Buyer-Navbar";
@@ -31,6 +32,7 @@ import VerifyEmail from "./pages/VerifyEmail";
 import CheckEmail from "./pages/CheckEmail"
 import EmailVerification from "./pages/EmailVerification";
 
+
 export default function App() {
 
   useEffect(() => {
@@ -48,10 +50,10 @@ export default function App() {
       <NavbarRender />
       <main>
         <Routes>
-          <Route path="/" element={<Home />} /> Home Page
-          <Route path="/searchResults" element={<SearchResults/>}/> Search Results
+          <Route path="/" element={<Home />} /> 
+          <Route path="/searchResults" element={<SearchResults/>}/> 
           <Route path="/buyer-store/CategoryResults" element={<CategoryResults/>}/>
-          <Route path="/about" element={<About />} /> About Page
+          <Route path="/about" element={<About />} /> 
           <Route path="/help/faq" element={<Faq/>}/>
           <Route path="/help/contact" element={<Contact/>}/>
           <Route path="/verify-email" element={<VerifyEmail/>}/>

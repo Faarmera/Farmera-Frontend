@@ -18,6 +18,9 @@ const SearchInput = styled.input`
   border-radius: 0.375rem;
   outline: none;
 
+  font-size: 12px;
+  color: #16a34a;
+
   &:focus {
     border-color: #16a34a;
   }
@@ -35,6 +38,8 @@ const SuggestionItem = styled.li`
   padding: 0.5rem;
   cursor: pointer;
   border-radius: 0.25rem;
+  color: #16a34a;
+  font-size: 12px;
   
   &:hover {
     background-color: #f0fdf4;
@@ -86,7 +91,7 @@ const Brand = styled(Link)`
 const DesktopMenu = styled.div`
   display: none;
 
-  @media (min-width: 768px) {
+  @media (min-width: 770px) {
     display: flex;
     align-items: center;
     gap: 2rem;
@@ -132,7 +137,10 @@ const DropdownItem = styled.div`
 
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: start;
+
+  padding-left: 10px;
+  box-sizing: border-box;
 
   cursor: pointer;
   
@@ -260,7 +268,7 @@ const MobileMenuButton = styled.button`
     color: #065f46;
   }
 
-  @media (min-width: 768px) {
+  @media (min-width: 770px) {
     display: none;
   }
 `;
@@ -269,7 +277,7 @@ const MobileMenu = styled.div`
   background-color: #f0fdf4;
   padding-bottom: 1rem;
 
-  @media (min-width: 768px) {
+  @media (min-width: 770px) {
     display: none;
   }
 `;
@@ -328,6 +336,133 @@ const SignUpButton = styled(Link)`
     background-color: #15803d;
   }
 `;
+
+const RightSide = styled.div`
+  display: none;
+  @media (max-width: 770px) {
+    width: fit-content;
+    gap: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+`
+
+const MobileSignIn = styled(Link)`
+    border: 1px solid #15803d;
+    background: transparent;
+    color: #15803d;
+    width: fit-content;
+    height: fit-content;
+    padding: 2px 8px 2px 8px;
+    box-sizing: border-box;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+
+    &:hover{
+      border: none;
+      background-color: #15803d;
+      color: white;
+    }
+`
+
+const CartLinkTwo = styled(Link)`
+  display: none;
+
+  @media (max-width: 770px) {
+    position: relative;
+    color: #15803d;
+
+    display: flex;
+    align-items: center;
+
+
+    &:hover {
+      color: #065f46;
+    }
+
+    .cart-icon {
+      width: 30px;
+
+    }
+
+    .cart-badge {
+      position: absolute;
+      top: -0.5rem;
+      right: -0.5rem;
+      background-color: transparent;
+      color: #15803d;
+      font-size: 12px;
+      font-weight: 700;
+      height: 1rem;
+      width: 1rem;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+`
+const SearchContainerTwo = styled.div`
+  display: none;
+
+  @media (max-width: 770px) {
+    position: relative;
+    z-index: 10;
+
+    display: flex;
+    align-items: center;
+
+    &:hover {
+      color: #065f46;
+    }
+    
+    button {
+      background: none;
+      border: none;
+      color: #15803d;
+      cursor: pointer;
+      &:hover {
+        color: #065f46;
+      }
+      .search{
+        width: 30px;
+      }
+    }
+  }
+`
+
+const SearchDropdownTwo = styled.div`
+  position: absolute;
+  top: 1.6rem;
+  margin-top: 0.5rem;
+  width: 8.0rem;
+  background: white;
+  border-radius: 0.375rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 0.5rem;
+
+  input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #bbf7d0;
+    border-radius: 0.375rem;
+    outline: none;
+
+    box-sizing: border-box;
+
+    &:focus {
+      border-color: #16a34a;
+    }
+  }
+
+  @media (min-width: 770px) {
+      display: none;
+  }
+`
 
 // Component
 export default function AdminNavbar () {
@@ -502,19 +637,63 @@ export default function AdminNavbar () {
 
         </DesktopMenu>
 
-        {/* Mobile Menu Button */}
-        <MobileMenuButton onClick={() => setIsOpen(!isOpen)}>
-          {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </MobileMenuButton>
+        <RightSide>
+            <MobileSignIn to="/SignIn">
+                    Sign In
+            </MobileSignIn>
+
+            <SearchContainerTwo onClick={(e) => e.stopPropagation()}>
+                  <button onClick={() => setSearchOpen(true)}>
+                    <Search className="search"/>
+                  </button>
+                  {searchOpen && (
+                    <SearchDropdownTwo>
+                      <SearchInput
+                        type="text"
+                        placeholder="Search products..."
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") handleSearch();
+                        }}
+                      />
+                      {suggestions.length > 0 && (
+                        <SuggestionsList>
+                          {suggestions.map((suggestion, index) => (
+                            <SuggestionItem
+                              key={suggestion._id || index}
+                              onClick={() => handleSuggestionClick(suggestion)}
+                            >
+                              {suggestion.name}
+                            </SuggestionItem>
+                          ))}
+                        </SuggestionsList>
+                      )}
+                      {searchTerm && suggestions.length === 0 && (
+                        <NoSuggestions>No matching products found</NoSuggestions>
+                      )}
+                    </SearchDropdownTwo>
+                  )}
+            </SearchContainerTwo>
+  
+            <CartLinkTwo to="/buyer-cart">
+                <ShoppingCart className="cart-icon" />
+                <span className="cart-badge">{itemCount}</span>
+            </CartLinkTwo>
+  
+            {/* Mobile Menu Button */}
+            <MobileMenuButton onClick={() => setIsOpen(!isOpen)}>
+              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </MobileMenuButton>
+        </RightSide>
+
       </NavbarWrapper>
 
       {/* Mobile Menu */}
       {isOpen && (
         <MobileMenu>
           <MobileMenuLink to="/buyer-store">Store</MobileMenuLink>
-          <MobileMenuLink to="/buyer-cart">Cart</MobileMenuLink>
           <MobileMenuLink to="/help/faq">Help</MobileMenuLink>
-          <MobileMenuLink to="/signin">Sign In</MobileMenuLink>
           <MobileMenuLink to="/signup">Create Account</MobileMenuLink>
         </MobileMenu>
       )}
