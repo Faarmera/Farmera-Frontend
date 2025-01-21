@@ -1,5 +1,6 @@
 // import React from "react";
 import { useAuth } from "../../context/AuthContext";
+import { useState, useEffect } from "react";
 import AdminProductList from "./components/AdminProductList";
 import AdminStats from "./components/AdminStats";
 import styled from "styled-components";
@@ -7,6 +8,21 @@ import styled from "styled-components";
 
 export default function Dashboard() {
   const { state: authState } = useAuth();
+  const [productNo, setProductNo] = useState(0);
+  const [prevProductNo, setPrevProductNo] = useState(0);
+
+  useEffect(() => {
+    const storedPrevProductNo = localStorage.getItem("prevProductNo");
+    if (storedPrevProductNo !== null) {
+      setPrevProductNo(Number(storedPrevProductNo));
+    }
+  }, [])
+
+  const handleProductNo = (count) => {
+    localStorage.setItem("prevProductNo", productNo)
+    setPrevProductNo(productNo)
+    setProductNo(count)
+  }
 
   if (!authState.isAuthenticated) {
     return (
@@ -29,8 +45,8 @@ export default function Dashboard() {
           <p>Manage your products and view your store's performance</p>
         </WelcomeSection>
 
-        <AdminStats />
-        <AdminProductList />
+        <AdminStats productNo={productNo} prevProductNo={prevProductNo} />
+        <AdminProductList handleProductNo={handleProductNo} />
       </Wrapper>
     </Container>
   );

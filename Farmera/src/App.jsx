@@ -34,6 +34,7 @@ import EmailVerification from "./pages/EmailVerification";
 import OrderSuccess from "./pages/OrderSuccess";
 
 // import ProductDetail from './pages/ProductDetail'
+import Profile from "./pages/Profile";
 
 
 export default function App() {
@@ -68,6 +69,7 @@ export default function App() {
           <Route path="/signup" element={<CreateAccount />} />
           <Route path="/buyer-store" element={<Store />} />
           <Route path="/buyer-cart" element={<Cart />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/checkout" element={<Checkout/>}/>
           <Route path="/payment" element={<Payment/>}/>
 

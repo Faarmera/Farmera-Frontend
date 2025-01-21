@@ -54,14 +54,27 @@ const StatTitle = styled.p`
   color: #4b5563;
 `;
 
-export default function AdminStats() {
+export default function AdminStats({productNo, prevProductNo}) {
+  const calculateChange = (current, previous) => {
+    if (previous === 0 && current === 0) {
+      return "0%"
+    }
+    if (previous === 0) {
+      return "+100%"
+    }
+    const change = ((current - previous) / previous) * 100
+    return `${change > 0 ? "+" : ""}${change.toFixed(1)}%`
+  };
+
+  const handleChange = calculateChange(productNo, prevProductNo);
+
   const stats = [
     {
       title: "Total Products",
-      value: "24",
+      value: productNo,
       icon: Package,
-      change: "+12%",
-      changeType: "increase",
+      change: handleChange,
+      changeType: productNo >= prevProductNo ? "increase" : "decrease",
     },
     {
       title: "Total Sales",
