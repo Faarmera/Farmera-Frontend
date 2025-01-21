@@ -5,13 +5,11 @@ import { Link } from "react-router-dom";
 import { FaAngleRight } from "react-icons/fa";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Button } from "antd";
 
 const Store = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  // const [selectedProduct, setSelectedProduct] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [pagination, setPagination] = useState({ currentPage: 1, totalPages: 1 });
@@ -59,14 +57,10 @@ const Store = () => {
         if (error.response?.status === 401) {
           
           setError("Unauthorized access. Please log in.");
-          // console.error("Unauthorized access:", error);
         } else {
-
           setError("Error fetching categories. Please try again.");
-          // console.error("Error fetching categories:", error);
         }
       });
-      // fetchCategories();
   }, []);
 
 
@@ -96,7 +90,6 @@ const Store = () => {
   const handleAddToCart = async (productId) => {
     const success = await addToCart(productId, 1);
     if (success) {
-      // alert('Product added to cart successfully!');
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
     }
@@ -162,6 +155,9 @@ const Store = () => {
         <FeaturedProductsSection>
           <div>
               <CategoriesDiv>
+                <Categories key="all-products" onClick={() => handleCategoryClick('')}>
+                  <h5>All Products</h5>
+                </Categories>
                 {categories.map((category) => (
                   <Categories
                     key={category._id}  className={`category ${selectedCategory === category.name ? 'focused' : ''}`} onClick={() => handleCategoryClick(category.name)}>
@@ -174,7 +170,6 @@ const Store = () => {
               <CategoryDisplay>
                 {/* <button onClick={() => setSelectedCategory(null)}>Back</button> */}
                 {/* <h2>{selectedCategory}</h2> */}
-
               </CategoryDisplay>
             
             )}
@@ -197,15 +192,6 @@ const Store = () => {
             ))
           )}
           </ProductWrapper>
-
-          {/* FOR FAROUQ */}
-          {/* <button 
-              onClick={fetchAndSetProducts} 
-              style={{ backgroundColor: "#16A34A", color: "#fff", padding: "10px 20px", border: "none",
-                borderRadius: "5px", cursor: "pointer", fontSize: "16px", marginBottom: "1rem"}}
-            >
-              All Products
-            </button> */}
         </FeaturedProductsSection>
       )}
 
