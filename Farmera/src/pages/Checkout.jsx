@@ -6,10 +6,11 @@ import axios from 'axios';
 import { PaystackButton } from 'react-paystack';
 import { validateAddress } from '../utils/Validation';
 import ErrorBoundary from '../utils/ErrorBoundary';
+import { GiMailShirt } from 'react-icons/gi';
 
 const Checkout = () => {
-  const [userEmail, setUserEmail] = useState('');
-  const [price, setPrice] = useState(null);
+  // const [userEmail, setUserEmail] = useState('');
+  // const [price, setPrice] = useState(null);
   const navigate = useNavigate();
   const { cart } = useCart();
   const [step, setStep] = useState(1);
@@ -28,60 +29,62 @@ const Checkout = () => {
 
   const token = localStorage.getItem('token');
 
-  useEffect(() => {
-      const fetchUserProfile = async () => {
-          try {
-              const response = await axios.get(
-                 'http://localhost:5000/api/v1/user/profile/get/SignedinUserProfile',
-                  {
-                      headers: {
-                          Authorization: `Bearer ${token}`,
-                      },
-                  }
-              );
+  // useEffect(() => {
+  //     const fetchUserProfile = async () => {
+  //         try {
+  //             const response = await axios.get(
+  //                'https://farmera-eyu3.onrender.com/api/v1/user/profile/get/SignedinUserProfile',
+  //                 {
+  //                     headers: {
+  //                         Authorization: `Bearer ${token}`,
+  //                     },
+  //                 }
+  //             );
 
-              const userProfile = response.data;
-              setUserEmail(userProfile.email);
-          } catch (error) {
-              console.error('Error fetching user profile:', error);
-          }
-      };
+  //             const userProfile = response.data;
+  //             setUserEmail(userProfile.email);
+  //         } catch (error) {
+  //             console.error('Error fetching user profile:', error);
+  //         }
+  //     };
 
-      fetchUserProfile();
-  }, [token]);
+  //     fetchUserProfile();
+  // }, [token]);
 
-  useEffect(() => {
-    const fetchCartDetails = async () => {
-        try {
-            const response = await axios.get(
-                'http://localhost:5000/api/v1/cart/user',
-                {
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                  },
-                }
-            );
+//   useEffect(() => {
+//     const fetchCartDetails = async () => {
+//         try {
+//             const response = await axios.get(
+//                 'https://farmera-eyu3.onrender.com/api/v1/cart/user',
+//                 {
+//                   headers: {
+//                     Authorization: `Bearer ${token}`,
+//                   },
+//                 }
+//             );
 
-            const cartData = response.data;
-            console.log(cartData)
-            setPrice(cartData.totalBill);
-            console.log('Total Bill:', cartData.totalBill);
-        } catch (error) {
-            console.error('Error fetching cart details:', error);
-        }
-    };
+//             const cartData = response.data;
+//             console.log(cartData)
+//             setPrice(cartData.totalBill);
+//             console.log('Total Bill:', cartData.totalBill);
+//         } catch (error) {
+//             console.error('Error fetching cart details:', error);
+//         }
+//     };
 
-    fetchCartDetails();
-}, [token]);
+//     fetchCartDetails();
+// }, [token]);
 
-  // const cost = 300
-
-  const config = {
-    reference: (new Date()).getTime().toString(),
-    email: userEmail,
-    amount: price * 100,
-    publicKey: 'pk_test_b5202d3d874ecb280c84d15f6ff56c905bd2442e',
-  };
+const email = "obasyemeka@gmail.com"
+const price = 900
+  
+const paystackConfig = {
+  reference: (new Date()).getTime().toString(),
+  // email: userEmail,
+  email: email,
+  amount: price * 100,
+  publicKey: 'pk_test_b5202d3d874ecb280c84d15f6ff56c905bd2442e',
+};
 
   const pickupStations = [
     {
@@ -121,7 +124,7 @@ const Checkout = () => {
       [errorType]: errorMessage
     }));
 
-    // Auto-clear error after 5 seconds
+
     setTimeout(() => {
       setErrors(prev => ({
         ...prev,
@@ -135,8 +138,8 @@ const Checkout = () => {
       try {
         setPageLoading(true);
         await Promise.all([
-          fetchUserProfile(),
-          fetchCartDetails()
+          // fetchUserProfile(),
+          // fetchCartDetails()
         ]);
       } catch (error) {
         handleError(error, 'profile');
@@ -147,47 +150,6 @@ const Checkout = () => {
 
     loadInitialData();
   }, [token]);
-
-  const fetchUserProfile = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get('http://localhost:5000/api/v1/user/profile/get/SignedinUserProfile', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setUserEmail(response.data.email);
-    } catch (err) {
-      handleError(err, 'profile');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchCartDetails = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get(
-        'http://localhost:5000/api/v1/cart/user',
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
-      setPrice(response.data.totalBill);
-    } catch (error) {
-      handleError(error, 'cart');
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const paystackConfig = {
-    reference: (new Date()).getTime().toString(),
-    email: userEmail,
-    // amount: price * 100,
-    amount: 500,
-    publicKey: 'pk_test_b5202d3d874ecb280c84d15f6ff56c905bd2442e',
-  };
 
   const handleAddressSubmit = () => {
     if (!validateDeliveryDetails()) {
@@ -237,14 +199,14 @@ const Checkout = () => {
       };
 
       const response = await axios.post(
-        'http://localhost:5000/api/v1/order/add',
+        'https://farmera-eyu3.onrender.com/api/v1/order/add',
         orderData,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
       );
 
-      navigate(`/order-success/${response.data.order._id}`, { 
+      navigate(`/order-success/${response.data.orders._id}`, { 
         state: { order: response.data } 
       });
     } catch (error) {

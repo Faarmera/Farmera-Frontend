@@ -9,7 +9,7 @@ const Cart = () => {
   const { cart, loading, error, addToCart, decreaseQuantity, removeFromCart, clearCart } = useCart();
 
   const navigate = useNavigate();
-  const { state: { isAuthenticated } } = useAuth();
+  // const { state: { isAuthenticated } } = useAuth();
 
   if (loading) return <div style={{textAlign: "center"}}>Loading cart...</div>;
   if (error) return <div style={{textAlign: "center"}}>Error: {error}</div>;
@@ -26,16 +26,17 @@ const Cart = () => {
   }
   
   const handleCheckout = () => {
-    if (isAuthenticated) {
+    // if (isAuthenticated) {
+    //   navigate('/checkout');
+    // } else {
+    //   navigate('/signin', { 
+    //     state: { 
+    //       returnTo: '/checkout',
+    //       message: 'Please sign in to complete your checkout'
+    //     } 
+    //   });
+    // }
       navigate('/checkout');
-    } else {
-      navigate('/signin', { 
-        state: { 
-          returnTo: '/checkout',
-          message: 'Please sign in to complete your checkout'
-        } 
-      });
-    }
   };
 
   return (
@@ -48,7 +49,7 @@ const Cart = () => {
       <CartGrid>
         <CartItems>
           {cart.cartItems?.map((item) => (
-            item.product ? (  // Check if product exists
+            item.product ? (  
               <CartItem key={item.product._id}>
                 <ProductImage 
                 src={Array.isArray(item.product?.images) && item.product?.images.length > 0 
@@ -93,7 +94,7 @@ const Cart = () => {
                 <span>₦{cart.totalBill}</span>
             </SummaryItem>
             <CheckoutButton onClick={handleCheckout} disabled={cart.cartItems.length === 0}>
-            {isAuthenticated ? 'Proceed to Checkout' : 'Sign in to Checkout'}
+            {/* {isAuthenticated ? 'Proceed to Checkout' : 'Sign in to Checkout'} */} Proceed to checkout
             </CheckoutButton>
             <ContinueShoppingButton to="/buyer-store">
                 Continue Shopping

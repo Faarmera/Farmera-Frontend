@@ -30,8 +30,8 @@ export const CartProvider = ({ children }) => {
       };
  
       const endpoint = isAuthenticated
-        ? 'http://localhost:5000/api/v1/cart/user'
-        : 'http://localhost:5000/api/v1/cart/guestUser';
+        ? 'https://farmera-eyu3.onrender.com/api/v1/cart/guestUser'
+        : 'https://farmera-eyu3.onrender.com/api/v1/cart/guestUser';
 
       console.log('Attempting to fetch from endpoint:', endpoint);
       console.log('Current auth status:', { isAuthenticated, cartId });
@@ -100,7 +100,7 @@ export const CartProvider = ({ children }) => {
       }
       
       const response = await axios.post(
-        'http://localhost:5000/api/v1/cart/add',
+        'https://farmera-eyu3.onrender.com/api/v1/cart/add',
         { products: [{ productId, quantity }] },
         { headers, withCredentials: true }
       );
@@ -126,8 +126,8 @@ export const CartProvider = ({ children }) => {
       };
 
       const endpoint = isAuthenticated 
-        ? 'http://localhost:5000/api/v1/cart/decrease'
-        : 'http://localhost:5000/api/v1/cart/guestDecrease';
+        ? 'https://farmera-eyu3.onrender.com/api/v1/cart/guestDecrease'
+        : 'https://farmera-eyu3.onrender.com/api/v1/cart/guestDecrease';
 
         console.log('Attempting to delete from endpoint:', endpoint);
         console.log('Current auth status:', { isAuthenticated, cartId });
@@ -162,7 +162,7 @@ export const CartProvider = ({ children }) => {
     
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/v1/cart/merge",
+        "https://farmera-eyu3.onrender.com/api/v1/cart/merge",
         { cartId },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -189,8 +189,8 @@ export const CartProvider = ({ children }) => {
       };
 
       const endpoint = isAuthenticated 
-        ? 'http://localhost:5000/api/v1/cart/delete'
-        : 'http://localhost:5000/api/v1/cart/guestDelete';
+        ? 'https://farmera-eyu3.onrender.com/api/v1/cart/guestDelete'
+        : 'https://farmera-eyu3.onrender.com/api/v1/cart/guestDelete';
 
         console.log('Attempting to delete from endpoint:', endpoint);
         console.log('Current auth status:', { isAuthenticated, cartId });
@@ -225,8 +225,8 @@ export const CartProvider = ({ children }) => {
       };
  
       const endpoint = isAuthenticated 
-        ? 'http://localhost:5000/api/v1/cart/clear'
-        : 'http://localhost:5000/api/v1/cart/guestClear';
+        ? 'https://farmera-eyu3.onrender.com/api/v1/cart/guestClear'
+        : 'https://farmera-eyu3.onrender.com/api/v1/cart/guestClear';
 
         console.log('Attempting to clear from endpoint:', endpoint);
         console.log('Current auth status:', { isAuthenticated, cartId });
