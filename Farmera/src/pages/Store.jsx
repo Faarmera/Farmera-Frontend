@@ -10,6 +10,7 @@ const Store = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [pagination, setPagination] = useState({ currentPage: 1, totalPages: 1 });
@@ -27,6 +28,8 @@ const Store = () => {
     "Kebbi", "Kogi", "Kwara", "Lagos", "Nasarawa", "Niger", "Ogun", "Ondo", "Osun", "Oyo", "Plateau",
     "Rivers", "Sokoto", "Taraba", "Yobe", "Zamfara"
   ];
+
+  const [showToast, setShowToast] = useState(false);
 
   const navigate = useNavigate();
 
@@ -53,14 +56,24 @@ const Store = () => {
       })
       .catch((error) => {
         if (error.response?.status === 401) {
-
-          console.error("Unauthorized access:", error);
+          
+          setError("Unauthorized access. Please log in.");
+          // console.error("Unauthorized access:", error);
         } else {
-          console.error("Error fetching categories:", error);
+
+          setError("Error fetching categories. Please try again.");
+          // console.error("Error fetching categories:", error);
         }
       });
+      // fetchCategories();
   }, []);
 
+  const handleProductClick = (product) => {
+    setSelectedProduct(product); // Set clicked product to state
+  };
+  const handleCloseModal = () => {
+    setSelectedProduct(null); // Close the modal by setting the state to null
+  };
   const handleCategoryClick = (categoryName) => {
     // axios
     //   .get(`https://farmera-eyu3.onrender.com/api/v1/category/get/${categoryName}`, {
@@ -77,6 +90,7 @@ const Store = () => {
     //   });
     setSelectedCategory(categoryName);
     setFilters((prevFilters) => ({ ...prevFilters, category: categoryName }));
+    fetchAndSetProducts();
   };
 
   const fetchAndSetProducts = async (page = 1) => {
@@ -99,7 +113,9 @@ const Store = () => {
   const handleAddToCart = async (productId) => {
     const success = await addToCart(productId, 1);
     if (success) {
-      alert('Product added to cart successfully!');
+      // alert('Product added to cart successfully!');
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
     }
   };
 
@@ -109,8 +125,18 @@ const Store = () => {
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
+    if (name === "minPrice" && isNaN(value)) return;
+    if (name === "maxPrice" && isNaN(value)) return;
+
     setFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
   };
+  useEffect(() => {
+    const debounceFetch = setTimeout(() => {
+      fetchAndSetProducts();
+    }, 500);
+  
+    return () => clearTimeout(debounceFetch);
+  }, [filters]);
 
   const handlePageChange = (page) => {
     fetchAndSetProducts(page);
@@ -118,6 +144,7 @@ const Store = () => {
 
   return (
     <Div>
+      <Toast visible={showToast}>Product added to cart successfully!</Toast>
       <Route>
         <Link to="/">
           <p className="home">Home</p>
@@ -127,33 +154,34 @@ const Store = () => {
       </Route>
 
       <FiltersContainer>
-        {/* <input type="text" name="category" placeholder="Category..." value={filters.category} onChange={handleFilterChange} /> */}
-        <input type="number" name="minPrice" placeholder="Min Price" value={filters.minPrice} onChange={handleFilterChange} />
-        <input type="number" name="maxPrice" placeholder="Max Price" value={filters.maxPrice} onChange={handleFilterChange} />
-        {/* <input type="text" name="location" placeholder="Location..." value={filters.location} onChange={handleFilterChange} /> */}
-        <select name="location" value= {filters.location} onChange={handleFilterChange}>
-          <option value="">Select Location (State)</option>
-          {nigerianStates.map((state, index)=>(
-            <option key= {index} value={state}>
-              {state}
-            </option>
-          ))}
-        </select>
+        <div className="filter-item"> <FilterLabel htmlFor="minPrice">Min Price</FilterLabel> <input type="number" name="minPrice" placeholder="Min Price" value={filters.minPrice} onChange={handleFilterChange} /></div>
+        <div className="filter-item"> <FilterLabel htmlFor="maxPrice">Max Price</FilterLabel><input type="number" name="maxPrice" placeholder="Max Price" value={filters.maxPrice} onChange={handleFilterChange} /></div>
+        <div className="filter-item">
+          <FilterLabel htmlFor="location">Location</FilterLabel>
+          <LocationSelect name="location" value= {filters.location} onChange={handleFilterChange}>
+            <option value="">Select Location (State)</option>
+              {nigerianStates.map((state, index)=>(
+                <option key= {index} value={state}>
+                  {state}
+                </option>
+              ))}
+          </LocationSelect>
+        </div>
       </FiltersContainer> 
 
       {loading ? (
-        <p style={{textAlign: "center"}}>Loading...</p>
+        <Spinner>
+          <p style={{textAlign: "center"}}>Loading...</p>
+        </Spinner>
       ) : error ? (
         <p style={{ color: "red" }}>{error}</p>
       ) : (
         <FeaturedProductsSection>
           <div>
-            {/* {!selectedCategory ? ( */}
               <CategoriesDiv>
                 {categories.map((category) => (
                   <Categories
                     key={category._id}  className={`category ${selectedCategory === category.name ? 'focused' : ''}`} onClick={() => handleCategoryClick(category.name)}>
-                    {/* onClick={() => handleFocus(category.id)} */}
                     <h5>{category.name}</h5>
                   </Categories>
                 ))}
@@ -169,7 +197,10 @@ const Store = () => {
             )}
           </div>
           <ProductWrapper>
-            {products.map((product) => (
+            {products.length === 0 ? (
+              <p>No products found matching your filters.</p>
+            ) : (
+            products.map((product) => (
               <ProductCard key={product._id}>
                 <img src={product.images[0]} alt={product.imageIds[0]} />
                 <div>
@@ -180,14 +211,18 @@ const Store = () => {
                   <button onClick={() => handleAddToCart(product._id)}>Add to Cart</button>
                 </div>
               </ProductCard>
-            ))}
+            ))
+          )}
           </ProductWrapper>
         </FeaturedProductsSection>
       )}
 
       <Pagination>
         {Array.from({ length: pagination.totalPages }, (_, index) => (
-          <button key={index} onClick={() => handlePageChange(index + 1)} disabled={pagination.currentPage === index + 1}>
+          <button key={index} onClick={() => handlePageChange(index + 1)} disabled={pagination.currentPage === index + 1}  
+          style={{backgroundColor: pagination.currentPage === index + 1 ? "#16A34A" : "transparent" 
+            ,
+          }}>
             <p>{index + 1}</p>
           </button>
         ))}
@@ -210,7 +245,6 @@ const Route = styled.div`
   margin: 0px auto;
   align-items: center;
   gap: 5px;
-  /* border: 1px solid; */
 
   .home {
     padding: 0.5rem 1rem;
@@ -222,27 +256,65 @@ const Route = styled.div`
 }
 `
 
-// const FiltersContainer = styled.div`
-//   display: flex;
-//   flex-direction: column;
-//   gap: 1rem;
-//   margin-bottom: 2rem;
-//   max-width: 1200px;
-//   margin: 0px auto;
-
-//   @media (min-width: 640px) {
-//     flex-direction: row;
-//     justify-content: space-between;
-//     align-items: center;
-//   }
-// `
-
 const CategoryDisplay = styled.div`
   
 `
 const FiltersContainer = styled.div`
-  
-`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  max-width: 1100px;
+  margin: 0px auto;
+  justify-content: center;
+  align-items: center;
+
+  @media (min-width: 640px) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  input,
+  select {
+    padding: 0.75rem;
+    font-size: 14px;
+    border-radius: 0.375rem;
+    border: 1px solid #d1d5db;
+    width: 100%;
+    max-width: 200px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.3s ease;
+
+    &:focus {
+      outline: none;
+      border-color: #16a34a; 
+      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.3);
+    }
+    &::placeholder {
+      color: #6b7280; 
+      opacity: 1;
+    }
+  }
+
+  select {
+    background-color: #fff;
+    cursor: pointer;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+
+  .filter-label {
+    font-weight: bold;
+    font-size: 14px;
+    color: #333;
+  }
+
+  .select-wrapper {
+    width: 100%;
+    max-width: 200px;
+  }
+`;
 
 const CategoriesDiv = styled.div`
   /* margin-left: 60px; */
@@ -252,24 +324,34 @@ const CategoriesDiv = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
-  /* border: 1px solid;
-  text-align: center;
-  align-items: center; */
   display: flex;
   justify-content: space-around;
-  h5{
-    /* border: 1px solid red;
-    margin: 0px auto;
-    text-align: center;
-    align-items: center;
-    display: flex;
-    justify-content: space-around; */
-  }
 `
+
+
+const LocationSelect = styled.select`
+  padding: 0.5rem;
+  font-size: 14px;
+  border-radius: 0.375rem;
+  border: 1px solid #d1d5db;
+  width: 100%;
+  max-width: 200px;
+  transition: border-color 0.3s ease;
+
+  &:focus {
+    outline: none;
+    border-color: #16a34a;
+  }
+`;
+
+const FilterLabel = styled.label`
+  font-weight: bold;
+  font-size: 14px;
+  color: #333;
+`;
 
 const Categories = styled.div`
   border: none;
-  /* background-color: #94f0b6; */
   background-color: transparent;
   border-radius: 5px;
   padding: 10px;
@@ -282,7 +364,6 @@ const Categories = styled.div`
   }
 
   &:hover {
-    /* background-color: #9bddb3; */
     background-color: #16A34A;
     border: 1px solid black;
   }
@@ -293,7 +374,39 @@ const FeaturedProductsSection = styled.div`
   /* padding: 4rem 0; */
   max-width: 1200px;
   margin: 0px auto;
+  
 `
+const Spinner = styled.div`
+  margin-top: 20px;
+  margin: auto;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #16a34a;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 2s linear infinite;
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+`;
+const Toast = styled.div`
+  width: fit-content;
+  margin: 0px auto;
+  text-align: center;
+  background-color: #16a34a;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+  display: ${({ visible }) => (visible ? 'block' : 'none')};
+  opacity: ${({ visible }) => (visible ? 1 : 0)};
+  transition: opacity 0.3s ease;
+`;
+
+
 
 const ProductWrapper = styled.div`
   max-width: 1200px;
@@ -301,7 +414,6 @@ const ProductWrapper = styled.div`
   justify-content: center;
   flex-wrap: wrap;
   gap: 30px;
-  /* border: 1px solid; */
   margin-top: 20px;
 `
 
