@@ -3,284 +3,6 @@ import axios from 'axios';
 
 const CartContext = createContext();
 
-// export const CartProvider = ({ children }) => {
-//   const [cart, setCart] = useState(null);
-//   const [loading, setLoading] = useState(false);
-//   const [error, setError] = useState(null);
-
-
-//   const [guestCart, setGuestCart] = useState(() => {
-//     const savedCart = localStorage.getItem('guestCart');
-//     return savedCart ? JSON.parse(savedCart) : { cartItems: [], totalBill: 0 };
-//   });
-
-//   useEffect(() => {
-//     localStorage.setItem('guestCart', JSON.stringify(guestCart));
-//   }, [guestCart]);
-
-//   const isAuthenticated = !!localStorage.getItem("token");
-
-//   const currentCart = isAuthenticated ? cart : guestCart;
-
-//   const fetchCart = async () => {
-//     const token = localStorage.getItem("token");
-//     // if (!token) {
-//     //     return;
-//     // }
-
-//     if (!isAuthenticated) return;
-    
-//     try {
-//         const response = await axios.get('https://farmera-eyu3.onrender.com/api/v1/cart/user', {
-//             headers: {
-//                 Authorization: `Bearer ${token}`,
-//             },
-//             withCredentials: true
-//         });
-//         setCart(response.data);
-//     } catch (error) {
-//         console.error('Error fetching cart:', error);
-//         setError(error.response?.data?.error || 'Error fetching cart');
-//     }
-// };
-
-//   useEffect(() => {
-//     fetchCart();
-//   }, []);
-
-//   // const addToCart = async (productId, quantity = 1) => {
-//   //   setLoading(true);
-//   //   try {
-//   //       const token = localStorage.getItem("token");
-//   //       const response = await axios.post('https://farmera-eyu3.onrender.com/api/v1/cart/add',
-//   //       {
-//   //         products: [{ productId, quantity }],
-//   //       },
-//   //       {
-//   //         withCredentials: true
-//   //       },
-//   //       {
-//   //         headers: {
-//   //           Authorization: `Bearer ${token}`,
-//   //         },
-//   //       }
-//   //     );
-//   //     setCart(response.data.cart);
-//   //     return true;
-//   //   } catch (error) {
-//   //     setError(error.response?.data?.error || 'Error adding to cart');
-//   //     return false;
-//   //   } finally {
-//   //     setLoading(false);
-//   //   }
-//   // };
-
-//   const addToCart = async (productId, quantity = 1) => {
-//     setLoading(true);
-//     try {
-//       if (!isAuthenticated) {
-//         // Handle guest cart
-//         const response = await axios.get(`https://farmera-eyu3.onrender.com/api/v1/products/${productId}`);
-//         const product = response.data;
-        
-//         const existingItem = guestCart.cartItems.find(item => item.product._id === productId);
-//         if (existingItem) {
-//           existingItem.quantity += quantity;
-//           existingItem.price = existingItem.quantity * product.price;
-//         } else {
-//           guestCart.cartItems.push({
-//             product,
-//             quantity,
-//             price: product.price * quantity
-//           });
-//         }
-        
-//         guestCart.totalBill = guestCart.cartItems.reduce((total, item) => total + item.price, 0);
-//         setGuestCart({...guestCart});
-//         return true;
-//       }
-      
-//       // Handle authenticated cart
-//       // ... your existing addToCart code
-//           const token = localStorage.getItem("token");
-//           const response = await axios.post('https://farmera-eyu3.onrender.com/api/v1/cart/add',
-//           {
-//             products: [{ productId, quantity }],
-//           },
-//           {
-//             withCredentials: true
-//           },
-//           {
-//             headers: {
-//               Authorization: `Bearer ${token}`,
-//             },
-//           }
-//         );
-//         setCart(response.data.cart);
-//         return true;
-//       } catch (error) {
-//         setError(error.response?.data?.error || 'Error adding to cart');
-//         return false;
-//       } finally {
-//         setLoading(false);
-//       }
-//   };
-
-//   const decreaseQuantity = async (productId) => {
-//     setLoading(true);
-//     try {
-//       if (!isAuthenticated) {
-//         // Handle guest cart
-//         const itemIndex = guestCart.cartItems.findIndex(item => item.product._id === productId);
-//         if (itemIndex === -1) {
-//           throw new Error('Product not found in cart');
-//         }
-  
-//         const item = guestCart.cartItems[itemIndex];
-//         if (item.quantity <= 1) {
-//           guestCart.cartItems.splice(itemIndex, 1);
-//         } else {
-//           item.quantity -= 1;
-//           item.price = item.quantity * item.product.price;
-//         }
-  
-//         guestCart.totalBill = guestCart.cartItems.reduce((total, item) => total + item.price, 0);
-//         setGuestCart({...guestCart});
-//         return true;
-//       }
-//         const token = localStorage.getItem("token");
-//         const response = await axios.patch('https://farmera-eyu3.onrender.com/api/v1/cart/decrease',
-//         { productId },
-//         {
-//           withCredentials: true
-//         },
-//         {
-//           headers: {
-//             Authorization: `Bearer ${token}`,
-//           },
-//         }
-//       );
-//       setCart(response.data.cart);
-//       return true;
-//     } catch (error) {
-//       setError(error.response?.data?.error || 'Error decreasing quantity');
-//       return false;
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const removeFromCart = async (productId) => {
-//     setLoading(true);
-//     try {
-//       if (!isAuthenticated) {
-//         // Handle guest cart
-//         const itemIndex = guestCart.cartItems.findIndex(item => item.product._id === productId);
-//         if (itemIndex === -1) {
-//           throw new Error('Product not found in cart');
-//         }
-  
-//         guestCart.cartItems.splice(itemIndex, 1);
-//         guestCart.totalBill = guestCart.cartItems.reduce((total, item) => total + item.price, 0);
-//         setGuestCart({...guestCart});
-//         return true;
-//       }
-
-//       const token = localStorage.getItem("token");
-//       const response = await axios.delete('https://farmera-eyu3.onrender.com/api/v1/cart/delete',
-//         { productId },
-//         {
-//           withCredentials: true
-//         },
-//         {
-//           headers: {
-//             Authorization: `Bearer ${token}`,
-//           },
-//         }
-//       );
-//       setCart(response.data.cart);
-//       return true;
-//     } catch (error) {
-//       setError(error.response?.data?.error || 'Error removing from cart');
-//       return false;
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const clearCart = async () => {
-//     setLoading(true);
-//     setLoading(true);
-//     try {
-//       if (!isAuthenticated) {
-//         // Handle guest cart
-//         setGuestCart({ cartItems: [], totalBill: 0 });
-//         return true;
-//       }
-
-//       const response = await axios.delete('https://farmera-eyu3.onrender.com/api/v1/cart/clear',
-//         {
-//           headers: {
-//             Authorization: `Bearer ${localStorage.getItem('token')}`,
-//           },
-//         },
-//         {
-//           withCredentials: true
-//         },
-//       );
-//       setCart(response.data.cart);
-//       return true;
-//     } catch (error) {
-//       setError(error.response?.data?.error || 'Error clearing cart');
-//       return false;
-//     } finally {
-//       setLoading(false);
-//     }
-//   }; 
-  
-//   const mergeCartsAfterLogin = async (token) => {
-//     if (guestCart.cartItems.length === 0) return;
-    
-//     try {
-//       const products = guestCart.cartItems.map(item => ({
-//         productId: item.product._id,
-//         quantity: item.quantity
-//       }));
-      
-//       await axios.post('https://farmera-eyu3.onrender.com/api/v1/cart/add',
-//         { products },
-//         {
-//           headers: { Authorization: `Bearer ${token}` },
-//           withCredentials: true
-//         }
-//       );
-      
-//       // Clear guest cart after successful merge
-//       setGuestCart({ cartItems: [], totalBill: 0 });
-      
-//       // Fetch the updated cart
-//       await fetchCart();
-//     } catch (error) {
-//       console.error('Error merging carts:', error);
-//     }
-//   };
-
-//   return (
-//     <CartContext.Provider value={{
-//       cart: currentCart,
-//       loading,
-//       error,
-//       addToCart,
-//       decreaseQuantity,
-//       removeFromCart,
-//       clearCart,
-//       mergeCartsAfterLogin
-//     }}>
-//       {children}
-//     </CartContext.Provider>
-//   );
-// };
-
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -300,56 +22,89 @@ export const CartProvider = ({ children }) => {
       console.log('Skipping fetch: not authenticated and no cartId');
       return;
     }
-  
+ 
     try {
+      const token = localStorage.getItem("token");
       const headers = {
         'Content-Type': 'application/json',
       };
-  
+ 
+      const endpoint = isAuthenticated
+        ? 'http://localhost:5000/api/v1/cart/user'
+        : 'http://localhost:5000/api/v1/cart/guestUser';
+
+      console.log('Attempting to fetch from endpoint:', endpoint);
+      console.log('Current auth status:', { isAuthenticated, cartId });
+      
       if (isAuthenticated) {
-        const token = localStorage.getItem("token");
+        if (!token) {
+          console.log('Token not available yet, skipping fetch');
+          return;
+        }
         console.log('Fetching authenticated cart with token:', token);
         headers.Authorization = `Bearer ${token}`;
       } else {
         console.log('Fetching guest cart with cartId:', cartId);
         headers['x-cart-id'] = cartId;
       }
-  
-      const response = await axios.get(
-        'https://farmera-eyu3.onrender.com/api/v1/cart/user',
-        { headers, withCredentials: true }
-      );
+
+      console.log('Request headers:', headers);
+ 
+      const response = await axios.get(endpoint, {
+        headers,
+        withCredentials: true,
+        timeout: 5000,
+      });
+     
       console.log('Received cart data:', response.data);
       setCart(response.data);
     } catch (error) {
-      console.error('Error fetching cart:', error);
-      setError(error.response?.data?.error || 'Error fetching cart');
-    }
-  };
+      console.error('Detailed error information:', {
+        message: error.message,
+        code: error.code,
+        response: error.response,
+        request: error.request
+      });
 
+      if (error.code === 'ERR_NETWORK') {
+        setError('Unable to connect to the server. Please check your internet connection or try again later.');
+      } else if (error.response) {
+        setError(error.response.data?.error || `Server error: ${error.response.status}`);
+      } else if (error.request) {
+        setError('No response received from server. Please try again.');
+      } else {
+        setError('Error setting up the request. Please try again.');
+      }
+    }
+};
+  
   useEffect(() => {
     fetchCart();
-  }, []);
+  }, [isAuthenticated, cartId]);
 
   const addToCart = async (productId, quantity = 1) => {
     setLoading(true);
     try {
+      const token = localStorage.getItem("token");
       const headers = {
         'Content-Type': 'application/json',
       };
-
+      
       if (isAuthenticated) {
-        headers.Authorization = `Bearer ${localStorage.getItem("token")}`;
+        if (!token) {
+          throw new Error('No auth token available');
+        }
+        headers.Authorization = `Bearer ${token}`;
       } else if (cartId) {
         headers['x-cart-id'] = cartId;
       }
-
+      
       const response = await axios.post(
-        'https://farmera-eyu3.onrender.com/api/v1/cart/add',
+        'http://localhost:5000/api/v1/cart/add',
         { products: [{ productId, quantity }] },
         { headers, withCredentials: true }
       );
-
+      
       setCart(response.data.cart);
       if (!isAuthenticated && response.data.cartId) {
         setCartId(response.data.cartId);
@@ -370,18 +125,25 @@ export const CartProvider = ({ children }) => {
         'Content-Type': 'application/json',
       };
 
+      const endpoint = isAuthenticated 
+        ? 'http://localhost:5000/api/v1/cart/decrease'
+        : 'http://localhost:5000/api/v1/cart/guestDecrease';
+
+        console.log('Attempting to delete from endpoint:', endpoint);
+        console.log('Current auth status:', { isAuthenticated, cartId });
+ 
       if (isAuthenticated) {
         headers.Authorization = `Bearer ${localStorage.getItem("token")}`;
       } else if (cartId) {
         headers['x-cart-id'] = cartId;
       }
-
+ 
       const response = await axios.patch(
-        'https://farmera-eyu3.onrender.com/api/v1/cart/decrease',
+        endpoint,
         { productId },
         { headers, withCredentials: true }
       );
-
+ 
       setCart(response.data.cart);
       return true;
     } catch (error) {
@@ -393,26 +155,31 @@ export const CartProvider = ({ children }) => {
   };
 
   const mergeCartsAfterLogin = async (token) => {
-  const localCartId = localStorage.getItem('cartId');
-  if (!localCartId) return;
-   
-  try {
-    const response = await axios.post(
-      'https://farmera-eyu3.onrender.com/api/v1/cart/merge',
-      { cartId: localCartId },
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        withCredentials: true
-      }
-    );
-     
-    setCart(response.data.cart);
-    localStorage.removeItem('cartId');
-    setCartId(null);
-  } catch (error) {
-    console.error('Error merging carts:', error);
-  }
-};
+    const cartId = localStorage.getItem("cartId");
+    if (!cartId) return;
+
+    console.log(cartId)
+    
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/v1/cart/merge",
+        { cartId },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        }
+      );
+      
+      setCart(response.data.cart);
+      
+      localStorage.removeItem("cartId");
+      setCartId(null);
+      
+      await fetchCart();
+    } catch (error) {
+      console.error("Error merging carts:", error);
+    }
+  };
 
   const removeFromCart = async (productId) => {
     setLoading(true);
@@ -420,26 +187,30 @@ export const CartProvider = ({ children }) => {
       const headers = {
         'Content-Type': 'application/json',
       };
-  
+
+      const endpoint = isAuthenticated 
+        ? 'http://localhost:5000/api/v1/cart/delete'
+        : 'http://localhost:5000/api/v1/cart/guestDelete';
+
+        console.log('Attempting to delete from endpoint:', endpoint);
+        console.log('Current auth status:', { isAuthenticated, cartId });
+ 
       if (isAuthenticated) {
         headers.Authorization = `Bearer ${localStorage.getItem("token")}`;
       } else if (cartId) {
         headers['x-cart-id'] = cartId;
       }
-  
+ 
       const response = await axios.delete(
-        'https://farmera-eyu3.onrender.com/api/v1/cart/delete',
-        { 
-          data: { productId },
-          headers,
-          withCredentials: true 
-        }
+        endpoint,
+        { productId },
+        { headers, withCredentials: true }
       );
-      
+ 
       setCart(response.data.cart);
       return true;
     } catch (error) {
-      setError(error.response?.data?.error || 'Error removing from cart');
+      setError(error.response?.data?.error || 'Error deleting product');
       return false;
     } finally {
       setLoading(false);
@@ -452,21 +223,25 @@ export const CartProvider = ({ children }) => {
       const headers = {
         'Content-Type': 'application/json',
       };
-  
+ 
+      const endpoint = isAuthenticated 
+        ? 'http://localhost:5000/api/v1/cart/clear'
+        : 'http://localhost:5000/api/v1/cart/guestClear';
+
+        console.log('Attempting to clear from endpoint:', endpoint);
+        console.log('Current auth status:', { isAuthenticated, cartId });
+
       if (isAuthenticated) {
         headers.Authorization = `Bearer ${localStorage.getItem("token")}`;
       } else if (cartId) {
         headers['x-cart-id'] = cartId;
       }
-  
-      const response = await axios.delete(
-        'https://farmera-eyu3.onrender.com/api/v1/cart/clear',
-        { 
-          headers,
-          withCredentials: true 
-        }
-      );
-      
+ 
+      const response = await axios.delete(endpoint, {
+        headers,
+        withCredentials: true
+      });
+     
       setCart(response.data.cart);
       return true;
     } catch (error) {
@@ -475,7 +250,7 @@ export const CartProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+};
 
   return (
     <CartContext.Provider value={{

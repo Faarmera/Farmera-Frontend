@@ -1,11 +1,81 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useCart } from '../context/CartContext';
 import OrderContext from '../context/OrderContext';
-import Payment from './Payment';
+import axios from 'axios';
+import { PaystackButton } from 'react-paystack';
 
 const Checkout = () => {
+
+  const [userEmail, setUserEmail] = useState('');
+  const [price, setPrice] = useState(null);
+  const navigate = useNavigate();
+  const { cart } = useCart();
+  const [step, setStep] = useState(1);
+  const [deliveryMethod, setDeliveryMethod] = useState('');
+  const [shippingAddress, setShippingAddress] = useState('');
+  const [pickupStation, setPickupStation] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const { clearCart } = useCart();
+  const token = localStorage.getItem('token');
+
+  useEffect(() => {
+      const fetchUserProfile = async () => {
+          try {
+              const response = await axios.get(
+                 'http://localhost:5000/api/v1/user/profile/get/SignedinUserProfile',
+                  {
+                      headers: {
+                          Authorization: `Bearer ${token}`,
+                      },
+                  }
+              );
+
+              const userProfile = response.data;
+              setUserEmail(userProfile.email);
+          } catch (error) {
+              console.error('Error fetching user profile:', error);
+          }
+      };
+
+      fetchUserProfile();
+  }, [token]);
+
+  useEffect(() => {
+    const fetchCartDetails = async () => {
+        try {
+            const response = await axios.get(
+                'http://localhost:5000/api/v1/cart/user',
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+            );
+
+            const cartData = response.data;
+            console.log(cartData)
+            setPrice(cartData.totalBill);
+            console.log('Total Bill:', cartData.totalBill);
+        } catch (error) {
+            console.error('Error fetching cart details:', error);
+        }
+    };
+
+    fetchCartDetails();
+}, [token]);
+
+  // const cost = 300
+
+  const config = {
+    reference: (new Date()).getTime().toString(),
+    email: userEmail,
+    amount: price * 100,
+    publicKey: 'pk_test_b5202d3d874ecb280c84d15f6ff56c905bd2442e',
+  };
 
   const pickupStations = [
     {
@@ -34,16 +104,6 @@ const Checkout = () => {
     }
   ];
 
-  const navigate = useNavigate();
-  const { cart } = useCart();
-  const [step, setStep] = useState(1);
-  const [deliveryMethod, setDeliveryMethod] = useState('');
-  const [shippingAddress, setShippingAddress] = useState('');
-  const [pickupStation, setPickupStation] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-
   const handlePaymentMethodChange = (method) => {
     setPaymentMethod(method);
     setError('');
@@ -65,6 +125,61 @@ const Checkout = () => {
     }
     setStep(2);
   };
+
+  const handlePaystackSuccessAction = async (reference) => {
+    try {
+      setLoading(true);
+  
+      const orderData = {
+        deliveryMethod,
+        shippingAddress: deliveryMethod === 'delivery' ? shippingAddress : pickupStation,
+        paymentMethod: 'Paystack',
+        isPaid: true,
+        cartItems: cart.cartItems,
+        paymentReference: reference.reference, 
+      };
+  
+      const response = await axios.post(
+        'http://localhost:5000/api/v1/order/add',
+        orderData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log('Order created successfully:', response.data);
+      navigate(`/order-success/${response.order._id}`, { state: { order: response.data } });
+    } catch (error) {
+      console.error('Error creating order:', error);
+      setError('Failed to create order. Please contact support.');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const handlePaystackCloseAction = () => {
+    console.log('Payment dialog closed');
+    setError('Payment was canceled. Please try again.');
+
+    setStep(3);
+  };
+  
+
+  const componentProps = {
+      ...config,
+      text: 'Pay with Paystack',
+      onSuccess: (reference) => handlePaystackSuccessAction(reference),
+      onClose: handlePaystackCloseAction,
+  };
+
+
+
+
+
+
+
 
   const handlePaymentSubmit = () => {
     if (!paymentMethod) {
@@ -120,7 +235,6 @@ const Checkout = () => {
       const result = await verificationResponse.json();
       
       if (result.success) {
-        // Handle successful payment
         console.log('Payment verified successfully');
       }
     } catch (error) {
@@ -146,7 +260,7 @@ const Checkout = () => {
       <ProgressBar>
         <ProgressStep active={step >= 1}>1. Delivery</ProgressStep>
         <ProgressStep active={step >= 2}>2. Payment</ProgressStep>
-        <ProgressStep active={step >= 3}>3. Confirm</ProgressStep>
+        {/* <ProgressStep active={step >= 3}>3. Confirm</ProgressStep> */}
       </ProgressBar>
 
       {error && <ErrorMessage>{error}</ErrorMessage>}
@@ -215,7 +329,10 @@ const Checkout = () => {
 {step === 2 && (
         <Section>
           <h2>Payment Method</h2>
-          <PaymentOptions>
+          <StyledPaystackButton as={PaystackButton} {...componentProps}>
+            Pay Now
+          </StyledPaystackButton>
+          {/* <PaymentOptions>
             <PaymentOption
               selected={paymentMethod === 'card'}
               onClick={() => handlePaymentMethodChange('card')}
@@ -265,11 +382,11 @@ const Checkout = () => {
             disabled={!paymentMethod || loading}
           >
             Continue to Review
-          </Button>
+          </Button> */}
         </Section>
       )}
 
-{step === 3 && (
+{/* {step === 3 && (
         <Section>
           <h2>Order Summary</h2>
           <OrderSummary>
@@ -282,16 +399,12 @@ const Checkout = () => {
               <span>{deliveryMethod === 'delivery' ? shippingAddress : pickupStation}</span>
             </SummaryItem>
             <SummaryItem>
-              <span>Payment Method:</span>
-              <span>{paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1)}</span>
-            </SummaryItem>
-            <SummaryItem>
               <span>Total Items:</span>
               <span>{cart.cartItems.length}</span>
             </SummaryItem>
             <SummaryItem total>
               <span>Total Amount:</span>
-              <span>₦{cart.totalBill}</span>
+              <span>₦{cart?.totalBill || 0}</span>
             </SummaryItem>
           </OrderSummary>
 
@@ -302,16 +415,16 @@ const Checkout = () => {
             {loading ? 'Processing Payment...' : 'Pay and Place Order'}
           </Button>
         </Section>
-      )}
+      )} */}
 
-      <PageContainer>
+      {/* <PageContainer>
           <PaymentComponent 
             amount={1000} // Amount in Naira
             email="customer@example.com"
             onSuccess={handlePaymentSuccess}
             onClose={handlePaymentClose}
           />
-        </PageContainer>
+        </PageContainer> */}
     </Container>
   );
 };
@@ -421,6 +534,26 @@ const PageContainer = styled.div`
 const PaymentComponent = styled.div`
   
 `
+
+const StyledPaystackButton = styled.button`
+  background-color: #16a34a;
+  color: #fff;
+  font-size: 1rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+
+  &:hover {
+    background-color: #15803d;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  &:active {
+    background-color: #166534;
+  }
+`;
 
 const CardDetails = styled.div`
   margin: 1.5rem 0;

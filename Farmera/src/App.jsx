@@ -31,6 +31,7 @@ import Payment from "./pages/Payment";
 import VerifyEmail from "./pages/VerifyEmail";
 import CheckEmail from "./pages/CheckEmail"
 import EmailVerification from "./pages/EmailVerification";
+import OrderSuccess from "./pages/OrderSuccess";
 
 // import ProductDetail from './pages/ProductDetail'
 
@@ -61,6 +62,7 @@ export default function App() {
           <Route path="/verify-email" element={<VerifyEmail/>}/>
           <Route path="/check-email" element={<CheckEmail/>}/>
           <Route path="/verify/${userId}/${uniqueString}" element={<EmailVerification/>}/>
+          <Route path="/verify/:userId/:uniqueString" element={<EmailVerification/>}/>
           <Route path="/signin" element={<SignIn />} /> Sign-In Page
           <Route path="/forgotpassword" element={<ForgotPassword/>}/>
           <Route path="/signup" element={<CreateAccount />} />
@@ -70,6 +72,7 @@ export default function App() {
           <Route path="/payment" element={<Payment/>}/>
 
           {/* <Route path="/product/:id" element={<ProductDetail />} /> */}
+          <Route path="/order-success" element={<OrderSuccess/>}/>
           <Route path="/farmer-dashboard" element={
             
             <ProtectedRoute>

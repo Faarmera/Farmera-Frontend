@@ -60,31 +60,28 @@ const SignIn = () => {
 
     };
     const handleSubmit = async (e) => {
-
         e.preventDefault();
-
         setLoading(true);
     
         try {
-
             const response = await axios.post(
-
                 "https://farmera-eyu3.onrender.com/api/v1/auth/signin",
                 formData
-
             );
 
             // console.log("Server Response:", response.data);
             // console.log("token received:", response.data.token);
 
+    
+            console.log("token received:", response.data.token);
             const {token, user} = response.data;
-
+    
             if (!token) {
                 throw new Error('No token received from server');
             }
-
-            localStorage.setItem("token", token)
-            
+    
+            // First store the token and user data
+            localStorage.setItem("token", token);
             localStorage.setItem("user", JSON.stringify(user));
 
             // console.log("token saved in localStorage:", localStorage.getItem("token"));
@@ -94,6 +91,9 @@ const SignIn = () => {
 
             await mergeCartsAfterLogin(token);
 
+            console.log("token saved in localStorage:", localStorage.getItem("token"));
+    
+            // Dispatch user authentication first
             dispatch({
                 type: "SIGN_IN",
                 payload: {
@@ -110,8 +110,16 @@ const SignIn = () => {
                     token
                 }
             });
-            
-
+    
+            // Then try to merge carts
+            try {
+                await mergeCartsAfterLogin(token);
+            } catch (cartError) {
+                console.error("Error merging carts:", cartError);
+                // Continue with navigation even if cart merge fails
+            }
+    
+            // Finally, handle navigation
             switch (user.type) {
                 case "admin":
                     navigate("/");
@@ -126,31 +134,20 @@ const SignIn = () => {
                     throw new Error("Invalid user type");
             }
     
-
         } catch (error) {
-
-            // console.error("Error during sign-in:", error);
-
             if (error.response) {
-                
-                    setErrors({
-                        email: "Invalid credentials",
-                        password: "Invalid credentials"
-                    });
-
+                setErrors({
+                    email: "Invalid credentials",
+                    password: "Invalid credentials"
+                });
             } else {
-
                 setErrors({
                     email: "Network issues. Try again later...",
                     password: "Network issues. Try again later..."
                 });
-
             }
-
         } finally {
-
             setLoading(false);
-
         }
     };
 

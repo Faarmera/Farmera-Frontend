@@ -21,11 +21,11 @@ const VerifyEmail = () => {
               Please click the link in the email to verify your account. If you don't see the email, check your spam folder.
             </SubText>
           </TextContent>
-          <LinkWrapper>
+          {/* <LinkWrapper>
             <StyledButton onClick={openEmailClient}>
               Open Email
             </StyledButton>
-          </LinkWrapper>
+          </LinkWrapper> */}
         </Card>
       </Wrapper>
     </Container>

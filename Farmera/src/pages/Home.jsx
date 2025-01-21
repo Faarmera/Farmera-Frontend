@@ -464,28 +464,26 @@ export default function Home() {
       </FeaturesWrapper>
     </FeaturesSection>
 
-    {/* Featured Products Section */}
-    <FeaturedProductsSection>
-      <h2 style={{textAlign: "center", padding: "1rem", color: "#15803d"}}>Featured Products</h2>
-      <ProductsWrapper>
-        {/* <div>
-          <h2>Featured Products</h2>
-        </div> */}
-        {products.map((product) => (
-          <ProductCard key={product._id}>
-            <img src={product.images[0]} alt={product.imageIds[0]} />
-            <div>
-              <h2>{product.name}</h2>
-              <p>{product.description}</p>
-              <p id="location">By {product.store} @ {product.location}</p>
-              <h3>₦ {product.price}</h3>
-              <button onClick={() => handleAddToCart(product._id)}>Add to Cart</button>
-            </div>
-          </ProductCard>
-        ))}
-      </ProductsWrapper>
-    </FeaturedProductsSection>
-  </div>
+      {/* Featured Products Section */}
+      <FeaturedProductsSection>
+      <h2 style={{textAlign: "center", padding: "1rem"}}>Featured Products</h2>
+        <ProductsWrapper>
+          {/* <h2>Featured Products</h2> */}
+          {products.map((product) => (
+            <ProductCard key={product._id}>
+              <img src={product.images[0]} alt={product.imageIds[0]} />
+              <div>
+                <h2>{product.name}</h2>
+                <p>{product.description}</p>
+                <p id="location">By {product.store} @ {product.location}</p>
+                <h3>₦ {product.price}</h3>
+                <button onClick={() => handleAddToCart(product._id)}>Add to Cart</button>
+              </div>
+            </ProductCard>
+          ))}
+        </ProductsWrapper>
+      </FeaturedProductsSection>
+    </div>
   );
 }
 // import React from 'react';
