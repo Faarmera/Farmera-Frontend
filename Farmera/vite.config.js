@@ -6,8 +6,8 @@ export default defineConfig({
   plugins: [react()],
 })
 
-build:{
-    rollupOptions:{
-      external:['react-dom/client'],
-    }
-}
+// build:{
+//     rollupOptions:{
+//       external:['react-dom/client'],
+//     }
+// },

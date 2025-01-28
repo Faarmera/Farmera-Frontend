@@ -21,11 +21,6 @@ const VerifyEmail = () => {
               Please click the link in the email to verify your account. If you don't see the email, check your spam folder.
             </SubText>
           </TextContent>
-          {/* <LinkWrapper>
-            <StyledButton onClick={openEmailClient}>
-              Open Email
-            </StyledButton>
-          </LinkWrapper> */}
         </Card>
       </Wrapper>
     </Container>
@@ -119,26 +114,26 @@ const SubText = styled.p`
   margin-top: 16px;
 `;
 
-const LinkWrapper = styled.div`
-  text-align: center;
-`;
+// const LinkWrapper = styled.div`
+//   text-align: center;
+// `;
 
-const StyledButton = styled.button`
-  background-color: #16a34a;
-  color: white;
-  font-size: 1rem;
-  font-weight: 500;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+// const StyledButton = styled.button`
+//   background-color: #16a34a;
+//   color: white;
+//   font-size: 1rem;
+//   font-weight: 500;
+//   padding: 0.75rem 1.5rem;
+//   border-radius: 0.5rem;
+//   border: none;
+//   cursor: pointer;
+//   transition: background-color 0.2s ease;
 
-  &:hover {
-    background-color: #15803d;
-  }
+//   &:hover {
+//     background-color: #15803d;
+//   }
 
-  @media (max-width: 768px) {
-    font-size: 0.9rem;
-  }
-`;
+//   @media (max-width: 768px) {
+//     font-size: 0.9rem;
+//   }
+// `;

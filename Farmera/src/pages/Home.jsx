@@ -340,7 +340,7 @@ export default function Home() {
           },
         },
       );
-      console.log(response.data);
+      // console.log(response.data);
       return setProducts(response.data.products);
 
     } catch (error) {

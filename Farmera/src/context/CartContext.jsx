@@ -30,7 +30,7 @@ export const CartProvider = ({ children }) => {
       };
  
       const endpoint = isAuthenticated
-        ? 'https://farmera-eyu3.onrender.com/api/v1/cart/guestUser'
+        ? 'https://farmera-eyu3.onrender.com/api/v1/cart/user'
         : 'https://farmera-eyu3.onrender.com/api/v1/cart/guestUser';
 
       console.log('Attempting to fetch from endpoint:', endpoint);
@@ -126,7 +126,7 @@ export const CartProvider = ({ children }) => {
       };
 
       const endpoint = isAuthenticated 
-        ? 'https://farmera-eyu3.onrender.com/api/v1/cart/guestDecrease'
+        ? 'https://farmera-eyu3.onrender.com/api/v1/cart/decrease'
         : 'https://farmera-eyu3.onrender.com/api/v1/cart/guestDecrease';
 
         console.log('Attempting to delete from endpoint:', endpoint);
@@ -189,7 +189,7 @@ export const CartProvider = ({ children }) => {
       };
 
       const endpoint = isAuthenticated 
-        ? 'https://farmera-eyu3.onrender.com/api/v1/cart/guestDelete'
+        ? 'https://farmera-eyu3.onrender.com/api/v1/cart/delete'
         : 'https://farmera-eyu3.onrender.com/api/v1/cart/guestDelete';
 
         console.log('Attempting to delete from endpoint:', endpoint);
@@ -225,7 +225,7 @@ export const CartProvider = ({ children }) => {
       };
  
       const endpoint = isAuthenticated 
-        ? 'https://farmera-eyu3.onrender.com/api/v1/cart/guestClear'
+        ? 'https://farmera-eyu3.onrender.com/api/v1/cart/clear'
         : 'https://farmera-eyu3.onrender.com/api/v1/cart/guestClear';
 
         console.log('Attempting to clear from endpoint:', endpoint);
