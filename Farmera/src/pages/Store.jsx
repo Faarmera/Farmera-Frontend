@@ -407,24 +407,37 @@ const FilterLabel = styled.label`
 `;
 
 const Categories = styled.div`
-  border: 1px solid #16A34A;
+  border: 1px solid #16a34a;
   background-color: transparent;
   border-radius: 5px;
   padding: 10px;
   cursor: pointer;
-  .focused {
-  background-color: #cce7ff;
-  border-color: #0066cc;
-  transform: scale(1.1);
-  box-shadow: 0 0 5px 2px rgba(0, 102, 204, 0.4);
-  }
+  transition: all 0.3s ease;
 
   &:hover {
     color: white;
-    background-color: #16A34A;
-    /* border: 1px solid black; */
+    background-color: #16a34a;
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }
-`
+
+  &:focus {
+    outline: none;
+    background-color: #16a34a;
+    transform: scale(1.05);
+    box-shadow: 0 0 5px 2px rgba(22, 163, 74, 0.5);
+    color: white;
+  }
+
+  &.focused {
+    background-color: #cce7ff;
+    border-color: #0066cc;
+    transform: scale(1.1);
+    box-shadow: 0 0 5px 2px rgba(0, 102, 204, 0.4);
+    color: #0066cc;
+  }
+`;
+
 
 const FeaturedProductsSection = styled.div`
   background-color: #f9fafb;
