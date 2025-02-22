@@ -84,34 +84,80 @@ export const CartProvider = ({ children }) => {
 
   const addToCart = async (productId, quantity = 1) => {
     setLoading(true);
+    
+    // if (!isAuthenticated && !cartId) {
+    //   console.log('Skipping add to cart: not authenticated and no cartId');
+    //   setError('Cart session not initialized');
+    //   setLoading(false);
+    //   return false;
+    // }
+    
     try {
       const token = localStorage.getItem("token");
       const headers = {
         'Content-Type': 'application/json',
       };
+  
+      const endpoint = isAuthenticated
+        ? 'https://farmera-eyu3.onrender.com/api/v1/cart/add'
+        : 'https://farmera-eyu3.onrender.com/api/v1/cart/guestAdd';
+      
+      console.log('Attempting to add to cart using endpoint:', endpoint);
+      console.log('Current auth status:', { isAuthenticated, cartId });
       
       if (isAuthenticated) {
         if (!token) {
-          throw new Error('No auth token available');
+          console.log('Token not available yet, cannot add to cart');
+          setError('Authentication token missing');
+          setLoading(false);
+          return false;
         }
+        console.log('Adding to authenticated cart with token:', token);
         headers.Authorization = `Bearer ${token}`;
-      } else if (cartId) {
+      } else {
+        console.log('Adding to guest cart with cartId:', cartId);
         headers['x-cart-id'] = cartId;
       }
       
+      console.log('Request headers:', headers);
+      
       const response = await axios.post(
-        'https://farmera-eyu3.onrender.com/api/v1/cart/add',
+        endpoint,
         { products: [{ productId, quantity }] },
-        { headers, withCredentials: true }
+        { 
+          headers, 
+          withCredentials: true,
+          timeout: 5000
+        }
       );
       
-      setCart(response.data.cart);
+      console.log('Received updated cart data:', response.data);
+      setCart(response.data.cart || response.data);
+      
       if (!isAuthenticated && response.data.cartId) {
         setCartId(response.data.cartId);
+        localStorage.setItem('cartId', response.data.cartId);
       }
+      
       return true;
     } catch (error) {
-      setError(error.response?.data?.error || 'Error adding to cart');
+      console.error('Detailed error information:', {
+        message: error.message,
+        code: error.code,
+        response: error.response,
+        request: error.request
+      });
+      
+      if (error.code === 'ERR_NETWORK') {
+        setError('Unable to connect to the server. Please check your internet connection or try again later.');
+      } else if (error.response) {
+        setError(error.response.data?.error || `Server error: ${error.response.status}`);
+      } else if (error.request) {
+        setError('No response received from server. Please try again.');
+      } else {
+        setError('Error setting up the request. Please try again.');
+      }
+      
       return false;
     } finally {
       setLoading(false);
@@ -184,33 +230,60 @@ export const CartProvider = ({ children }) => {
   const removeFromCart = async (productId) => {
     setLoading(true);
     try {
+      const token = localStorage.getItem("token");
       const headers = {
         'Content-Type': 'application/json',
       };
-
-      const endpoint = isAuthenticated 
-        ? 'https://farmera-eyu3.onrender.com/api/v1/cart/delete'
-        : 'https://farmera-eyu3.onrender.com/api/v1/cart/guestDelete';
-
-        console.log('Attempting to delete from endpoint:', endpoint);
-        console.log('Current auth status:', { isAuthenticated, cartId });
- 
+      
+      const endpoint = isAuthenticated
+        ? 'http://localhost:5000/api/v1/cart/delete'
+        : 'http://localhost:5000/api/v1/cart/guestDelete';
+      
+      console.log('Attempting to delete from endpoint:', endpoint);
+      console.log('Current auth status:', { isAuthenticated, cartId });
+  
       if (isAuthenticated) {
-        headers.Authorization = `Bearer ${localStorage.getItem("token")}`;
+        if (!token) {
+          console.log('Token not available, cannot remove from cart');
+          setError('Authentication token missing');
+          setLoading(false);
+          return false;
+        }
+        headers.Authorization = `Bearer ${token}`;
       } else if (cartId) {
         headers['x-cart-id'] = cartId;
+      } else {
+        console.log('No cartId available for guest user');
+        setError('Cart session not initialized');
+        setLoading(false);
+        return false;
       }
- 
-      const response = await axios.delete(
-        endpoint,
-        { productId },
-        { headers, withCredentials: true }
-      );
- 
+
+      const response = await axios.delete(endpoint, {
+        headers,
+        data: { productId },
+        withCredentials: true,
+        timeout: 5000
+      });
+  
+      console.log('Received updated cart data:', response.data);
       setCart(response.data.cart);
       return true;
     } catch (error) {
-      setError(error.response?.data?.error || 'Error deleting product');
+      console.error('Detailed error information:', {
+        message: error.message,
+        code: error.code,
+        response: error.response?.data,
+        status: error.response?.status
+      });
+      
+      if (error.code === 'ERR_NETWORK') {
+        setError('Unable to connect to the server. Please check your internet connection.');
+      } else if (error.response) {
+        setError(error.response.data?.error || `Server error: ${error.response.status}`);
+      } else {
+        setError('Error removing product from cart. Please try again.');
+      }
       return false;
     } finally {
       setLoading(false);

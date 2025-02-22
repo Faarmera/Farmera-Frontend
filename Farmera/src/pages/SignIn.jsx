@@ -111,15 +111,12 @@ const SignIn = () => {
                 }
             });
     
-            // Then try to merge carts
             try {
                 await mergeCartsAfterLogin(token);
             } catch (cartError) {
                 console.error("Error merging carts:", cartError);
-                // Continue with navigation even if cart merge fails
             }
     
-            // Finally, handle navigation
             switch (user.type) {
                 case "admin":
                     navigate("/");

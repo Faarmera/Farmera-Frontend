@@ -9,8 +9,8 @@ import ErrorBoundary from '../utils/ErrorBoundary';
 import { GiMailShirt } from 'react-icons/gi';
 
 const Checkout = () => {
-  // const [userEmail, setUserEmail] = useState('');
-  // const [price, setPrice] = useState(null);
+  const [userEmail, setUserEmail] = useState('');
+  const [price, setPrice] = useState(null);
   const navigate = useNavigate();
   const { cart } = useCart();
   const [step, setStep] = useState(1);
@@ -29,61 +29,58 @@ const Checkout = () => {
 
   const token = localStorage.getItem('token');
 
-  // useEffect(() => {
-  //     const fetchUserProfile = async () => {
-  //         try {
-  //             const response = await axios.get(
-  //                'https://farmera-eyu3.onrender.com/api/v1/user/profile/get/SignedinUserProfile',
-  //                 {
-  //                     headers: {
-  //                         Authorization: `Bearer ${token}`,
-  //                     },
-  //                 }
-  //             );
+  useEffect(() => {
+      const fetchUserProfile = async () => {
+          try {
+              const response = await axios.get(
+                 'https://farmera-eyu3.onrender.com/api/v1/user/profile/get/SignedinUserProfile',
+                  {
+                      headers: {
+                          Authorization: `Bearer ${token}`,
+                      },
+                  }
+              );
 
-  //             const userProfile = response.data;
-  //             setUserEmail(userProfile.email);
-  //         } catch (error) {
-  //             console.error('Error fetching user profile:', error);
-  //         }
-  //     };
+              const userProfile = response.data;
+              setUserEmail(userProfile.email);
+          } catch (error) {
+              console.error('Error fetching user profile:', error);
+          }
+      };
 
-  //     fetchUserProfile();
-  // }, [token]);
+      fetchUserProfile();
+  }, [token]);
 
-//   useEffect(() => {
-//     const fetchCartDetails = async () => {
-//         try {
-//             const response = await axios.get(
-//                 'https://farmera-eyu3.onrender.com/api/v1/cart/user',
-//                 {
-//                   headers: {
-//                     Authorization: `Bearer ${token}`,
-//                   },
-//                 }
-//             );
+  useEffect(() => {
+    const fetchCartDetails = async () => {
+        try {
+            const response = await axios.get(
+                'https://farmera-eyu3.onrender.com/api/v1/cart/user',
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+            );
 
-//             const cartData = response.data;
-//             console.log(cartData)
-//             setPrice(cartData.totalBill);
-//             console.log('Total Bill:', cartData.totalBill);
-//         } catch (error) {
-//             console.error('Error fetching cart details:', error);
-//         }
-//     };
+            const cartData = response.data;
+            console.log(cartData)
+            setPrice(cartData.totalBill);
+            console.log('Total Bill:', cartData.totalBill);
+        } catch (error) {
+            console.error('Error fetching cart details:', error);
+        }
+    };
 
-//     fetchCartDetails();
-// }, [token]);
+    fetchCartDetails();
+}, [token]);
 
-const email = "obasyemeka@gmail.com"
-const price = 900
-  
 const paystackConfig = {
   reference: (new Date()).getTime().toString(),
-  // email: userEmail,
-  email: email,
+  email: userEmail,
+  price: price,
   amount: price * 100,
-  publicKey: 'pk_test_b5202d3d874ecb280c84d15f6ff56c905bd2442e',
+  publicKey: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
 };
 
   const pickupStations = [
@@ -114,10 +111,7 @@ const paystackConfig = {
   ];
 
   const handleError = (error, errorType) => {
-    const errorMessage = error.response?.data?.message || 
-                        error.response?.data?.error || 
-                        error.message || 
-                        'An unexpected error occurred';
+    const errorMessage = error.response?.data?.message || error.response?.data?.error || error.message || 'An unexpected error occurred';
 
     setErrors(prev => ({
       ...prev,
@@ -138,8 +132,8 @@ const paystackConfig = {
       try {
         setPageLoading(true);
         await Promise.all([
-          // fetchUserProfile(),
-          // fetchCartDetails()
+          fetchUserProfile(),
+          fetchCartDetails()
         ]);
       } catch (error) {
         handleError(error, 'profile');
@@ -199,14 +193,14 @@ const paystackConfig = {
       };
 
       const response = await axios.post(
-        'https://farmera-eyu3.onrender.com/api/v1/order/add',
+        'http://localhost:5000/api/v1/order/add',
         orderData,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
       );
 
-      navigate(`/order-success/${response.data.orders._id}`, { 
+      navigate(`/order-success/${response.data.order._id}`, { 
         state: { order: response.data } 
       });
     } catch (error) {

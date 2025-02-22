@@ -36,8 +36,8 @@ const Cart = () => {
         } 
       });
     }
-      navigate('/checkout');
   };
+  
 
   return (
     <CartContainer>
